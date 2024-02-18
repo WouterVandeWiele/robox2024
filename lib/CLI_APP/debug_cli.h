@@ -1,4 +1,8 @@
 #include <SimpleCLI.h>
+#include <stdint.h>
+
+// Can be used to implement a CLI to send debug commands
+// Documentation: https://github.com/SpacehuhnTech/SimpleCLI
 
 // Create CLI Object
 SimpleCLI cli;
@@ -6,6 +10,7 @@ SimpleCLI cli;
 // Commands
 Command ping;
 Command help;
+Command print;
 
 // Callback function for ping command
 void pingCallback(cmd* c) {
@@ -19,6 +24,18 @@ void helpCallback(cmd *c) {
     Command cmd(c);
 
     Serial.println(cli.toString());
+}
+
+// Example callback to demonstrate aruments
+void printCallback(cmd *c) {
+    Command cmd(c);
+    
+    uint8_t times = atoi(cmd.getArg("n").getValue().c_str());
+    String text = cmd.getArg(0).getValue();
+
+    for (uint8_t i = 0; i < times; i++){
+        Serial.println(text);
+    }
 }
 
 // Callback in case of an error
@@ -41,7 +58,15 @@ void debug_cli_setup() {
 
     // Install all callback functions
     ping = cli.addCmd("ping", pingCallback);
+    ping.setDescription("Replies with \"pong\" if the ESP32 is still going through the main loop");
+    
     help = cli.addCmd("help", helpCallback);
+    help.setDescription("Print cli help, lists all registered commands");
+    
+    print = cli.addCmd("print", printCallback);
+    print.setDescription("Example command demonstrating aruments, takes <text> and prints n times");
+    print.addPosArg("text");
+    print.addArg("n", "1");
 
     // [Optional] Check if our command was successfully added
     if (!ping) Serial.println(">Ping command not installed!");
@@ -49,6 +74,9 @@ void debug_cli_setup() {
 
     if (!help) Serial.println(">Help command not installed!");
     else Serial.println(">Help was added to the CLI!");
+
+    if (!print) Serial.println(">Print command not installed!");
+    else Serial.println(">Print was added to the CLI!");
 
     // Set error Callback
     cli.setOnError(errorCallback);
