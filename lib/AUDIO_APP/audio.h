@@ -7,13 +7,22 @@
  * @copyright GPLv3
  */
 
+// robox audio architecture overview [docs/audio_overview.excalidraw.png]
+
 #include "BluetoothA2DPSink.h"
 #include "AudioTools.h"
 
 #define USE_AUDIO_LOGGING false
 
+// pin configuration
+#define PIN_MUTE 22
+#define PIN_DATA 32
+#define PIN_BCLK 33
+#define PIN_WS 25
+#define A2DP_BLE_NAME "a2dp-i2s"
+
 BluetoothA2DPSink a2dp_sink;
-I2SStream i2s(22);
+I2SStream i2s(PIN_MUTE);
 
 // Write data to I2S
 // void read_data_stream(const uint8_t *data, uint32_t length) {
@@ -51,9 +60,9 @@ void audio_setup() {
   };
 
   i2s_pin_config_t my_pin_config = {
-    .bck_io_num = 33,
-    .ws_io_num = 25,
-    .data_out_num = 32,
+    .bck_io_num = PIN_BCLK,
+    .ws_io_num = PIN_WS,
+    .data_out_num = PIN_DATA,
     .data_in_num = I2S_PIN_NO_CHANGE
   };
   a2dp_sink.set_pin_config(my_pin_config);
@@ -62,6 +71,6 @@ void audio_setup() {
   a2dp_sink.set_i2s_config(i2s_config);
   a2dp_sink.set_avrc_metadata_attribute_mask(ESP_AVRC_MD_ATTR_TITLE | ESP_AVRC_MD_ATTR_ARTIST | ESP_AVRC_MD_ATTR_ALBUM | ESP_AVRC_MD_ATTR_TRACK_NUM | ESP_AVRC_MD_ATTR_NUM_TRACKS | ESP_AVRC_MD_ATTR_GENRE | ESP_AVRC_MD_ATTR_PLAYING_TIME);
   a2dp_sink.set_auto_reconnect(true);
-  a2dp_sink.start("a2dp-i2s");
+  a2dp_sink.start(A2DP_BLE_NAME);
 
 }
