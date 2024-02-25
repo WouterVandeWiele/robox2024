@@ -1,8 +1,8 @@
 #include <Arduino.h>
 // #include "lcd_config.h"
 // #include "debug_cli.h"
-// #include "audio_mux.h"
-#include "ble.h"
+#include "audio_mux.h"
+// #include "ble.h"
 #include "general_definitions.h"
 
 // setup logging
@@ -11,8 +11,8 @@
 // #include "esp32-hal-log.h"
 
 
-// RoboxAudioMux mux;
-RoboxBluetooth ble;
+RoboxAudioMux mux;
+// RoboxBluetooth ble;
 
 void setup() {
     Serial.begin(115200);
@@ -29,8 +29,8 @@ void setup() {
     esp_log_level_set(LOG_WEB_TAG, ESP_LOG_DEBUG);
 
     ESP_LOGI(LOG_MAIN_TAG, "Setup mux");
-    // mux.setup();
-    ble.setup();
+    mux.setup();
+    // ble.setup();
 
     // ESP_LOGI(LOG_TAG, "lcd setup");
     // lcd_setup();
@@ -38,7 +38,7 @@ void setup() {
     // i2s_setup();
 
     ESP_LOGI(LOG_MAIN_TAG, "select ble source");
-    // mux.switch_to(BleSource);
+    mux.switch_to(BleSource);
     // debug_cli_setup();
     // audio_setup();
     // ble.mux_start();
@@ -50,5 +50,5 @@ void loop() {
     // debug_cli_loop();
     // delay(100);
 
-    // mux.copy();
+    mux.copy();
 }
