@@ -10,7 +10,12 @@ SD Card Audio MUX controls
 */
 
 class RoboxSD: public MuxInterface {
+    public:
+        /*
+        SD Audio MUX controls
+        */
 
+        void setup();
 };
 
 

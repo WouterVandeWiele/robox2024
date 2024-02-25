@@ -3,9 +3,9 @@
 
 #include "AudioTools.h"
 #include "BluetoothA2DPSink.h"
+// #include "i2s.h"
+#include "general_definitions.h"
 #include "mux_interface.h"
-#include "pin_definitions.h"
-
 
 
 #define A2DP_BLE_NAME "a2dp-i2s"
@@ -17,9 +17,10 @@ void avrc_metadata_callback(uint8_t id, const uint8_t *text);
 
 class RoboxBluetooth : public MuxInterface {
     public:
-        // RoboxBluetooth();
+        RoboxBluetooth(): i2s(I2S_PIN_MUTE) {};
 
-        RoboxBluetooth(): i2s(I2S_PIN_MUTE), a2dp_sink() {};
+        // RoboxBluetooth(): a2dp_sink(), i2s(I2S_PIN_MUTE) {};
+        // RoboxBluetooth();
 
         /*
         BLE Audio MUX controls
@@ -31,9 +32,8 @@ class RoboxBluetooth : public MuxInterface {
         void mux_start();
 
     private:
-        BluetoothA2DPSink a2dp_sink;
         I2SStream i2s;
-
+        BluetoothA2DPSink a2dp_sink;
 };
 
 

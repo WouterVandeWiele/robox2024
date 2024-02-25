@@ -10,27 +10,36 @@
  */
 // robox audio architecture overview [docs/audio_overview.excalidraw.png]
 #include "AudioTools.h"
+
 #include "mux_interface.h"
 #include "ble.h"
 #include "web_radio.h"
 #include "sd.h"
+#include "general_definitions.h"
+
 
 
 enum audio_source {NotSelectedSource, BleSource, WebRadioSource, SDSource};
-// const char* audio_source_names[] = {"NotSelected", "Ble", "WebRadio", "SD"};
+extern const char* audio_source_names[];
 
 class RoboxAudioMux {
     public:
-        RoboxAudioMux();
+        RoboxAudioMux(): current_source(nullptr) {};
+
+        void setup();
 
         void switch_to(audio_source new_mux_source);
 
         void copy();
 
     private:
+        // I2SStream i2s;
+        I2SConfig i2s_cfg;
+        
         RoboxBluetooth ble;
-        RoboxWebRadio web;
+        // RoboxWebRadio web;
         RoboxSD sd;
+        
         MuxInterface* current_source;
 };
 

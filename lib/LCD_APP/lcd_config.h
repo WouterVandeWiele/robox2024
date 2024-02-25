@@ -8,7 +8,7 @@
 
 // locking primitives to communicate with the task function
 SemaphoreHandle_t xSemaphoreScreenUpdate = NULL;    // trigger to the task to update the screen, release this semafore once done (block sequential updateWholeScreen and let them wait untill the draw screen procedure has finished)
-
+static portMUX_TYPE spinlockScreenUpdate = portMUX_INITIALIZER_UNLOCKED;
 
 class LCD_Threaded: public SED1530_LCD {
 
@@ -31,9 +31,15 @@ void run_task(void * param) {
     LCD_Threaded* p = (LCD_Threaded*)param;
 
     while (true) {
+        taskENTER_CRITICAL(&spinlockScreenUpdate);  // disable interrupts untill we determinded if we need to redraw the LCD
+
         if (uxSemaphoreGetCount(xSemaphoreScreenUpdate) == 0) {
             xSemaphoreGive(xSemaphoreScreenUpdate);
+            taskEXIT_CRITICAL(&spinlockScreenUpdate);
+
             p->taskUpdateWholeScreen();
+        } else {
+            taskEXIT_CRITICAL(&spinlockScreenUpdate);
         }
     }
 }
