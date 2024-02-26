@@ -1,0 +1,31 @@
+
+
+
+### MNM hits stream
+GET https://vrt.streamabc.net/vrt-mnmhits-mp3-128-4437998?sABC=65qn8308%230%2303o15nn5qs0o543s80qs7nonp8p7n730%23&aw_0_1st.playerid=&amsparams=playerid:;skey:1708819208
+###
+PUT https://vrt.streamabc.net/vrt-mnmhits-mp3-128-4437998?sABC=65qn8308%230%2303o15nn5qs0o543s80qs7nonp8p7n730%23&aw_0_1st.playerid=&amsparams=playerid:;skey:1708819208
+Icy-MetaData: 1
+
+### MNM hits website
+PUT http://icecast.vrtcdn.be/mnm_hits-high.mp3
+Icy-MetaData: 1
+
+### MNM hits redirected
+PUT http://quantumcast.vrtcdn.be/mnm_hits/mp3-128
+Icy-MetaData: 1
+
+### MNM stream not found
+HEAD http://vrt.streamabc.net/vrt-mnmhits-mp3-128-4437998?sABC=65qq2226%230%2374n758s0q1s902p2555537s56sornrqo%23&aw_0_1st.playerid=&amsparams=playerid:;skey:1708991014
+Icy-MetaData: 1
+
+###
+GET https://vrt.streamabc.net/vrt-mnmhits-mp3-128-4437998?sABC=65qn8308%230%2303o15nn5qs0o543s80qs7nonp8p7n730%23&aw_0_1st.playerid=&amsparams=playerid:;skey:1708819208
+Icy-MetaData: 1
+Connection: keep-allive
+
+
+### working example
+
+HEAD http://ice1.somafm.com/deepspaceone-128-mp3
+Icy-MetaData: 1
