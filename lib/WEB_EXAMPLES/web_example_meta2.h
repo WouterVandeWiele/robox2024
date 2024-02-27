@@ -22,8 +22,7 @@
 
 URLStream url(wifi_ssid, wifi_password);
 MetaDataOutput out1; // final output of metadata
-I2SStream i2s; // I2S output
-// VolumeStream volume(i2s);
+extern I2SStream i2s; // I2S output
 EncodedAudioStream out2dec(&i2s, new MP3DecoderHelix()); // Decoding stream
 MultiOutput out;
 StreamCopy copier(out, url); // copy url to decoder
@@ -52,29 +51,29 @@ void web_setup(){
   out1.begin(url.httpRequest());
 
   // setup i2s
-    auto i2s_cfg = i2s.defaultConfig(TX_MODE);
-    i2s_cfg.sample_rate = my_i2s_config.sample_rate;
-    i2s_cfg.bits_per_sample = my_i2s_config.bits_per_sample;
-    i2s_cfg.channel_format = my_i2s_config.channel_format;
-    // i2s_cfg.channel_format = i2s_config.communication_format;
+    // auto i2s_cfg = i2s.defaultConfig(TX_MODE);
+    // i2s_cfg.sample_rate = my_i2s_config.sample_rate;
+    // i2s_cfg.bits_per_sample = my_i2s_config.bits_per_sample;
+    // i2s_cfg.channel_format = my_i2s_config.channel_format;
+    // // i2s_cfg.channel_format = i2s_config.communication_format;
 
-    i2s_cfg.buffer_count = my_i2s_config.dma_buf_count;
-    i2s_cfg.buffer_size = my_i2s_config.dma_buf_len;
-    i2s_cfg.use_apll = my_i2s_config.use_apll;
-    i2s_cfg.auto_clear = my_i2s_config.tx_desc_auto_clear;
-    i2s_cfg.pin_bck = my_i2s_pin_config.bck_io_num;
-    i2s_cfg.pin_ws = my_i2s_pin_config.ws_io_num;
-    i2s_cfg.pin_data = my_i2s_pin_config.data_out_num;
+    // i2s_cfg.buffer_count = my_i2s_config.dma_buf_count;
+    // i2s_cfg.buffer_size = my_i2s_config.dma_buf_len;
+    // i2s_cfg.use_apll = my_i2s_config.use_apll;
+    // i2s_cfg.auto_clear = my_i2s_config.tx_desc_auto_clear;
+    // i2s_cfg.pin_bck = my_i2s_pin_config.bck_io_num;
+    // i2s_cfg.pin_ws = my_i2s_pin_config.ws_io_num;
+    // i2s_cfg.pin_data = my_i2s_pin_config.data_out_num;
 
-    i2s.begin(i2s_cfg);
+    // i2s.begin(i2s_cfg);
+
+  i2s_setup();
 
   // setup I2S based on sampling rate provided by decoder
   out2dec.setNotifyAudioChange(i2s);
   out2dec.begin();
 
   // // set initial volume
-  // volume.begin(i2s_cfg); // we need to provide the bits_per_sample and channels
-  // volume.setVolume(0.1);
 
 }
 

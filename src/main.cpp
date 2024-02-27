@@ -4,7 +4,8 @@
 // #include "audio_mux.h"
 // #include "ble.h"
 // #include "web_radio.h"
-#include "web_example_meta.h"
+// #include "web_example_meta2.h"
+#include "player_metadata.h"
 #include "general_definitions.h"
 
 // setup logging
@@ -55,7 +56,8 @@ void setup() {
     // debug_cli_setup();
     // audio_setup();
     // ble.mux_start();
-    web_setup();
+    // web_setup();
+    player_setup();
 }
 
 void loop() {
@@ -66,5 +68,6 @@ void loop() {
     // delay(100);
 
     // mux.copy();
-    web_loop();
+    // web_loop();
+    player_loop();
 }
