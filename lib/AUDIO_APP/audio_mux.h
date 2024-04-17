@@ -12,9 +12,9 @@
 #include "AudioTools.h"
 
 #include "mux_interface.h"
-#include "ble.h"
+// #include "ble.h"
 // #include "web_radio.h"
-#include "sd.h"
+// #include "sd.h"
 #include "general_definitions.h"
 
 
@@ -36,9 +36,9 @@ class RoboxAudioMux {
         // I2SStream i2s;
         I2SConfig i2s_cfg;
         
-        RoboxBluetooth ble;
+        // RoboxBluetooth ble;
         // RoboxWebRadio web;
-        RoboxSD sd;
+        // RoboxSD sd;
         
         MuxInterface* current_source;
 };

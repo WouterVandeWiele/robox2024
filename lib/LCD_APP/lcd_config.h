@@ -2,6 +2,7 @@
 #include <mutex>
 #include "SED1530_LCD.h"
 #include "example_bitmaps.h"
+#include "general_definitions.h"
 
 // robox LCD architecture [docs/lcd_overview.excalidraw.png]
 
@@ -45,12 +46,13 @@ void run_task(void * param) {
 }
 
 // LCD PINS
-uint8_t lcdA0 = 26;
-uint8_t lcdRW = 27;
-uint8_t lcdEnable = 13;
-uint8_t lcdDataPins[] = {19,23,18,5,17,16,4,0};
+// uint8_t lcdA0 = 26;
+// uint8_t lcdRW = 27;
+// uint8_t lcdEnable = 13;
+// uint8_t lcdDataPins[] = {19,23,18,5,17,16,4,0};
+uint8_t lcdDataPins[] = LCDDATAPINS;
 
-LCD_Threaded lcd_t(lcdA0, lcdRW, lcdEnable, lcdDataPins);
+LCD_Threaded lcd_t(LCDA0, LCDRW, LCDENABLE, lcdDataPins);
 
 void lcd_setup() {
     delay(1000);

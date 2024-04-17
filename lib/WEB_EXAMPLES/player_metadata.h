@@ -31,10 +31,10 @@ AudioSourceURL source(urlStream, urls, "audio/mp3");
 MP3DecoderHelix decoder;
 AudioPlayer player(source, i2s, decoder);
 
-// additional controls
-const int volumePin = A0;
-Debouncer nextButtonDebouncer(2000);
-const int nextButtonPin = 13;
+// // additional controls
+// const int volumePin = A0;
+// Debouncer nextButtonDebouncer(2000);
+// const int nextButtonPin = 13;
 
 // Print Audio Metadata
 void printMetaData(MetaDataType type, const char* str, int len){
@@ -47,7 +47,7 @@ void printMetaData(MetaDataType type, const char* str, int len){
 
 // Arduino setup
 void player_setup() {
-  Serial.begin(115200);
+  // Serial.begin(115200);
   AudioLogger::instance().begin(Serial, AudioLogger::Info);
 
   // setup output
@@ -59,7 +59,7 @@ void player_setup() {
   player.setMetadataCallback(printMetaData);
   player.begin();
 
-  player.setVolume(0.3);
+  player.setVolume(0.2);
 }
 
 // Sets the volume control from a linear potentiometer input

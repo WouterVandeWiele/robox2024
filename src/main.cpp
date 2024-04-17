@@ -5,7 +5,11 @@
 // #include "ble.h"
 // #include "web_radio.h"
 // #include "web_example_meta2.h"
-#include "player_metadata.h"
+// #include "player_metadata.h"
+// #include "sdfat_example.h"
+#include "ble_example.h"
+// #include "streams_copy_example.h"
+// #include "listing.h"
 #include "general_definitions.h"
 
 // setup logging

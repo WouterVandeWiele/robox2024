@@ -12,7 +12,7 @@ const char* audio_source_names[] = {"NotSelected", "Ble", "WebRadio", "SD"};
 void RoboxAudioMux::setup() {
     ESP_LOGI(LOG_MUX_TAG, ">>> Audio Mux starting...");
     ESP_LOGD(LOG_MUX_TAG, "setup BLE");
-    ble.setup();
+    // ble.setup();
 
     ESP_LOGD(LOG_MUX_TAG, "init i2s");
     // i2s_cfg = i2s.defaultConfig(TX_MODE);
@@ -35,7 +35,7 @@ void RoboxAudioMux::setup() {
     // web.setup();
 
     ESP_LOGD(LOG_MUX_TAG, "setup SD");
-    sd.setup();
+    // sd.setup();
 
     ESP_LOGI(LOG_BLE_TAG, "<<< Audio Mux setup completed");
 }
@@ -53,7 +53,7 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
         break;
 
     case BleSource:
-        current_source = &ble;
+        // current_source = &ble;
         break;
 
     case WebRadioSource:
@@ -61,7 +61,7 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
         break;
 
     case SDSource:
-        current_source = &sd;
+        // current_source = &sd;
         break;
 
     default:

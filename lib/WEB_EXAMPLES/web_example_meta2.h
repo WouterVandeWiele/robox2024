@@ -74,6 +74,7 @@ void web_setup(){
   out2dec.begin();
 
   // // set initial volume
+  // player.setVolume(0.3);
 
 }
 
