@@ -1,5 +1,8 @@
 #include <SimpleCLI.h>
 #include <stdint.h>
+#include "robox_audio_mux.h"
+
+extern RoboxAudioMux mux;
 
 // Can be used to implement a CLI to send debug commands
 // Documentation: https://github.com/SpacehuhnTech/SimpleCLI
@@ -11,6 +14,7 @@ SimpleCLI cli;
 Command ping;
 Command help;
 Command print;
+Command audio_source;
 
 // Callback function for ping command
 void pingCallback(cmd* c) {
@@ -33,9 +37,29 @@ void printCallback(cmd *c) {
     uint8_t times = atoi(cmd.getArg("n").getValue().c_str());
     String text = cmd.getArg(0).getValue();
 
-    for (uint8_t i = 0; i < times; i++){
+    for (uint8_t i = 0; i < times; i++) {
         Serial.println(text);
     }
+}
+
+void sourceCallback(cmd *c) {
+    Command cmd(c);
+    String src = cmd.getArg(0).getValue();
+
+    if (src == "ble") {
+        // switch to ble
+        mux.switch_to(BleSource);
+    } else if (src == "web") {
+        // switch to web radio
+        mux.switch_to(WebRadioSource);
+    } else if (src == "sd") {
+        // switch to SD
+        mux.switch_to(SDSource);
+    } else {
+        // undefined source
+        mux.switch_to(NotSelectedSource);
+    }
+    
 }
 
 // Callback in case of an error
@@ -68,6 +92,10 @@ void debug_cli_setup() {
     print.addPosArg("text");
     print.addArg("n", "1");
 
+    audio_source = cli.addCmd("source", sourceCallback);
+    audio_source.setDescription("Select the audio source, takes 1 arument of: ['ble', 'web', 'sd']");
+    print.addPosArg("source");
+
     // [Optional] Check if our command was successfully added
     if (!ping) Serial.println(">Ping command not installed!");
     else Serial.println(">Ping was added to the CLI!");
@@ -77,6 +105,9 @@ void debug_cli_setup() {
 
     if (!print) Serial.println(">Print command not installed!");
     else Serial.println(">Print was added to the CLI!");
+
+    if (!audio_source) Serial.println(">Source command not installed!");
+    else Serial.println(">Source was added to the CLI!");
 
     // Set error Callback
     cli.setOnError(errorCallback);

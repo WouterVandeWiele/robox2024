@@ -3,9 +3,6 @@
 
 class MuxInterface {
     public:
-        virtual void setup() {
-            
-        }
 
         virtual void mux_stop() {
 

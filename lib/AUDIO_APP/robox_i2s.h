@@ -23,10 +23,6 @@ extern i2s_config_t my_i2s_config;
 extern i2s_pin_config_t my_i2s_pin_config;
 
 
-// static i2s_config_t my_i2s_config;
-
-// i2s_pin_config_t my_i2s_pin_config;
-
 void i2s_setup();
 
 

@@ -3,4 +3,5 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
-lib/WIFI_CREDENTIALS/wifi_credentials.h
+lib/WIFI_CREDENTIALS/wifi_credentials.cpp
+support_*

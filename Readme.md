@@ -1,15 +1,42 @@
 # Robox 2024
 
-## Working examples
+## Configuration
 
-main.cpp
+main.cpp is configurable through defines to select different examples or components.
 
-- #include "player_metadata.h"
-- #include "sdfat_example.h" // https://www.pschatzmann.ch/home/2021/11/02/streaming-mp3-files-to-a-bluetooth-speaker/
-  -> not using the SD functionality, comment "https://github.com/greiman/SdFat.git@^2.2.2" in the lib_deps of platformio.ini
 
-- #include "ble_example.h"
+### Audio components
 
+Configuration of the arduino audio library components. 
+In the context of the robox project they all drive the I2S amp and thus only one can be enabled at a time.
+
+Select one of:
+
+```h
+#define ROBOX_FULL          //  the complete audio project, with audio mux
+
+// the examples, from the arduino audio library, with minimal adaptations
+#define ROBOX_EXAMPLE_BLE
+#define ROBOX_EXAMPLE_SD
+#define ROBOX_EXAMPLE_WEB
+
+// robox components, based on the examples above, with adaptations for the audio mux
+#define ROBOX_COMPONENT_BLE
+#define ROBOX_COMPONENT_WEB
+#define ROBOX_COMPONENT_SD
+```
+
+### addon components
+
+Additional functionality can be included or removed, multiple can be selected:
+```h
+#define ROBOX_LCD         // include the LCD component (headers, init and loop)
+#define ROBOX_DEBUG_CLI   // include the debug CLI component (headers, init and loop)
+```
+
+### wifi credentials
+
+In order to use the webstream component, wifi credentials need to be added to access the web. Follow the instructions here: [wifi credentials](lib/WIFI_CREDENTIALS/README.md)
 
 ## PlatformIO configuration (dev log)
 ### Freenove fnk0085

@@ -1,16 +1,80 @@
 #include <Arduino.h>
-// #include "lcd_config.h"
-// #include "debug_cli.h"
-// #include "audio_mux.h"
-// #include "ble.h"
-// #include "web_radio.h"
-// #include "web_example_meta2.h"
-// #include "player_metadata.h"
-// #include "sdfat_example.h"
-#include "ble_example.h"
+#include "AudioTools.h"
+
+/*
+ * Compile parts of the project:
+ * - ROBOX_FULL: the complete audio project, with audio mux
+ * - ROBOX_EXAMPLE_*: the examples, from the arduino audio library, with minimal adaptations
+ * - ROBOX_COMPONENT_*: the examples, from the arduino audio library, with adaptations for the audio mux
+ *
+ * Select only one of the above
+ */
+
+// #define ROBOX_FULL
+
+// #define ROBOX_EXAMPLE_BLE
+// #define ROBOX_EXAMPLE_SD
+// #define ROBOX_EXAMPLE_WEB
+
+// #define ROBOX_COMPONENT_BLE
+// #define ROBOX_COMPONENT_WEB
+#define ROBOX_COMPONENT_SD
+
+
+/*
+ * External parts:
+ * ROBOX_LCD: include the LCD component (headers, init and loop)
+ * ROBOX_DEBUG_CLI: include the debug CLI component (headers, init and loop)
+ *
+ * Multiple can be selected
+ */
+
+// #define ROBOX_LCD
+// #define ROBOX_DEBUG_CLI
+
+
+/*
+ * compile options logic
+ */
+
+#if defined ROBOX_FULL
+    #include "robox_audio_mux.h"
+
+#elif defined ROBOX_COMPONENT_BLE
+    #include "robox_ble.h"
+
+#elif defined ROBOX_COMPONENT_WEB
+    #include "robox_web.h"
+
+#elif defined ROBOX_COMPONENT_SD
+    #include "robox_sd.h"
+
+#elif defined ROBOX_EXAMPLE_BLE
+    #include "ble_example.h"
+
+#elif defined ROBOX_EXAMPLE_SD
+    #include "sdfat_example.h"
+
+#elif defined ROBOX_EXAMPLE_WEB
+    // #include "web_radio.h"
+    // #include "web_example_meta2.h"
+    #include "player_metadata.h"
+
+#endif
+
+#if defined ROBOX_LCD
+    #include "lcd_config.h"
+#endif
+
+#if defined ROBOX_DEBUG_CLI
+    #include "debug_cli.h"
+#endif
+// #include "ble_example.h"
+// #include "ble_copier.h"
 // #include "streams_copy_example.h"
 // #include "listing.h"
 #include "general_definitions.h"
+#include "wifi_credentials.h"
 
 // setup logging
 // #define LOG_LOCAL_LEVEL ESP_LOG_ERROR
@@ -27,12 +91,27 @@
 
 // typedef int16_t sound_t;                                   // sound will be represented as int16_t (with 2 bytes)
 
-// RoboxAudioMux mux;
-// RoboxBluetooth ble;
-// RoboxWebRadio web;
+
+
+#if defined ROBOX_FULL
+    RoboxAudioMux mux;
+
+#elif defined ROBOX_COMPONENT_BLE
+    RoboxBluetooth ble;
+
+#elif defined ROBOX_COMPONENT_WEB
+    RoboxWebRadio web;
+
+#elif defined ROBOX_COMPONENT_SD
+    RoboxSD sd;
+
+#endif
+
 
 void setup() {
     Serial.begin(115200);
+
+    AudioLogger::instance().begin(Serial, AudioLogger::Info);
     
     // setup logging
     esp_log_level_set("*", ESP_LOG_WARN);
@@ -45,33 +124,73 @@ void setup() {
     esp_log_level_set(LOG_SD_TAG, ESP_LOG_DEBUG);
     esp_log_level_set(LOG_WEB_TAG, ESP_LOG_DEBUG);
 
-    ESP_LOGI(LOG_MAIN_TAG, "Setup mux");
-    // mux.setup();
-    // ble.setup();
-    // web.setup();
+    #if defined ROBOX_FULL
+        ESP_LOGI(LOG_MAIN_TAG, "Setup mux");
+        mux.setup();
+        // mux.switch_to(BleSource);
+        mux.switch_to(SDSource);
 
-    // ESP_LOGI(LOG_TAG, "lcd setup");
-    // lcd_setup();
-    // ESP_LOGI(LOG_TAG, "i2s setup");
-    // i2s_setup();
+    #elif defined ROBOX_COMPONENT_BLE
+        ESP_LOGI(LOG_MAIN_TAG, "ble start");
+        ble.mux_start();
 
-    ESP_LOGI(LOG_MAIN_TAG, "select ble source");
-    // mux.switch_to(BleSource);
-    // debug_cli_setup();
-    // audio_setup();
-    // ble.mux_start();
-    // web_setup();
-    player_setup();
+    #elif defined ROBOX_COMPONENT_WEB
+        ESP_LOGI(LOG_MAIN_TAG, "web start");
+        web.mux_start();
+
+    #elif defined ROBOX_COMPONENT_SD
+        ESP_LOGI(LOG_MAIN_TAG, "sd start");
+        sd.mux_start();
+
+    #elif defined ROBOX_EXAMPLE_BLE || defined ROBOX_EXAMPLE_SD || defined ROBOX_EXAMPLE_WEB
+        ESP_LOGI(LOG_MAIN_TAG, "examples start");
+        player_setup();
+
+    #endif
+
+    // #if defined ROBOX_COMPONENT_BLE || defined ROBOX_COMPONENT_WEB || defined ROBOX_COMPONENT_SD
+    //     ESP_LOGI(LOG_TAG, "i2s setup");
+    //     i2s_setup();
+    // #endif
+
+    #if defined ROBOX_LCD
+        ESP_LOGI(LOG_TAG, "lcd setup");
+        lcd_setup();
+    #endif
+
+
+    #if defined ROBOX_DEBUG_CLI
+        ESP_LOGI(LOG_MAIN_TAG, "select ble source");
+        debug_cli_setup();
+    #endif
 }
 
 void loop() {
-    // ble.mux_copy();
-    // web.mux_copy();
-    // lcd_test();
-    // debug_cli_loop();
-    // delay(100);
+    #if defined ROBOX_FULL
+        mux.copy();
+    
+    #elif defined ROBOX_EXAMPLE_BLE || defined ROBOX_EXAMPLE_SD || defined ROBOX_EXAMPLE_WEB
+        player_loop();
 
-    // mux.copy();
-    // web_loop();
-    player_loop();
+    #elif defined ROBOX_COMPONENT_BLE
+        ble.mux_copy();
+
+    #elif defined ROBOX_COMPONENT_WEB
+        web.mux_copy();
+
+    #elif defined ROBOX_COMPONENT_SD
+        sd.mux_copy();
+
+    #endif
+
+
+    #if defined ROBOX_LCD
+        lcd_test();
+
+    #endif
+
+    #if defined ROBOX_DEBUG_CLI
+        debug_cli_loop();
+
+    #endif
 }

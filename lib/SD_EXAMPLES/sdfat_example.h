@@ -16,7 +16,7 @@
 
 
 
-#include "i2s.h"
+#include "robox_i2s.h"
 #include "general_definitions.h"
 
 

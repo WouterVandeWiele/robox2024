@@ -59,6 +59,10 @@
         "thread": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "ble_cpp": "c",
+        "bluetootha2dpsink.h": "c",
+        "general_definitions.h": "c",
+        "audiotools.h": "c"
     }
 }

@@ -10,7 +10,7 @@
 #include "BluetoothA2DPSink.h"
 #include "AudioTools.h"
 
-#include "i2s.h"
+#include "robox_i2s.h"
 #include "general_definitions.h"
 
 BluetoothA2DPSink a2dp_sink;

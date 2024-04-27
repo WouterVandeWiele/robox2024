@@ -1,15 +1,10 @@
 # Wifi Credentials header
 
-Add your credentials in wifi_credentials.h as this header is in the git ignore.
+Add your credentials in wifi_credentials.c as this file is in the git ignore.
 
 Template:
 
-```h
-#ifndef WIFI_CREDENTIALS_H
-#define WIFI_CREDENTIALS_H
-
-char wifi_ssid[] = "<your wifi ssid>";
-char wifi_password[] = "<your wifi password>";
-
-#endif  // WIFI_CREDENTIALS_H
+```c
+const char *wifi_ssid = "<your wifi ssid>";
+const char *wifi_password = "<your wifi password>";
 ```

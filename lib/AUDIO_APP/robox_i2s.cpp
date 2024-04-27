@@ -1,5 +1,5 @@
 #include "AudioTools.h"
-#include "i2s.h"
+#include "robox_i2s.h"
 #include "general_definitions.h"
 
 I2SStream i2s(I2S_PIN_MUTE);
