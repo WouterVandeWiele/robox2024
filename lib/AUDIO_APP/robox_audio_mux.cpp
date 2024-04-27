@@ -19,7 +19,8 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
     ESP_LOGI(LOG_MUX_TAG, "Audio Mux switch from: %s", audio_source_names[source_name]);
 
     if (source_name != NotSelectedSource) {
-        current_source.mux_stop();
+        current_source->mux_stop();
+        current_source->~MuxInterface();
     }
 
     ESP_LOGI(LOG_MUX_TAG, "Audio Mux switching to: %s", audio_source_names[new_mux_source]);
@@ -31,15 +32,15 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
         break;
 
     case BleSource:
-        current_source = RoboxBluetooth();
+        current_source = new RoboxBluetooth();
         break;
 
     case WebRadioSource:
-        current_source = RoboxWebRadio();
+        current_source = new RoboxWebRadio();
         break;
 
     case SDSource:
-        current_source = RoboxSD();
+        current_source = new RoboxSD();
         break;
 
     default:
@@ -47,10 +48,10 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
         break;
     }
 
-    ESP_LOGI(LOG_MUX_TAG, "Audio Mux init new driver");
+    ESP_LOGI(LOG_MUX_TAG, "Audio Mux init new driver: %s", audio_source_names[source_name]);
 
     if (source_name != NotSelectedSource) {
-        current_source.mux_start();
+        current_source->mux_start();
     }
 
     ESP_LOGI(LOG_MUX_TAG, "Audio Mux switch complete");
@@ -58,6 +59,6 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
 
 void RoboxAudioMux::copy() {
     if (source_name != NotSelectedSource) {
-        current_source.mux_copy();
+        current_source->mux_copy();
     }
 }

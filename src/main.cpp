@@ -10,7 +10,7 @@
  * Select only one of the above
  */
 
-// #define ROBOX_FULL
+#define ROBOX_FULL
 
 // #define ROBOX_EXAMPLE_BLE
 // #define ROBOX_EXAMPLE_SD
@@ -18,7 +18,7 @@
 
 // #define ROBOX_COMPONENT_BLE
 // #define ROBOX_COMPONENT_WEB
-#define ROBOX_COMPONENT_SD
+// #define ROBOX_COMPONENT_SD
 
 
 /*
@@ -30,7 +30,7 @@
  */
 
 // #define ROBOX_LCD
-// #define ROBOX_DEBUG_CLI
+#define ROBOX_DEBUG_CLI
 
 
 /*
@@ -128,7 +128,8 @@ void setup() {
         ESP_LOGI(LOG_MAIN_TAG, "Setup mux");
         mux.setup();
         // mux.switch_to(BleSource);
-        mux.switch_to(SDSource);
+        // mux.switch_to(WebRadioSource);
+        // mux.switch_to(SDSource);
 
     #elif defined ROBOX_COMPONENT_BLE
         ESP_LOGI(LOG_MAIN_TAG, "ble start");

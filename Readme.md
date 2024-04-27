@@ -38,6 +38,38 @@ Additional functionality can be included or removed, multiple can be selected:
 
 In order to use the webstream component, wifi credentials need to be added to access the web. Follow the instructions here: [wifi credentials](lib/WIFI_CREDENTIALS/README.md)
 
+
+## Debug CLI
+
+To ease manual testing a debug CLI is added (configurable through the preprocessor statements)
+Open a serial connection and when the the ESP starts, follozing messages are displayed if the CLI is initialized.
+
+```
+>>> Starting debug CLI.
+>Ping was added to the CLI!
+>Help was added to the CLI!
+>Print was added to the CLI!
+>Source was added to the CLI!
+>>> CLI installed, type "help" for all options.
+```
+
+Currently following options are implemented:
+```
+help
+# help
+ping
+Replies with "pong" if the ESP32 is still going through the main loop
+
+help
+Print cli help, lists all registered commands
+
+print -text <value> [-n <1>]
+Example command demonstrating aruments, takes <text> and prints n times
+
+source -s <value>
+Select the audio source, takes 1 arument of: ['ble', 'web', 'sd']
+```
+
 ## PlatformIO configuration (dev log)
 ### Freenove fnk0085
 https://community.platformio.org/t/esp32s-configuration-error/38647/2

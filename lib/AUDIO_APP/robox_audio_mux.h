@@ -31,7 +31,7 @@ class RoboxAudioMux {
 
     private:
         audio_source source_name;
-        MuxInterface current_source;
+        MuxInterface* current_source;
 };
 
 

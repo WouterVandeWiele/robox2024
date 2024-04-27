@@ -46,6 +46,8 @@ void sourceCallback(cmd *c) {
     Command cmd(c);
     String src = cmd.getArg(0).getValue();
 
+    Serial.printf("'%s'\n", src);
+
     if (src == "ble") {
         // switch to ble
         mux.switch_to(BleSource);
@@ -55,10 +57,11 @@ void sourceCallback(cmd *c) {
     } else if (src == "sd") {
         // switch to SD
         mux.switch_to(SDSource);
-    } else {
-        // undefined source
-        mux.switch_to(NotSelectedSource);
     }
+    // else {
+    //     // undefined source
+    //     // mux.switch_to(NotSelectedSource);
+    // }
     
 }
 
@@ -94,7 +97,7 @@ void debug_cli_setup() {
 
     audio_source = cli.addCmd("source", sourceCallback);
     audio_source.setDescription("Select the audio source, takes 1 arument of: ['ble', 'web', 'sd']");
-    print.addPosArg("source");
+    audio_source.addPosArg("s");
 
     // [Optional] Check if our command was successfully added
     if (!ping) Serial.println(">Ping command not installed!");
