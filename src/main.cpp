@@ -10,7 +10,7 @@
  * Select only one of the above
  */
 
-#define ROBOX_FULL
+// #define ROBOX_FULL
 
 // #define ROBOX_EXAMPLE_BLE
 // #define ROBOX_EXAMPLE_SD
@@ -25,13 +25,16 @@
  * External parts:
  * ROBOX_LCD: include the LCD component (headers, init and loop)
  * ROBOX_DEBUG_CLI: include the debug CLI component (headers, init and loop)
+ * ROBOX_DEBUG_I2C: test the I2C IO expander component
+ * ROBOX_DEBUG_I2C_SCANNER: test the I2C, do a scan to detect which HW addresses are active.
  *
  * Multiple can be selected
  */
 
-// #define ROBOX_LCD
-#define ROBOX_DEBUG_CLI
-
+#define ROBOX_LCD
+// #define ROBOX_DEBUG_CLI
+// #define ROBOX_DEBUG_I2C
+// #define ROBOX_DEBUG_I2C_SCANNER
 
 /*
  * compile options logic
@@ -69,6 +72,15 @@
 #if defined ROBOX_DEBUG_CLI
     #include "debug_cli.h"
 #endif
+
+#if defined ROBOX_DEBUG_I2C
+    #include "robox_io.h"
+#endif
+
+#if defined ROBOX_DEBUG_I2C_SCANNER
+    #include "robox_i2c_scanner.h"
+#endif
+
 // #include "ble_example.h"
 // #include "ble_copier.h"
 // #include "streams_copy_example.h"
@@ -107,6 +119,10 @@
 
 #endif
 
+#if defined ROBOX_DEBUG_I2C
+    RoboxIoExpander io(IO_EXPANDER_W_ADDRESS);
+#endif
+
 
 void setup() {
     Serial.begin(115200);
@@ -114,15 +130,17 @@ void setup() {
     AudioLogger::instance().begin(Serial, AudioLogger::Info);
     
     // setup logging
-    esp_log_level_set("*", ESP_LOG_WARN);
+    esp_log_level_set("*", ESP_LOG_DEBUG);
+    // esp_log_level_set("*", ESP_LOG_WARN);
+    // esp_log_level_set(LOG_MAIN_TAG, ESP_LOG_DEBUG);
+    // esp_log_level_set(LOG_BLE_TAG, ESP_LOG_DEBUG);
+    // esp_log_level_set(LOG_MUX_TAG, ESP_LOG_DEBUG);
+    // esp_log_level_set(LOG_I2S_TAG, ESP_LOG_DEBUG);
+    // esp_log_level_set(LOG_SD_TAG, ESP_LOG_DEBUG);
+    // esp_log_level_set(LOG_WEB_TAG, ESP_LOG_DEBUG);
+
     // esp_log_level_set(BT_AV_TAG, ESP_LOG_NONE);
     // esp_log_level_set(BT_APP_TAG, ESP_LOG_NONE);
-    esp_log_level_set(LOG_MAIN_TAG, ESP_LOG_DEBUG);
-    esp_log_level_set(LOG_BLE_TAG, ESP_LOG_DEBUG);
-    esp_log_level_set(LOG_MUX_TAG, ESP_LOG_DEBUG);
-    esp_log_level_set(LOG_I2S_TAG, ESP_LOG_DEBUG);
-    esp_log_level_set(LOG_SD_TAG, ESP_LOG_DEBUG);
-    esp_log_level_set(LOG_WEB_TAG, ESP_LOG_DEBUG);
 
     #if defined ROBOX_FULL
         ESP_LOGI(LOG_MAIN_TAG, "Setup mux");
@@ -155,7 +173,7 @@ void setup() {
     // #endif
 
     #if defined ROBOX_LCD
-        ESP_LOGI(LOG_TAG, "lcd setup");
+        ESP_LOGI(LOG_MAIN_TAG, "lcd setup");
         lcd_setup();
     #endif
 
@@ -164,6 +182,16 @@ void setup() {
         ESP_LOGI(LOG_MAIN_TAG, "select ble source");
         debug_cli_setup();
     #endif
+
+    #if defined ROBOX_DEBUG_I2C
+        io.configure_outputs(0, 0x00);
+        io.configure_outputs(1, 0x00);
+    #endif
+
+    #if defined ROBOX_DEBUG_I2C_SCANNER
+        scanner_setup();
+    #endif
+
 }
 
 void loop() {
@@ -186,12 +214,34 @@ void loop() {
 
 
     #if defined ROBOX_LCD
-        lcd_test();
+        ESP_LOGI(LOG_MAIN_TAG, "LCD loop");
 
+        lcd_test();
+        // delay(10000);
     #endif
 
     #if defined ROBOX_DEBUG_CLI
         debug_cli_loop();
 
+    #endif
+
+    #if defined ROBOX_DEBUG_I2C
+        ESP_LOGI(LOG_MAIN_TAG, "IO expander write");
+        io.set_output(0, 0x00);
+        // io.set_output(1, 0x00);
+        delay(100);
+        io.set_output(0, 0x80);
+        // io.set_output(1, 0xFF);
+        delay(100);
+
+        // ESP_LOGI(LOG_MAIN_TAG, "IO expander read");
+        // uint8_t data = io.get_configure_outputs(1);
+        // ESP_LOGI(LOG_MAIN_TAG, "IO expander read %2x", data);
+
+    #endif
+
+    #if defined ROBOX_DEBUG_I2C_SCANNER
+        scanner_loop();
+        delay(10000);
     #endif
 }

@@ -54,11 +54,16 @@
 
 #include <stdint.h>
 #include "Adafruit_GFX.h"
+#include "robox_io.h"
 // #include <Adafruit_GFX.h>
 // #include <Adafruit_I2CDevice.h>
 // #include <Adafruit_SPIDevice.h>
 // #include <SPI.h>
 // #include <Wire.h>
+
+/* Interface type */
+// #define IO_DIRECT
+#define IO_EXPANDER
 
 /* GLCD Commands */
 #define GLCD_CMD_DISPLAY_OFF                    (0xAE)
@@ -129,6 +134,13 @@
 // #define MONOOLED_WHITE 1   ///< Default white 'color' for monochrome OLEDS
 // #define MONOOLED_INVERSE 2 ///< Default inversion command for monochrome OLEDS
 
+typedef struct IO_CONFIG {
+  uint8_t control_port;
+  uint8_t control_pins;
+  uint8_t data_port;
+  uint8_t data_pins;
+} io_config;
+
 /*!
     @brief  Class that stores state and functions for interacting with
             generic grayscale OLED displays.
@@ -136,8 +148,11 @@
 
 class SED1530_LCD : public GFXcanvas1 {
 public:
-  // SED1530_LCD(uint16_t w, uint16_t h, uint8_t A0, uint8_t RW, uint8_t EN, uint8_t *DATA);
-  SED1530_LCD(uint8_t A0, uint8_t RW, uint8_t EN, uint8_t *DATA);
+  #if defined IO_DIRECT
+    SED1530_LCD(uint8_t A0, uint8_t RW, uint8_t EN, uint8_t *DATA);
+  #elif defined IO_EXPANDER
+    SED1530_LCD(uint8_t io_address);
+  #endif
 
   ~SED1530_LCD(void);
 
@@ -170,8 +185,8 @@ public:
   // void oled_command(uint8_t c);
   // bool oled_commandList(const uint8_t *c, uint8_t n);
 
+  void lcd_init(void);
 protected:
-  void init(void);
 
   // Adafruit_SPIDevice *spi_dev = NULL; ///< The SPI interface BusIO device
   // Adafruit_I2CDevice *i2c_dev = NULL; ///< The I2C interface BusIO device
@@ -190,10 +205,15 @@ protected:
 
   // uint8_t _bpp = 1; ///< Bits per pixel color for this display
 private:
-  uint8_t A0;
-  uint8_t RW;
-  uint8_t EN;
-  uint8_t *DATA;
+  #if defined IO_DIRECT
+    uint8_t A0;
+    uint8_t RW;
+    uint8_t EN;
+    uint8_t *DATA;
+  #elif defined IO_EXPANDER
+    io_config ports;
+    RoboxIoExpander io;
+  #endif
 
   void setPage(uint8_t page);
   void setColumn(uint8_t row);

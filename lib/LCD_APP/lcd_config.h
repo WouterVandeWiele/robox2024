@@ -1,5 +1,5 @@
 
-#include <mutex>
+// #include <mutex>
 #include "SED1530_LCD.h"
 #include "example_bitmaps.h"
 #include "general_definitions.h"
@@ -8,68 +8,84 @@
 
 
 // locking primitives to communicate with the task function
-SemaphoreHandle_t xSemaphoreScreenUpdate = NULL;    // trigger to the task to update the screen, release this semafore once done (block sequential updateWholeScreen and let them wait untill the draw screen procedure has finished)
-static portMUX_TYPE spinlockScreenUpdate = portMUX_INITIALIZER_UNLOCKED;
+// SemaphoreHandle_t xSemaphoreScreenUpdate = NULL;    // trigger to the task to update the screen, release this semafore once done (block sequential updateWholeScreen and let them wait untill the draw screen procedure has finished)
+// static portMUX_TYPE spinlockScreenUpdate = portMUX_INITIALIZER_UNLOCKED;
 
-class LCD_Threaded: public SED1530_LCD {
+// class LCD_Threaded: public SED1530_LCD {
 
-    public:
-        LCD_Threaded(uint8_t A0, uint8_t RW, uint8_t EN, uint8_t *DATA): SED1530_LCD(A0, RW, EN, DATA) {};
+//     public:
+//         #if defined IO_DIRECT
+//             LCD_Threaded(uint8_t A0, uint8_t RW, uint8_t EN, uint8_t *DATA): SED1530_LCD(A0, RW, EN, DATA) {};
+//         #elif defined IO_EXPANDER
+//             LCD_Threaded(uint8_t address): SED1530_LCD(address) {};
+//         #endif
 
-        void updateWholeScreen(void) {
-            xSemaphoreTake(xSemaphoreScreenUpdate, 0);
-        }
+//         void updateWholeScreen(void) {
+//             xSemaphoreTake(xSemaphoreScreenUpdate, 0);
+//         }
 
-        void taskUpdateWholeScreen(void) {
-            SED1530_LCD::updateWholeScreen();
-        }
+//         void taskUpdateWholeScreen(void) {
+//             SED1530_LCD::updateWholeScreen();
+//         }
 
-        TaskHandle_t threaded_task;
-};
+//         TaskHandle_t threaded_task;
+// };
 
 
-void run_task(void * param) {
-    LCD_Threaded* p = (LCD_Threaded*)param;
+// void run_task(void * param) {
+//     LCD_Threaded* p = (LCD_Threaded*)param;
 
-    while (true) {
-        taskENTER_CRITICAL(&spinlockScreenUpdate);  // disable interrupts untill we determinded if we need to redraw the LCD
+//     while (true) {
+//         taskENTER_CRITICAL(&spinlockScreenUpdate);  // disable interrupts untill we determinded if we need to redraw the LCD
 
-        if (uxSemaphoreGetCount(xSemaphoreScreenUpdate) == 0) {
-            xSemaphoreGive(xSemaphoreScreenUpdate);
-            taskEXIT_CRITICAL(&spinlockScreenUpdate);
+//         if (uxSemaphoreGetCount(xSemaphoreScreenUpdate) == 0) {
+//             xSemaphoreGive(xSemaphoreScreenUpdate);
+//             taskEXIT_CRITICAL(&spinlockScreenUpdate);
 
-            p->taskUpdateWholeScreen();
-        } else {
-            taskEXIT_CRITICAL(&spinlockScreenUpdate);
-        }
-    }
-}
+//             p->taskUpdateWholeScreen();
+//         } else {
+//             taskEXIT_CRITICAL(&spinlockScreenUpdate);
+//         }
+//     }
+// }
 
 // LCD PINS
-// uint8_t lcdA0 = 26;
-// uint8_t lcdRW = 27;
-// uint8_t lcdEnable = 13;
-// uint8_t lcdDataPins[] = {19,23,18,5,17,16,4,0};
-uint8_t lcdDataPins[] = LCDDATAPINS;
+// #if defined IO_DIRECT
+// uint8_t lcdDataPins[] = LCDDATAPINS;
 
-LCD_Threaded lcd_t(LCDA0, LCDRW, LCDENABLE, lcdDataPins);
+//     LCD_Threaded lcd_t(LCDA0, LCDRW, LCDENABLE, lcdDataPins);
+// #elif defined IO_EXPANDER
+//     LCD_Threaded lcd_t(IO_EXPANDER_ADDRESS);
+// #endif
+
+#if defined IO_DIRECT
+    uint8_t lcdDataPins[] = LCDDATAPINS;
+    SED1530_LCD lcd_t(A0, RW, EN, DATA);
+#elif defined IO_EXPANDER
+    SED1530_LCD lcd_t(IO_EXPANDER_W_ADDRESS);
+#endif
 
 void lcd_setup() {
-    delay(1000);
+    ESP_LOGI(LOG_LCD_TAG, "LCD setup");
+    lcd_t.lcd_init();
+    // delay(1000);
 
-    xSemaphoreScreenUpdate = xSemaphoreCreateBinary();
+    // xSemaphoreScreenUpdate = xSemaphoreCreateBinary();
 
-    xTaskCreate(
-        run_task,       //Function to implement the task 
-        "lcd_thread", //Name of the task
-        6000,       //Stack size in words 
-        (void*)&lcd_t,       //Task input parameter 
-        0,          //Priority of the task 
-        &(lcd_t.threaded_task)       //Task handle.
-    );
+    // xTaskCreate(
+    //     run_task,       //Function to implement the task 
+    //     "lcd_thread", //Name of the task
+    //     6000,       //Stack size in words 
+    //     (void*)&lcd_t,       //Task input parameter 
+    //     0,          //Priority of the task 
+    //     &(lcd_t.threaded_task)       //Task handle.
+    // );
 }
 
 void lcd_test() {
+
+    /* draw rectangle */
+    ESP_LOGI(LOG_LCD_TAG, "LCD loop");
     lcd_t.fillScreen(GLCD_COLOR_CLEAR);
     lcd_t.drawRect(2, 2, 50, 20, GLCD_COLOR_SET);
     lcd_t.updateWholeScreen();
@@ -78,12 +94,14 @@ void lcd_test() {
     // lcd.fillScreen(GLCD_COLOR_CLEAR);
     // delay(1000);
 
+    /* draw circle */
     lcd_t.fillScreen(GLCD_COLOR_CLEAR);
     lcd_t.drawCircle(20, 20, 10, GLCD_COLOR_SET);
     lcd_t.updateWholeScreen();
 
     delay(1000);
 
+    /* rotate through markers */
     // for (int l = 0; l <= 3; l++) {
     for (byte i = 1; i <= 6; i++) {
         lcd_t.setMarker(i, true);
@@ -97,15 +115,18 @@ void lcd_test() {
 
     lcd_t.fillScreen(GLCD_COLOR_CLEAR);
 
-    for (int y = 0; y < 48; y++) {
+    /* refresh rate test */
+    int y = 0;
+    // for (int y = 0; y < 48; y++) {
         for (int x = 0; x < 100; x++) {
             lcd_t.drawPixel(x, y, GLCD_COLOR_SET);
             lcd_t.updateWholeScreen();
         }
-    }
+    // }
     
     delay(1000);
 
+    /* print text test */
     lcd_t.fillScreen(GLCD_COLOR_CLEAR);
     lcd_t.cp437(true);   // Use correct CP437 character codes
     lcd_t.print("Scho"); // Print the plain ASCII first part
@@ -114,6 +135,8 @@ void lcd_test() {
     lcd_t.updateWholeScreen();
 
     delay(1000);
+
+    /* 4x bitmaps test */
 
     lcd_t.fillScreen(GLCD_COLOR_CLEAR);
     lcd_t.setMarker(1, GLCD_COLOR_SET);
