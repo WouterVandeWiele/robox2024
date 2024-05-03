@@ -66,9 +66,6 @@
 #define LCD_A0 0x20
 #define LCD_RW 0x40
 #define LCD_EN 0x80
-// #define LCD_A0 0x04
-// #define LCD_RW 0x02
-// #define LCD_EN 0x01
 
 #define LCD_DATA_PINS 0xFF
 
