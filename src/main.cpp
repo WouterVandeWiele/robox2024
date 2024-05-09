@@ -15,6 +15,7 @@
 // #define ROBOX_EXAMPLE_BLE
 // #define ROBOX_EXAMPLE_SD
 // #define ROBOX_EXAMPLE_WEB
+#define ROBOX_EXAMPLE_MULTI_WEB_FFT
 
 // #define ROBOX_COMPONENT_BLE
 // #define ROBOX_COMPONENT_WEB
@@ -31,7 +32,7 @@
  * Multiple can be selected
  */
 
-#define ROBOX_LCD
+// #define ROBOX_LCD
 // #define ROBOX_DEBUG_CLI
 // #define ROBOX_DEBUG_I2C
 // #define ROBOX_DEBUG_I2C_SCANNER
@@ -62,6 +63,9 @@
     // #include "web_radio.h"
     // #include "web_example_meta2.h"
     #include "player_metadata.h"
+
+#elif defined ROBOX_EXAMPLE_MULTI_WEB_FFT
+    #include "simple_fft_example2.h"
 
 #endif
 
@@ -161,7 +165,7 @@ void setup() {
         ESP_LOGI(LOG_MAIN_TAG, "sd start");
         sd.mux_start();
 
-    #elif defined ROBOX_EXAMPLE_BLE || defined ROBOX_EXAMPLE_SD || defined ROBOX_EXAMPLE_WEB
+    #elif defined ROBOX_EXAMPLE_BLE || defined ROBOX_EXAMPLE_SD || defined ROBOX_EXAMPLE_WEB || defined ROBOX_EXAMPLE_MULTI_WEB_FFT
         ESP_LOGI(LOG_MAIN_TAG, "examples start");
         player_setup();
 
@@ -198,7 +202,7 @@ void loop() {
     #if defined ROBOX_FULL
         mux.copy();
     
-    #elif defined ROBOX_EXAMPLE_BLE || defined ROBOX_EXAMPLE_SD || defined ROBOX_EXAMPLE_WEB
+    #elif defined ROBOX_EXAMPLE_BLE || defined ROBOX_EXAMPLE_SD || defined ROBOX_EXAMPLE_WEB || defined ROBOX_EXAMPLE_MULTI_WEB_FFT
         player_loop();
 
     #elif defined ROBOX_COMPONENT_BLE
