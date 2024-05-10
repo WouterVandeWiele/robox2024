@@ -13,7 +13,7 @@
 // #define ROBOX_FULL
 
 // #define ROBOX_EXAMPLE_BLE
-#define ROBOX_EXAMPLE_BLE_BEAT
+// #define ROBOX_EXAMPLE_BLE_BEAT
 // #define ROBOX_EXAMPLE_SD
 // #define ROBOX_EXAMPLE_SD_PLAYER_BEAT
 // #define ROBOX_EXAMPLE_WEB
@@ -35,7 +35,7 @@
  * Multiple can be selected
  */
 
-// #define ROBOX_LCD
+#define ROBOX_LCD
 // #define ROBOX_DEBUG_CLI
 // #define ROBOX_DEBUG_I2C
 // #define ROBOX_DEBUG_I2C_SCANNER
