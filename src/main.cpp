@@ -13,9 +13,11 @@
 // #define ROBOX_FULL
 
 // #define ROBOX_EXAMPLE_BLE
-#define ROBOX_EXAMPLE_BLE_FFT
+#define ROBOX_EXAMPLE_BLE_BEAT
 // #define ROBOX_EXAMPLE_SD
+// #define ROBOX_EXAMPLE_SD_PLAYER_BEAT
 // #define ROBOX_EXAMPLE_WEB
+// #define ROBOX_EXAMPLE_WEB_PLAYER_BEAT
 // #define ROBOX_EXAMPLE_MULTI_WEB_FFT
 
 // #define ROBOX_COMPONENT_BLE
@@ -57,16 +59,22 @@
 #elif defined(ROBOX_EXAMPLE_BLE)
     #include "ble_example.h"
 
-#elif defined(ROBOX_EXAMPLE_BLE_FFT)
-    #include "simple_fft_a2dp_example.h"
+#elif defined(ROBOX_EXAMPLE_BLE_BEAT)
+    #include "beat_a2dp_multi.h"
 
 #elif defined(ROBOX_EXAMPLE_SD)
     #include "sdfat_example.h"
+
+#elif defined(ROBOX_EXAMPLE_SD_PLAYER_BEAT)
+    #include "beat_sd_player_multi.h"
 
 #elif defined(ROBOX_EXAMPLE_WEB)
     // #include "web_radio.h"
     // #include "web_example_meta2.h"
     #include "player_metadata.h"
+
+#elif defined(ROBOX_EXAMPLE_WEB_PLAYER_BEAT)
+    #include "beat_web_player_multi.h"
 
 #elif defined(ROBOX_EXAMPLE_MULTI_WEB_FFT)
     #include "simple_fft_example2.h"
@@ -169,7 +177,7 @@ void setup() {
         ESP_LOGI(LOG_MAIN_TAG, "sd start");
         sd.mux_start();
 
-    #elif defined(ROBOX_EXAMPLE_BLE) || defined(ROBOX_EXAMPLE_BLE_FFT) || defined(ROBOX_EXAMPLE_SD) || defined(ROBOX_EXAMPLE_WEB) || defined(ROBOX_EXAMPLE_MULTI_WEB_FFT)
+    #elif defined(ROBOX_EXAMPLE_BLE) || defined(ROBOX_EXAMPLE_BLE_BEAT) || defined(ROBOX_EXAMPLE_SD) || defined(ROBOX_EXAMPLE_WEB) || defined(ROBOX_EXAMPLE_MULTI_WEB_FFT) || defined(ROBOX_EXAMPLE_WEB_PLAYER_BEAT) || defined(ROBOX_EXAMPLE_SD_PLAYER_BEAT)
         ESP_LOGI(LOG_MAIN_TAG, "examples start");
         player_setup();
 
@@ -206,7 +214,7 @@ void loop() {
     #if defined(ROBOX_FULL)
         mux.copy();
     
-    #elif defined(ROBOX_EXAMPLE_BLE) || defined(ROBOX_EXAMPLE_BLE_FFT) || defined(ROBOX_EXAMPLE_SD) || defined(ROBOX_EXAMPLE_WEB) || defined(ROBOX_EXAMPLE_MULTI_WEB_FFT)
+    #elif defined(ROBOX_EXAMPLE_BLE) || defined(ROBOX_EXAMPLE_BLE_BEAT) || defined(ROBOX_EXAMPLE_SD) || defined(ROBOX_EXAMPLE_WEB) || defined(ROBOX_EXAMPLE_MULTI_WEB_FFT) || defined(ROBOX_EXAMPLE_WEB_PLAYER_BEAT) || defined(ROBOX_EXAMPLE_SD_PLAYER_BEAT)
         player_loop();
 
     #elif defined(ROBOX_COMPONENT_BLE)

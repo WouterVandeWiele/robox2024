@@ -1,27 +1,19 @@
-/**
- * @file basic-a2dp-fft.ino
- * @brief A2DP Sink with output to FFT.   
- * For details see the FFT Wiki: https://github.com/pschatzmann/arduino-audio-tools/wiki/FFT
- * @author Phil Schatzmann
- * @copyright GPLv3
- */
+#ifndef ROBOX_FFT_BEAT
+#define ROBOX_FFT_BEAT
 
-// https://github.com/leandcesar/PeakDetection
-
-#include "AudioTools.h"
 #include "AudioLibs/AudioRealFFT.h" // or any other supported inplementation
-#include "BluetoothA2DPSink.h"
-#include "robox_i2s.h"
+#include "general_definitions.h"
 #include <PeakDetection.h>
 #include <FastLED.h>
 
+
+// #define BEAT_TELEMETRY
 
 #define NUM_LEDS 6
 CRGB leds[NUM_LEDS];
 
 PeakDetection peakb0;
 
-BluetoothA2DPSink a2dp_sink;
 AudioRealFFT fft; // or any other supported inplementation
 
 // peak detection parameters
@@ -35,7 +27,7 @@ double influence = 0.6;
  * each fft caclulation we shift in the peak value (boolean)
  * to detect if we have trailing peaks we only change the LED colors if this variable reads 0x1
  */
-#define FILTER_POSITIONS 0b01111111     // determines how many bits we use in the shift register
+#define FILTER_POSITIONS 0b00111111     // determines how many bits we use in the shift register
 uint8_t max_filter = 0;
 
 
@@ -68,14 +60,9 @@ void allRandom(){
   FastLED.show(); 
 }
 
-// Provide data to FFT
-void writeDataStream(const uint8_t *data, uint32_t length) {
-  i2s.write(data, length);
-  fft.write(data, length);
-}
 
 // display fft result
-void fftResult(AudioFFTBase &fft){
+void fftResult(AudioFFTBase &fft) {
     float *magnitudes = fft.magnitudes();
 
     peakb0.add(magnitudes[0]);
@@ -85,14 +72,15 @@ void fftResult(AudioFFTBase &fft){
     if (max_filter == 0x1) {
       allRandom();
     }
-    // Serial.printf(">bin0:%.2f\n>maxf:%.2f\n>peak0:%.2f\n>filter0:%.2f\n", magnitudes[0], ((max_filter == 0x01) ? magnitudes[0] : 0) , (peakb0.getPeak()*magnitudes[0]), peakb0.getFilt(), peakb0.getEpsilon());
+    
+    #if defined(BEAT_TELEMETRY)
+    Serial.printf(">bin0:%.2f\n>maxf:%.2f\n>peak0:%.2f\n>filter0:%.2f\n", magnitudes[0], ((max_filter == 0x01) ? magnitudes[0] : 0) , (peakb0.getPeak()*magnitudes[0]), peakb0.getFilt(), peakb0.getEpsilon());
+    #endif
 }
 
-void player_setup() {
-  Serial.begin(115200);
-  AudioLogger::instance().begin(Serial, AudioLogger::Info);
 
-  // Setup FFT
+void fft_beat_setup(int samplerate = 44100) {
+    // Setup FFT
   auto tcfg = fft.defaultConfig();
   // tcfg.length = 4096;
   // tcfg.length = 256;
@@ -100,7 +88,7 @@ void player_setup() {
   // tcfg.length = 512;
 
   tcfg.channels = 2;
-  tcfg.sample_rate = a2dp_sink.sample_rate();;
+  tcfg.sample_rate = samplerate;
   tcfg.bits_per_sample = 16;
   tcfg.callback = &fftResult;
   fft.begin(tcfg);
@@ -131,36 +119,10 @@ void player_setup() {
   // sets the (lag, threshold, influence)
   peakb0.begin(lag, threshold, influence);
 
-  // register callback
-  a2dp_sink.set_stream_reader(writeDataStream, false);
-
-  // Start Bluetooth Audio Receiver
-  Serial.print("starting a2dp-fft...");
-  a2dp_sink.set_auto_reconnect(false);
-  a2dp_sink.start("a2dp-fft");
-
-  i2s_setup();
-
   FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, NUM_LEDS);
 
 }
 
-void player_loop() {
-  if (Serial.available() > 0) {
-    // reconfigure sine frequency
-    char buffer[20];
-    char buffer2[20];
-    int len = Serial.readBytesUntil('\n', (char*)buffer, 20);
-    Serial.printf("reconfigure: %s Hz\n", buffer);
 
-    memset(buffer2, '\0', 20);
-    memcpy(buffer2, &buffer[1], 19);
-    memset(buffer, '\0', 20);
 
-    if (buffer[0] == 'l') lag = atoi(buffer2);
-    if (buffer[0] == 't') threshold = atoi(buffer2);
-    if (buffer[0] == 'i') influence = atof(buffer2);
-
-    peakb0.begin(lag, threshold, influence);
-  }
-}
+#endif  // ROBOX_FFT_BEAT
