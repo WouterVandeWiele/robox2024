@@ -18,6 +18,8 @@
 
 extern I2SStream i2s;
 
+extern I2SConfig i2s_cfg;
+
 extern i2s_config_t my_i2s_config;
 
 extern i2s_pin_config_t my_i2s_pin_config;
