@@ -4,22 +4,22 @@
  * @brief Determines the output volume (=amplitude)
  * @copyright GPLv3
  */
+
+// https://github.com/leandcesar/PeakDetection
  
 #include "AudioTools.h"
 #include "AudioLibs/AudioRealFFT.h" // or AudioKissFFT
 #include <PeakDetection.h>
 
 PeakDetection peakDetection;                     // create PeakDetection object
-// #include "AudioLibs/LEDOutput.h"
 
 AudioRealFFT fft; // or AudioKissFFT
 // AudioFFTBase fft; // or AudioKissFFT
 // StreamCopy copier(fft, kit);  // copy mic to tfl
-int channels = 2;
-int samples_per_second = 44100;
-int bits_per_sample = 16;
-float value=0;
-float sine_amplitude = 200;
+const int channels = 2;
+const int samples_per_second = 44100;
+const int bits_per_sample = 16;
+const float sine_amplitude = 200;
 float frequency = 4e3;
 
 Vector<float> magnitudes{0};
@@ -40,10 +40,6 @@ void fftResult(AudioFFTBase &fft) {
         Serial.printf("\n>freq:%.2f\n>mag:%f\n", result.frequency, result.magnitude);
 
         float *magnitudes = fft.magnitudes();
-
-        // for (int b=0; b<size; b++) {
-        //   Serial.printf(">bin%d_amp:%.2f\n", b, magnitudes[b]);
-        // }
 
         peakDetection.add(magnitudes[0]);                     // adds a new data point
         int peak = peakDetection.getPeak();          // 0, 1 or -1
@@ -76,8 +72,7 @@ void player_setup(void) {
   // Setup sine wave
   sineWave.begin(info, frequency);
   Serial.println("started...");
-
-  peakDetection.begin(48, 3, 0.6);               // sets the lag, threshold and influence
+  peakDetection.begin(48, 3, 0.6);
 }
 
 // Arduino loop - copy sound to out 

@@ -13,9 +13,10 @@
 // #define ROBOX_FULL
 
 // #define ROBOX_EXAMPLE_BLE
+#define ROBOX_EXAMPLE_BLE_FFT
 // #define ROBOX_EXAMPLE_SD
 // #define ROBOX_EXAMPLE_WEB
-#define ROBOX_EXAMPLE_MULTI_WEB_FFT
+// #define ROBOX_EXAMPLE_MULTI_WEB_FFT
 
 // #define ROBOX_COMPONENT_BLE
 // #define ROBOX_COMPONENT_WEB
@@ -41,47 +42,50 @@
  * compile options logic
  */
 
-#if defined ROBOX_FULL
+#if defined(ROBOX_FULL)
     #include "robox_audio_mux.h"
 
-#elif defined ROBOX_COMPONENT_BLE
+#elif defined(ROBOX_COMPONENT_BLE)
     #include "robox_ble.h"
 
-#elif defined ROBOX_COMPONENT_WEB
+#elif defined(ROBOX_COMPONENT_WEB)
     #include "robox_web.h"
 
-#elif defined ROBOX_COMPONENT_SD
+#elif defined(ROBOX_COMPONENT_SD)
     #include "robox_sd.h"
 
-#elif defined ROBOX_EXAMPLE_BLE
+#elif defined(ROBOX_EXAMPLE_BLE)
     #include "ble_example.h"
 
-#elif defined ROBOX_EXAMPLE_SD
+#elif defined(ROBOX_EXAMPLE_BLE_FFT)
+    #include "simple_fft_a2dp_example.h"
+
+#elif defined(ROBOX_EXAMPLE_SD)
     #include "sdfat_example.h"
 
-#elif defined ROBOX_EXAMPLE_WEB
+#elif defined(ROBOX_EXAMPLE_WEB)
     // #include "web_radio.h"
     // #include "web_example_meta2.h"
     #include "player_metadata.h"
 
-#elif defined ROBOX_EXAMPLE_MULTI_WEB_FFT
+#elif defined(ROBOX_EXAMPLE_MULTI_WEB_FFT)
     #include "simple_fft_example2.h"
 
 #endif
 
-#if defined ROBOX_LCD
+#if defined(ROBOX_LCD)
     #include "lcd_config.h"
 #endif
 
-#if defined ROBOX_DEBUG_CLI
+#if defined(ROBOX_DEBUG_CLI)
     #include "debug_cli.h"
 #endif
 
-#if defined ROBOX_DEBUG_I2C
+#if defined(ROBOX_DEBUG_I2C)
     #include "robox_io.h"
 #endif
 
-#if defined ROBOX_DEBUG_I2C_SCANNER
+#if defined(ROBOX_DEBUG_I2C_SCANNER)
     #include "robox_i2c_scanner.h"
 #endif
 
@@ -109,21 +113,21 @@
 
 
 
-#if defined ROBOX_FULL
+#if defined(ROBOX_FULL)
     RoboxAudioMux mux;
 
-#elif defined ROBOX_COMPONENT_BLE
+#elif defined(ROBOX_COMPONENT_BLE)
     RoboxBluetooth ble;
 
-#elif defined ROBOX_COMPONENT_WEB
+#elif defined(ROBOX_COMPONENT_WEB)
     RoboxWebRadio web;
 
-#elif defined ROBOX_COMPONENT_SD
+#elif defined(ROBOX_COMPONENT_SD)
     RoboxSD sd;
 
 #endif
 
-#if defined ROBOX_DEBUG_I2C
+#if defined(ROBOX_DEBUG_I2C)
     RoboxIoExpander io(IO_EXPANDER_W_ADDRESS);
 #endif
 
@@ -146,90 +150,90 @@ void setup() {
     // esp_log_level_set(BT_AV_TAG, ESP_LOG_NONE);
     // esp_log_level_set(BT_APP_TAG, ESP_LOG_NONE);
 
-    #if defined ROBOX_FULL
+    #if defined(ROBOX_FULL)
         ESP_LOGI(LOG_MAIN_TAG, "Setup mux");
         mux.setup();
         // mux.switch_to(BleSource);
         // mux.switch_to(WebRadioSource);
         // mux.switch_to(SDSource);
 
-    #elif defined ROBOX_COMPONENT_BLE
+    #elif defined(ROBOX_COMPONENT_BLE)
         ESP_LOGI(LOG_MAIN_TAG, "ble start");
         ble.mux_start();
 
-    #elif defined ROBOX_COMPONENT_WEB
+    #elif defined(ROBOX_COMPONENT_WEB)
         ESP_LOGI(LOG_MAIN_TAG, "web start");
         web.mux_start();
 
-    #elif defined ROBOX_COMPONENT_SD
+    #elif defined(ROBOX_COMPONENT_SD)
         ESP_LOGI(LOG_MAIN_TAG, "sd start");
         sd.mux_start();
 
-    #elif defined ROBOX_EXAMPLE_BLE || defined ROBOX_EXAMPLE_SD || defined ROBOX_EXAMPLE_WEB || defined ROBOX_EXAMPLE_MULTI_WEB_FFT
+    #elif defined(ROBOX_EXAMPLE_BLE) || defined(ROBOX_EXAMPLE_BLE_FFT) || defined(ROBOX_EXAMPLE_SD) || defined(ROBOX_EXAMPLE_WEB) || defined(ROBOX_EXAMPLE_MULTI_WEB_FFT)
         ESP_LOGI(LOG_MAIN_TAG, "examples start");
         player_setup();
 
     #endif
 
-    // #if defined ROBOX_COMPONENT_BLE || defined ROBOX_COMPONENT_WEB || defined ROBOX_COMPONENT_SD
+    // #if defined(ROBOX_COMPONENT_BLE) || defined(ROBOX_COMPONENT_WEB) || defined(ROBOX_COMPONENT_SD)
     //     ESP_LOGI(LOG_TAG, "i2s setup");
     //     i2s_setup();
     // #endif
 
-    #if defined ROBOX_LCD
+    #if defined(ROBOX_LCD)
         ESP_LOGI(LOG_MAIN_TAG, "lcd setup");
         lcd_setup();
     #endif
 
 
-    #if defined ROBOX_DEBUG_CLI
+    #if defined(ROBOX_DEBUG_CLI)
         ESP_LOGI(LOG_MAIN_TAG, "select ble source");
         debug_cli_setup();
     #endif
 
-    #if defined ROBOX_DEBUG_I2C
+    #if defined(ROBOX_DEBUG_I2C)
         io.configure_outputs(0, 0x00);
         io.configure_outputs(1, 0x00);
     #endif
 
-    #if defined ROBOX_DEBUG_I2C_SCANNER
+    #if defined(ROBOX_DEBUG_I2C_SCANNER)
         scanner_setup();
     #endif
 
 }
 
 void loop() {
-    #if defined ROBOX_FULL
+    #if defined(ROBOX_FULL)
         mux.copy();
     
-    #elif defined ROBOX_EXAMPLE_BLE || defined ROBOX_EXAMPLE_SD || defined ROBOX_EXAMPLE_WEB || defined ROBOX_EXAMPLE_MULTI_WEB_FFT
+    #elif defined(ROBOX_EXAMPLE_BLE) || defined(ROBOX_EXAMPLE_BLE_FFT) || defined(ROBOX_EXAMPLE_SD) || defined(ROBOX_EXAMPLE_WEB) || defined(ROBOX_EXAMPLE_MULTI_WEB_FFT)
         player_loop();
 
-    #elif defined ROBOX_COMPONENT_BLE
+    #elif defined(ROBOX_COMPONENT_BLE)
         ble.mux_copy();
 
-    #elif defined ROBOX_COMPONENT_WEB
+    #elif defined(ROBOX_COMPONENT_WEB)
         web.mux_copy();
 
-    #elif defined ROBOX_COMPONENT_SD
+    #elif defined(ROBOX_COMPONENT_SD)
         sd.mux_copy();
 
     #endif
 
 
-    #if defined ROBOX_LCD
+    #if defined(ROBOX_LCD)
         ESP_LOGI(LOG_MAIN_TAG, "LCD loop");
 
         lcd_test();
         // delay(10000);
     #endif
 
-    #if defined ROBOX_DEBUG_CLI
+    #if defined(ROBOX_DEBUG_CLI)
         debug_cli_loop();
 
     #endif
 
-    #if defined ROBOX_DEBUG_I2C
+    #if defined(ROBOX_DEBUG_I2C)
         ESP_LOGI(LOG_MAIN_TAG, "IO expander write");
         io.set_output(0, 0x00);
         // io.set_output(1, 0x00);
@@ -244,7 +248,7 @@ void loop() {
 
     #endif
 
-    #if defined ROBOX_DEBUG_I2C_SCANNER
+    #if defined(ROBOX_DEBUG_I2C_SCANNER)
         scanner_loop();
         delay(10000);
     #endif

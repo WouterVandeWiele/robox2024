@@ -14,7 +14,7 @@
 #include "AudioTools.h"
 #include "AudioCodecs/CodecMP3Helix.h"
 
-#include "i2s.h"
+#include "robox_i2s.h"
 #include "general_definitions.h"
 
 
@@ -35,7 +35,7 @@ void player_setup(){
   // setup i2s
 //   auto config = i2s.defaultConfig(TX_MODE);
 //   i2s.begin(config);
-    i2s_setup();
+  i2s_setup();
 
   // setup I2S based on sampling rate provided by decoder
   decoder.begin();

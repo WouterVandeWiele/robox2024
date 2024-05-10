@@ -77,6 +77,8 @@
 #define IO_EXPANDER_R_ADDRESS 0xa0
 #define IO_EXPANDER_RESET 4
 
+#define LED_PIN 2
+
 #endif
 
 #ifdef PLATFORM_ESP32DA

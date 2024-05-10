@@ -12,7 +12,7 @@
 
 #include "AudioTools.h"
 #include "AudioCodecs/CodecMP3Helix.h"
-#include "i2s.h"
+#include "robox_i2s.h"
 #include "general_definitions.h"
 #include "wifi_credentials.h"
 
