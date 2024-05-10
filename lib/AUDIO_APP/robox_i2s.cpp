@@ -6,6 +6,8 @@ I2SStream i2s(I2S_PIN_MUTE);
 
 static VolumeStream volume(i2s);
 
+I2SConfig i2s_cfg;
+
 i2s_config_t my_i2s_config = {
     .mode = ROBOX_I2S_MODE,
     .sample_rate = ROBOX_I2S_SAMPLE_RATE, // updated automatically by A2DP
@@ -28,7 +30,7 @@ i2s_pin_config_t my_i2s_pin_config = {
 
 void i2s_setup() {
 
-    I2SConfig i2s_cfg = i2s.defaultConfig(TX_MODE);
+    i2s_cfg = i2s.defaultConfig(TX_MODE);
     i2s_cfg.sample_rate = my_i2s_config.sample_rate;
     i2s_cfg.bits_per_sample = my_i2s_config.bits_per_sample;
     i2s_cfg.channel_format = my_i2s_config.channel_format;
