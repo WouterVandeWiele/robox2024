@@ -5,7 +5,8 @@
 #include <KeyDetector.h>
 
 #include "SED1530_LCD.h"
-#include "example_bitmaps.h"
+// #include "example_bitmaps.h"
+#include "splash.h"
 #include "general_definitions.h"
 
 #include "SerialKey.h"
@@ -111,10 +112,12 @@ void run_task(void * param) {
 // Create variables that will be editable through the menu and assign them initial values
 int number = -512;
 bool enablePrint = false;
+char name[50] = {0};
 
 // Create two menu item objects of class GEMItem, linked to number and enablePrint variables 
 GEMItem menuItemInt("Number:", number);
-GEMItem menuItemBool("Enable print:", enablePrint);
+GEMItem menuItemBool("En print:", enablePrint);
+GEMItem menuItemString("str:", name);
 
 // Create menu button that will trigger printData() function. It will print value of our number variable
 // to Serial monitor if enablePrint is true. We will write (define) this function later. However, we should
@@ -129,7 +132,7 @@ GEMPage menuPageMain("Main Menu");
 // Create menu object of class GEM_adafruit_gfx. Supply its constructor with reference to tft object we created earlier
 // GEM_adafruit_gfx menu(lcd_t, GEM_POINTER_ROW, GEM_ITEMS_COUNT_AUTO);
 // Which is equivalent to the following call (you can adjust parameters to better fit your screen if necessary):
-GEM_adafruit_gfx menu(lcd_t, /* menuPointerType= */ GEM_POINTER_ROW, /* menuItemsPerScreen= */ GEM_ITEMS_COUNT_AUTO, /* menuItemHeight= */ 8, /* menuPageScreenTopOffset= */ 10, /* menuValuesLeftOffset= */ 86);
+GEM_adafruit_gfx menu(lcd_t, /* menuPointerType= */ GEM_POINTER_ROW, /* menuItemsPerScreen= */ GEM_ITEMS_COUNT_AUTO, /* menuItemHeight= */ 8, /* menuPageScreenTopOffset= */ 10, /* menuValuesLeftOffset= */ 80);
 
 
 
@@ -161,31 +164,28 @@ void lcd_setup() {
     #endif
 
 
-
-    // Push-buttons pin modes
-//   pinMode(downPin, INPUT);
-//   pinMode(leftPin, INPUT);
-//   pinMode(rightPin, INPUT);
-//   pinMode(upPin, INPUT);
-//   pinMode(cancelPin, INPUT);
-//   pinMode(okPin, INPUT);
-
-
 //   menu.setDrawMenuCallback(update_screen);
+  menu.setDrawCallback(update_screen);
+  menu.setSplash(100, 48, robox_splash);
+  menu.setSplashDelay(3000);
 
 
   // Menu init, setup and draw
   menu.init();
+//   update_screen();
+
 
   // Add menu items to menu page
   menuPageMain.addMenuItem(menuItemInt);
   menuPageMain.addMenuItem(menuItemBool);
   menuPageMain.addMenuItem(menuItemButton);
+  menuPageMain.addMenuItem(menuItemString);
 
   // Add menu page to menu and set it as current
   menu.setMenuPageCurrent(menuPageMain);
 
   menu.drawMenu();
+
 
 
 }
@@ -203,7 +203,7 @@ void lcd_test() {
 if (menu.readyForKey()) {
     serialKey.detect();
     menu.registerKeyPress(serialKey.trigger);
-  update_screen();
+//   update_screen();
 }
 
 }

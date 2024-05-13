@@ -161,6 +161,8 @@ void SED1530_LCD::writeData(uint8_t lcdData) {
 void SED1530_LCD::lcd_init() {
 
   ESP_LOGI(LOG_LCD_TAG, "lcd io setup start");
+  io.set_output(LCD_DATA_PORT, 0x00);
+  io.set_output(LCD_CONTROL_PORT, 0x00);
   io.configure_outputs(LCD_CONTROL_PORT, ~(LCD_EN | LCD_RW | LCD_A0));
   io.configure_outputs(LCD_DATA_PORT, ~(LCD_DATA_PINS));
   ESP_LOGI(LOG_LCD_TAG, "lcd io setup done");

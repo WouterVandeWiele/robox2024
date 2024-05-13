@@ -77,7 +77,21 @@
 #define IO_EXPANDER_R_ADDRESS 0xa0
 #define IO_EXPANDER_RESET 4
 
+// WS2812 pin
 #define LED_PIN 2
+
+// input buttons
+#define BUTTON_1AC 34
+#define BUTTON_1BD 35
+#define BUTTON_12C 36
+#define BUTTON_2AC 37
+#define BUTTON_2BD 38
+
+#define KEY_TH_1 825    // 0,825mV
+#define KEY_TH_2 1885   // 1,885mV
+// #define KEY_TC_C 2475   // 2,475mV
+
+#define KEY_DEBOUNCE_DELAY 50
 
 #endif
 
