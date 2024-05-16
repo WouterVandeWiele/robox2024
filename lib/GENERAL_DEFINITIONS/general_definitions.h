@@ -93,6 +93,16 @@
 
 #define KEY_DEBOUNCE_DELAY 200
 
+
+// motor pins
+
+#define MOTOR_1_DIR 9
+#define MOTOR_2_DIR 10
+#define MOTOR_1_SPD 22
+#define MOTOR_2_SPD 21
+#define MOTOR_PWM_FREQ 10000
+#define MOTOR_TIMER_BITS 12
+
 #endif
 
 #ifdef PLATFORM_ESP32DA
