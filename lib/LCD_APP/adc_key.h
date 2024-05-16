@@ -24,21 +24,18 @@ static threshold v_2bd_prev = TH0;
 byte compare(uint32_t voltage, threshold &previous, byte button1, byte button2) {
     threshold current;
 
-    if (voltage < KEY_TH_1)
-    {
+    // detect state based on voltage
+    if (voltage < KEY_TH_1) {
         current = TH0;
         previous = TH0;
-    }
-    else if ((voltage < KEY_TH_2) && (previous != PRESSED))
-    {
+    } else if ((voltage < KEY_TH_2) && (previous != PRESSED)) {
         current = TH1;
-    }
-    else if ((voltage >= KEY_TH_2) && (previous != PRESSED))
-    {
+    } else if ((voltage >= KEY_TH_2) && (previous != PRESSED)) {
         current = TH2;
     }
 
-    if (current == previous) {
+    // detect first button press or button is still pressed
+    if ((current == previous) || (previous == PRESSED)) {
         previous = PRESSED;
         byte b = (current == TH1) ? button1 : button2;
         Serial.printf("pressed, key: %d", b);
