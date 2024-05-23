@@ -60,10 +60,7 @@
 // #include <Adafruit_SPIDevice.h>
 // #include <SPI.h>
 // #include <Wire.h>
-
-/* Interface type */
-// #define IO_DIRECT
-#define IO_EXPANDER
+#include "general_config.h"
 
 /* GLCD Commands */
 #define GLCD_CMD_DISPLAY_OFF                    (0xAE)
@@ -148,10 +145,11 @@ typedef struct IO_CONFIG {
 
 class SED1530_LCD : public GFXcanvas1 {
 public:
-  #if defined IO_DIRECT
+  #if !defined(IO_EXPANDER)
     SED1530_LCD(uint8_t A0, uint8_t RW, uint8_t EN, uint8_t *DATA);
-  #elif defined IO_EXPANDER
-    SED1530_LCD(uint8_t io_address);
+  #elif defined(IO_EXPANDER)
+    // SED1530_LCD(uint8_t io_address);
+    SED1530_LCD(RoboxIoExpander* io_ref);
   #endif
 
   ~SED1530_LCD(void);
@@ -165,7 +163,7 @@ public:
   // void setContrast(uint8_t contrastlevel);
   // void drawPixel(int16_t x, int16_t y, uint16_t color);
   // bool getPixel(int16_t x, int16_t y);
-
+  void resetDisplay();
   void invertDisplay(bool i);
   void clearScreen(uint16_t color);
   void fillScreen(uint16_t color);
@@ -179,7 +177,7 @@ public:
   void writeCommand(uint8_t cmd);
   void writeData(uint8_t lcdData);
 
-  uint8_t index_buffer(uint8_t page, uint8_t column, uint8_t bit);
+  // uint8_t index_buffer(uint8_t page, uint8_t column, uint8_t bit);
   void updateWholeScreen(void);
 
   // void oled_command(uint8_t c);
@@ -205,14 +203,14 @@ protected:
 
   // uint8_t _bpp = 1; ///< Bits per pixel color for this display
 private:
-  #if defined IO_DIRECT
+  #if !defined(IO_EXPANDER)
     uint8_t A0;
     uint8_t RW;
     uint8_t EN;
     uint8_t *DATA;
-  #elif defined IO_EXPANDER
+  #elif defined(IO_EXPANDER)
     io_config ports;
-    RoboxIoExpander io;
+    RoboxIoExpander* io;
   #endif
 
   void setPage(uint8_t page);

@@ -1,17 +1,9 @@
 #include "robox_io.h"
 
 
-class RoboxMotor: public IoInterface {
+class RoboxBattery: public IoInterface {
     public:
-        RoboxMotor(RoboxIoExpander* io);
-
-        void init();
-
-        void set_speed(float m1, float m2);
-        void set_direction(bool m1, bool m2);
-
-        void enable(bool enable);
-        void shutdown(bool shutdown);
+        RoboxBattery(RoboxIoExpander* io);
 
         // static method that returns the IO expander config expected by this component
         static ExpanderConfig io_config();

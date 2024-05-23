@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 // http://javl.github.io/image2cpp/
 
 const unsigned char robox_splash [] PROGMEM = {

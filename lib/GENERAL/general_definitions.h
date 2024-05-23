@@ -1,6 +1,8 @@
 #ifndef GENERAL_DEFINITIONS_H
 #define GENERAL_DEFINITIONS_H
 
+#include "stdint.h"
+
 // ESP32 devkit
 #ifdef PLATFORM_ESP32DEV
 #define I2S_PIN_MUTE 22
@@ -46,7 +48,7 @@
 #define LCDDATAPINS {22,4,19,9,23,10,18,5}
 
 #define IO_RESET 4
-#define IO_INT 34
+#define IO_INTERRUPT 34
 #define I2C_SCL 22
 #define I2C_SDA 21
 #define I2C_SPEED 400000UL
@@ -63,11 +65,11 @@
 #define I2C_MASTER_TX_BUF_DISABLE 0 /*!< I2C master doesn't need buffer */
 #define I2C_MASTER_RX_BUF_DISABLE 0 /*!< I2C master doesn't need buffer */
 
-#define LCD_A0 0x20
-#define LCD_RW 0x40
-#define LCD_EN 0x80
+#define LCD_A0 (uint8_t)0x20
+#define LCD_RW (uint8_t)0x40
+#define LCD_EN (uint8_t)0x80
 
-#define LCD_DATA_PINS 0xFF
+#define LCD_DATA_PINS (uint8_t)0xFF
 
 #define LCD_DATA_PORT 1
 #define LCD_CONTROL_PORT 0
@@ -102,6 +104,14 @@
 #define MOTOR_2_SPD 21
 #define MOTOR_PWM_FREQ 10000
 #define MOTOR_TIMER_BITS 12
+
+#define MOTOR_EN 0x04
+#define MOTOR_STANDBY 0x08
+
+// battery pins
+#define BATTERY_CHARGE 0x01
+#define BATTERY_STANDBY 0x02
+
 
 #endif
 

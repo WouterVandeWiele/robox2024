@@ -47,6 +47,7 @@
  *
  */
 
+#include <mutex>
 #include <stdint.h>
 #include "Arduino.h"
 #include "SED1530_LCD.h"
@@ -70,7 +71,7 @@
 //     this->init();
 // }
 
-#if defined IO_DIRECT
+#if !defined(IO_EXPANDER)
   SED1530_LCD::SED1530_LCD(uint8_t A0, uint8_t RW, uint8_t EN, uint8_t *DATA): GFXcanvas1(100, 48), A0(A0), RW(RW), EN(EN), DATA(DATA) {
       pinMode(this->A0, OUTPUT);
       pinMode(this->RW, OUTPUT);
@@ -82,12 +83,15 @@
 
       this->init();
   }
-#elif defined IO_EXPANDER
-  SED1530_LCD::SED1530_LCD(uint8_t io_address): GFXcanvas1(100, 48), io(io_address), ports(ports) {
+#elif defined(IO_EXPANDER)
+  // SED1530_LCD::SED1530_LCD(uint8_t io_address): GFXcanvas1(100, 48), io(io_address), ports(ports) {
+
+  // }
+  SED1530_LCD::SED1530_LCD(RoboxIoExpander* io_ref): GFXcanvas1(100, 48), io(io_ref), ports(ports) {
 
     // ESP_LOGI(LOG_LCD_TAG, "lcd io setup start");
-    // io.configure_outputs(LCD_CONTROL_PORT, ~(LCD_A0 | LCD_RW | LCD_EN));
-    // io.configure_outputs(LCD_DATA_PORT, ~LCD_DATA_PINS);
+    // io->configure_outputs(LCD_CONTROL_PORT, ~(LCD_A0 | LCD_RW | LCD_EN));
+    // io->configure_outputs(LCD_DATA_PORT, ~LCD_DATA_PINS);
     // ESP_LOGI(LOG_LCD_TAG, "lcd io setup done");
     // // this->init();
     // ESP_LOGI(LOG_LCD_TAG, "lcd init done");
@@ -103,7 +107,7 @@ SED1530_LCD::~SED1530_LCD(void) {
 
 void SED1530_LCD::writeCommand(uint8_t cmd) {
   // ESP_LOGI(LOG_LCD_TAG, "lcd write command %2x", cmd);
-  #if defined IO_DIRECT
+  #if !defined(IO_EXPANDER)
     digitalWrite(this->RW, LOW);
     digitalWrite(this->A0, LOW);
     
@@ -120,18 +124,18 @@ void SED1530_LCD::writeCommand(uint8_t cmd) {
     digitalWrite(this->EN, LOW);
     GLCD_IO_DELAY();
     digitalWrite(this->EN, HIGH);
-  #elif defined IO_EXPANDER
-    io.set_output(LCD_CONTROL_PORT, LCD_EN);
-    io.set_output(LCD_DATA_PORT, cmd);
+  #elif defined(IO_EXPANDER)
+    io->set_output(LCD_CONTROL_PORT, LCD_EN, (LCD_A0 | LCD_RW | LCD_EN));
+    io->set_output(LCD_DATA_PORT, cmd, LCD_DATA_PINS);
 
-    io.set_output(LCD_CONTROL_PORT, 0);
-    io.set_output(LCD_CONTROL_PORT, LCD_EN);
+    io->set_output(LCD_CONTROL_PORT, 0, (LCD_A0 | LCD_RW | LCD_EN));
+    io->set_output(LCD_CONTROL_PORT, LCD_EN, (LCD_A0 | LCD_RW | LCD_EN));
   #endif
 }
 
 void SED1530_LCD::writeData(uint8_t lcdData) {
   // ESP_LOGI(LOG_LCD_TAG, "lcd write data %2x", lcdData);
-  #if defined IO_DIRECT
+  #if !defined(IO_EXPANDER)
     digitalWrite(this->RW, LOW);
     digitalWrite(this->A0, HIGH);
 
@@ -148,29 +152,34 @@ void SED1530_LCD::writeData(uint8_t lcdData) {
     digitalWrite(this->EN, LOW);
     GLCD_IO_DELAY();
     digitalWrite(this->EN, HIGH);
-  #elif defined IO_EXPANDER
-    io.set_output(LCD_CONTROL_PORT, (LCD_A0 | LCD_EN));
-    io.set_output(LCD_DATA_PORT, lcdData);
+  #elif defined(IO_EXPANDER)
+    io->set_output(LCD_CONTROL_PORT, (LCD_A0 | LCD_EN), (LCD_A0 | LCD_RW | LCD_EN));
+    io->set_output(LCD_DATA_PORT, lcdData, LCD_DATA_PINS);
 
-    io.set_output(LCD_CONTROL_PORT, LCD_A0);
-    io.set_output(LCD_CONTROL_PORT, (LCD_A0 | LCD_EN));
+    io->set_output(LCD_CONTROL_PORT, LCD_A0, (LCD_A0 | LCD_RW | LCD_EN));
+    io->set_output(LCD_CONTROL_PORT, (LCD_A0 | LCD_EN), (LCD_A0 | LCD_RW | LCD_EN));
 
   #endif
 }
 
 void SED1530_LCD::lcd_init() {
+  #if defined(IO_EXPANDER)
+  const std::lock_guard<std::mutex> lock(io->io_mutex);
+  #endif
 
-  ESP_LOGI(LOG_LCD_TAG, "lcd io setup start");
-  io.set_output(LCD_DATA_PORT, 0x00);
-  io.set_output(LCD_CONTROL_PORT, 0x00);
-  io.configure_outputs(LCD_CONTROL_PORT, ~(LCD_EN | LCD_RW | LCD_A0));
-  io.configure_outputs(LCD_DATA_PORT, ~(LCD_DATA_PINS));
-  ESP_LOGI(LOG_LCD_TAG, "lcd io setup done");
+
+  // ESP_LOGI(LOG_LCD_TAG, "lcd io setup start");
+  // io->set_output(LCD_DATA_PORT, 0x00);
+  // io->set_output(LCD_CONTROL_PORT, 0x00);
+  // io->configure_outputs(LCD_CONTROL_PORT, ~(LCD_EN | LCD_RW | LCD_A0));
+  // io->configure_outputs(LCD_DATA_PORT, ~(LCD_DATA_PINS));
+  // ESP_LOGI(LOG_LCD_TAG, "lcd io setup done");
   // this->init();
   
   //the following actions are performed to init the lcd
+  // delay(100);
   this->writeCommand(0xe2);    //reset display by soft
-  delay(1000);
+  delay(1500);
   this->writeCommand(0xa1);    //ADC select
   this->writeCommand(0xa2);    //lcd bias 1/8
   this->writeCommand(0x2c);    //power
@@ -186,7 +195,15 @@ void SED1530_LCD::lcd_init() {
 
 }
 
+void SED1530_LCD::resetDisplay() {
+  this->writeCommand(GLCD_CMD_RESET);
+}
+
 void SED1530_LCD::invertDisplay(bool i) {
+    #if defined(IO_EXPANDER)
+    const std::lock_guard<std::mutex> lock(io->io_mutex);
+    #endif
+
     this->writeCommand(0xA6 + (i ? 0:1));
 }
 
@@ -201,6 +218,10 @@ void SED1530_LCD::invertDisplay(bool i) {
 void SED1530_LCD::setMarker(uint8_t marker, bool on) {
     uint8_t highNibble, lowNibble;
     uint8_t markerLCD;
+
+    #if defined(IO_EXPANDER)
+    const std::lock_guard<std::mutex> lock(io->io_mutex);
+    #endif
 
     switch (marker) {
         case 1 : markerLCD = 20;
@@ -315,6 +336,11 @@ void SED1530_LCD::fillScreen(uint16_t color) {
 }
 
 void SED1530_LCD::updateWholeScreen(void) {
+
+  #if defined(IO_EXPANDER)
+    const std::lock_guard<std::mutex> lock(io->io_mutex);
+  #endif
+
   // uint32_t bytes = ((w + 7) / 8) * h;
   // if ((buffer = (uint8_t *)malloc(bytes))) {
   //   memset(buffer, 0, bytes);

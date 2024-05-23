@@ -36,6 +36,8 @@
  */
 
 #define ROBOX_LCD
+// #define ROBOX_BATTERY
+// #define ROBOX_MOTOR
 // #define ROBOX_DEBUG_CLI
 // #define ROBOX_DEBUG_I2C
 // #define ROBOX_DEBUG_I2C_SCANNER
@@ -82,7 +84,16 @@
 #endif
 
 #if defined(ROBOX_LCD)
-    #include "lcd_config.h"
+    // #include "lcd_config.h"
+    #include "lcd_screen.h"
+#endif
+
+#if defined(ROBOX_MOTOR)
+    #include "robox_motor.h"
+#endif
+
+#if defined(ROBOX_BATTERY)
+    #include "robox_battery.h"
 #endif
 
 #if defined(ROBOX_DEBUG_CLI)
@@ -135,8 +146,18 @@
 
 #endif
 
-#if defined(ROBOX_DEBUG_I2C)
-    RoboxIoExpander io(IO_EXPANDER_W_ADDRESS);
+static RoboxIoExpander* io;
+
+#if defined(ROBOX_LCD)
+static RoboxLcdScreen* screen;
+#endif
+
+#if defined(ROBOX_MOTOR)
+static RoboxMotor* motor;
+#endif
+
+#if defined(ROBOX_BATTERY)
+static RoboxBattery* battery;
 #endif
 
 
@@ -146,12 +167,13 @@ void setup() {
     AudioLogger::instance().begin(Serial, AudioLogger::Info);
     
     // setup logging
-    esp_log_level_set("*", ESP_LOG_DEBUG);
+    esp_log_level_set("*", ESP_LOG_ERROR);
     // esp_log_level_set("*", ESP_LOG_WARN);
     // esp_log_level_set(LOG_MAIN_TAG, ESP_LOG_DEBUG);
     // esp_log_level_set(LOG_BLE_TAG, ESP_LOG_DEBUG);
     // esp_log_level_set(LOG_MUX_TAG, ESP_LOG_DEBUG);
     // esp_log_level_set(LOG_I2S_TAG, ESP_LOG_DEBUG);
+    esp_log_level_set(LOG_I2C_TAG, ESP_LOG_DEBUG);
     // esp_log_level_set(LOG_SD_TAG, ESP_LOG_DEBUG);
     // esp_log_level_set(LOG_WEB_TAG, ESP_LOG_DEBUG);
 
@@ -183,14 +205,39 @@ void setup() {
 
     #endif
 
-    // #if defined(ROBOX_COMPONENT_BLE) || defined(ROBOX_COMPONENT_WEB) || defined(ROBOX_COMPONENT_SD)
-    //     ESP_LOGI(LOG_TAG, "i2s setup");
-    //     i2s_setup();
-    // #endif
+
+    #if defined(ROBOX_DEBUG_I2C) || defined(ROBOX_LCD) || defined(ROBOX_MOTOR) || defined(ROBOX_BATTERY)
+    io = new RoboxIoExpander(IO_EXPANDER_W_ADDRESS);
+    #endif
+
 
     #if defined(ROBOX_LCD)
         ESP_LOGI(LOG_MAIN_TAG, "lcd setup");
-        lcd_setup();
+
+        screen = new RoboxLcdScreen(io);
+        io->register_observer(screen, RoboxLcdScreen::io_config());
+    #endif
+
+    #if defined(ROBOX_MOTOR)
+        ESP_LOGI(LOG_MAIN_TAG, "motor setup");
+        motor = new RoboxMotor(io);
+        io->register_observer(motor, RoboxMotor::io_config());
+    #endif
+
+    #if defined(ROBOX_BATTERY)
+        ESP_LOGI(LOG_MAIN_TAG, "battery setup");
+        battery = new RoboxBattery(io);
+        io->register_observer(battery, RoboxBattery::io_config());
+    #endif
+
+    #if defined(ROBOX_DEBUG_I2C) || defined(ROBOX_LCD) || defined(ROBOX_MOTOR)
+        ESP_LOGI(LOG_MAIN_TAG, "configure io-expander");
+        io->io_configure();
+    #endif
+
+    #if defined(ROBOX_LCD)
+        ESP_LOGI(LOG_MAIN_TAG, "lcd init");
+        screen->init_lcd();
     #endif
 
 
@@ -200,8 +247,8 @@ void setup() {
     #endif
 
     #if defined(ROBOX_DEBUG_I2C)
-        io.configure_outputs(0, 0x00);
-        io.configure_outputs(1, 0x00);
+        io->configure_outputs(0, 0x00);
+        io->configure_outputs(1, 0x00);
     #endif
 
     #if defined(ROBOX_DEBUG_I2C_SCANNER)
@@ -232,26 +279,28 @@ void loop() {
     #if defined(ROBOX_LCD)
         ESP_LOGI(LOG_MAIN_TAG, "LCD loop");
 
-        lcd_test();
-        // delay(10000);
+        screen->lcd_gfx_test();
     #endif
 
     #if defined(ROBOX_DEBUG_CLI)
         debug_cli_loop();
+    #endif
 
+    #if defined(ROBOX_MOTOR) || defined(ROBOX_BATTERY)
+        io->loop();
     #endif
 
     #if defined(ROBOX_DEBUG_I2C)
         ESP_LOGI(LOG_MAIN_TAG, "IO expander write");
-        io.set_output(0, 0x00);
-        // io.set_output(1, 0x00);
+        io->set_output(0, 0x00);
+        // io->set_output(1, 0x00);
         delay(100);
-        io.set_output(0, 0x80);
-        // io.set_output(1, 0xFF);
+        io->set_output(0, 0x80);
+        // io->set_output(1, 0xFF);
         delay(100);
 
         // ESP_LOGI(LOG_MAIN_TAG, "IO expander read");
-        // uint8_t data = io.get_configure_outputs(1);
+        // uint8_t data = io->get_configure_outputs(1);
         // ESP_LOGI(LOG_MAIN_TAG, "IO expander read %2x", data);
 
     #endif
