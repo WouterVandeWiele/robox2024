@@ -51,6 +51,9 @@ void player_setup() {
     i2s_setup();
     fft_beat_setup();
 
+  pinMode(I2S_PIN_MUTE, OUTPUT);
+  digitalWrite(I2S_PIN_MUTE, HIGH);
+
   // Setup Multioutput
   multi_output.add(fft);
   multi_output.add(i2s);
@@ -60,6 +63,8 @@ void player_setup() {
   player.begin();
 
   player.setVolume(0.2);
+  // player.setVolume(0.6);
+  // player.setVolume(1.0);
 }
 
 // Arduino loop

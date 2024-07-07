@@ -13,7 +13,7 @@
 // #define ROBOX_FULL
 
 // #define ROBOX_EXAMPLE_BLE
-// #define ROBOX_EXAMPLE_BLE_BEAT
+#define ROBOX_EXAMPLE_BLE_BEAT
 // #define ROBOX_EXAMPLE_SD
 // #define ROBOX_EXAMPLE_SD_PLAYER_BEAT
 // #define ROBOX_EXAMPLE_WEB
@@ -35,9 +35,10 @@
  * Multiple can be selected
  */
 
-#define ROBOX_LCD
+// #define ROBOX_LCD
 // #define ROBOX_BATTERY
 // #define ROBOX_MOTOR
+// #define ROBOX_TEST_ADC_KEY
 // #define ROBOX_DEBUG_CLI
 // #define ROBOX_DEBUG_I2C
 // #define ROBOX_DEBUG_I2C_SCANNER
@@ -90,6 +91,10 @@
 
 #if defined(ROBOX_MOTOR)
     #include "robox_motor.h"
+#endif
+
+#if defined(ROBOX_TEST_ADC_KEY)
+    #include "adc_key.h"
 #endif
 
 #if defined(ROBOX_BATTERY)
@@ -146,7 +151,9 @@
 
 #endif
 
+#if defined(ROBOX_DEBUG_I2C) || defined(ROBOX_LCD) || defined(ROBOX_MOTOR) || defined(ROBOX_BATTERY)
 static RoboxIoExpander* io;
+#endif
 
 #if defined(ROBOX_LCD)
 static RoboxLcdScreen* screen;
@@ -154,6 +161,9 @@ static RoboxLcdScreen* screen;
 
 #if defined(ROBOX_MOTOR)
 static RoboxMotor* motor;
+unsigned long timekeeper = 0;
+uint8_t motor_test_program = 0;
+#define MOTOR_TEST_PROGRAMS 5
 #endif
 
 #if defined(ROBOX_BATTERY)
@@ -255,6 +265,19 @@ void setup() {
         scanner_setup();
     #endif
 
+    #if defined(ROBOX_TEST_ADC_KEY)
+    adc_key_setup();
+    #endif
+
+    #if defined(ROBOX_MOTOR)
+    motor->init();
+    motor->set_direction(0, 0);
+    motor->set_speed(1.0, 1.0);
+    motor->enable(1);
+
+    timekeeper = millis() + 5000;
+    #endif
+
 }
 
 void loop() {
@@ -286,9 +309,10 @@ void loop() {
         debug_cli_loop();
     #endif
 
-    #if defined(ROBOX_MOTOR) || defined(ROBOX_BATTERY)
-        io->loop();
-    #endif
+    // #if defined(ROBOX_MOTOR) || defined(ROBOX_BATTERY)
+    //     // check interrupt
+    //     io->loop();
+    // #endif
 
     #if defined(ROBOX_DEBUG_I2C)
         ESP_LOGI(LOG_MAIN_TAG, "IO expander write");
@@ -308,5 +332,46 @@ void loop() {
     #if defined(ROBOX_DEBUG_I2C_SCANNER)
         scanner_loop();
         delay(10000);
+    #endif
+
+    #if defined(ROBOX_MOTOR)
+    if (timekeeper < millis()) {
+        Serial.printf("new motor program. timekeeper: %ld, program %d\n", timekeeper, (motor_test_program % MOTOR_TEST_PROGRAMS));
+        timekeeper += 5000;
+
+
+        switch (motor_test_program % MOTOR_TEST_PROGRAMS)
+        {
+        case 0:
+            motor->set_direction(0, 0);
+            motor->set_speed(1.0, 1.0);
+            break;
+
+        case 1:
+            motor->set_direction(1, 1);
+            motor->set_speed(1.0, 1.0);
+            break;
+        
+        case 2:
+            motor->set_direction(1, 0);
+            motor->set_speed(1.0, 1.0);
+            break;
+
+        case 3:
+            motor->set_direction(0, 1);
+            motor->set_speed(1.0, 1.0);
+            break;
+
+        case 4:
+            motor->set_direction(0, 1);
+            motor->set_speed(0.9, 0.1);
+            break;
+
+        default:
+            break;
+        }
+
+        motor_test_program++;
+    }
     #endif
 }

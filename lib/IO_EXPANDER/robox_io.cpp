@@ -122,10 +122,10 @@ uint8_t RoboxIoExpander::get_configure_outputs(uint8_t port) {
 void RoboxIoExpander::set_output(uint8_t port, uint8_t data, uint8_t mask) {
     // ESP_LOGI(LOG_I2C_TAG, "IO expander set output port %d - %2x", port, data);
 
-    // _out_buffer[port] = (data & mask) | (data & ~(_out_buffer[port]));
+    _out_buffer[port] = (data & mask) | (_out_buffer[port] & ~(mask));
     
-    // io_set(PORT_ADDRESS(port, OUTPUT_P0, OUTPUT_P1), _out_buffer[port]);
-    io_set(PORT_ADDRESS(port, OUTPUT_P0, OUTPUT_P1), data);
+    io_set(PORT_ADDRESS(port, OUTPUT_P0, OUTPUT_P1), _out_buffer[port]);
+    // io_set(PORT_ADDRESS(port, OUTPUT_P0, OUTPUT_P1), data);
 }
 
 ExpanderConfig RoboxIoExpander::get_default_config() {

@@ -14,9 +14,9 @@ RoboxMotor::RoboxMotor(RoboxIoExpander* io): io(io) {
 void RoboxMotor::init() {
 
     // speed pins
-    ledcAttachPin (MOTOR_1_SPD, 1); 
+    ledcAttachPin(MOTOR_1_SPD, 1); 
     ledcSetup(1, MOTOR_PWM_FREQ, MOTOR_TIMER_BITS);
-    ledcAttachPin (MOTOR_2_SPD, 2);
+    ledcAttachPin(MOTOR_2_SPD, 2);
     ledcSetup(2, MOTOR_PWM_FREQ, MOTOR_TIMER_BITS);
 
     // direction pins
@@ -41,11 +41,15 @@ void RoboxMotor::set_direction(bool m1, bool m2) {
 void RoboxMotor::enable(bool enable) {
     // configure FAULT and ENABLE pin
     const std::lock_guard<std::mutex> lock(io->io_mutex);
+
+    io->set_output(LCD_CONTROL_PORT, (MOTOR_EN | MOTOR_STANDBY), (MOTOR_EN | MOTOR_STANDBY));
 }
 
 void RoboxMotor::shutdown(bool shutdown) {
     // configure RESET and SHUTDOWN pin
     const std::lock_guard<std::mutex> lock(io->io_mutex);
+
+    io->set_output(LCD_CONTROL_PORT, ~(MOTOR_EN | MOTOR_STANDBY), (MOTOR_EN | MOTOR_STANDBY));
 }
 
 

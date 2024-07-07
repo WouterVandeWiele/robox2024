@@ -15,6 +15,7 @@ Command ping;
 Command help;
 Command print;
 Command audio_source;
+Command mux_info;
 
 // Callback function for ping command
 void pingCallback(cmd* c) {
@@ -65,6 +66,16 @@ void sourceCallback(cmd *c) {
     
 }
 
+void muxCallback(cmd *c) {
+    Command cmd(c);
+
+    Argument meta_title = cmd.getArgument("c");
+
+    if (meta_title.isSet()) {
+        Serial.printf("Current Title: %s\n", mux.meta_tile);
+    }
+}
+
 // Callback in case of an error
 void errorCallback(cmd_error* e) {
     CommandError cmdError(e); // Create wrapper object
@@ -99,6 +110,10 @@ void debug_cli_setup() {
     audio_source.setDescription("Select the audio source, takes 1 arument of: ['ble', 'web', 'sd']");
     audio_source.addPosArg("s");
 
+    mux_info = cli.addCmd("mux", muxCallback);
+    mux_info.setDescription("get information from the mux interface");
+    mux_info.addFlagArg("meta_title");
+
     // [Optional] Check if our command was successfully added
     if (!ping) Serial.println(">Ping command not installed!");
     else Serial.println(">Ping was added to the CLI!");
@@ -111,6 +126,9 @@ void debug_cli_setup() {
 
     if (!audio_source) Serial.println(">Source command not installed!");
     else Serial.println(">Source was added to the CLI!");
+
+    if (!mux_info) Serial.println(">Mux command not installed!");
+    else Serial.println(">Mux was added to the CLI!");
 
     // Set error Callback
     cli.setOnError(errorCallback);

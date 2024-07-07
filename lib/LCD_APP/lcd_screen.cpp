@@ -36,6 +36,7 @@ void run_task(void * param) {
 #if defined(IO_EXPANDER)
     RoboxLcdScreen::RoboxLcdScreen(RoboxIoExpander* io): io(io), lcd_t(io) {
         // init_lcd();
+        pinMode(LCD_DIS_PWR, OUTPUT);
     }
 #else
     RoboxLcdScreen::RoboxLcdScreen(uint8_t A0, uint8_t RW, uint8_t EN, uint8_t *DATA): A0(A0), RW(RW), EN(EN), DATA(DATA), lcd_t(A0, RW, EN, DATA) {
@@ -77,6 +78,8 @@ void LCD_Threaded::taskUpdateWholeScreen() {
 void RoboxLcdScreen::init_lcd() {
     ESP_LOGI(LOG_LCD_TAG, "LCD setup");
 
+    power_up();
+
     lcd_t.lcd_init();
 
     #if defined(LCD_RUN_THREADED)
@@ -100,11 +103,11 @@ void RoboxLcdScreen::deinit_lcd() {
 }
 
 void RoboxLcdScreen::power_up() {
-
+    digitalWrite(LCD_DIS_PWR, HIGH);
 }
 
 void RoboxLcdScreen::power_down() {
-
+    digitalWrite(LCD_DIS_PWR, LOW);
 }
 
 ExpanderConfig RoboxLcdScreen::io_config() {
