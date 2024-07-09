@@ -23,8 +23,9 @@ class RoboxBluetooth : public MuxInterface {
         BLE Audio MUX controls
         */
 
-        void mux_start();
-        void mux_stop();
+        void mux_start() override;
+        void mux_stop() override;
+        void volume(float level) override;
 
     private:
         BluetoothA2DPSink a2dp_sink;

@@ -26,6 +26,8 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
     ESP_LOGI(LOG_MUX_TAG, "Audio Mux switching to: %s", audio_source_names[new_mux_source]);
 
     source_name = new_mux_source;
+    // const std::lock_guard<std::mutex> lock(meta_mutex);
+    meta.title = "";
     switch (new_mux_source)
     {
     case NotSelectedSource:
@@ -61,4 +63,8 @@ void RoboxAudioMux::copy() {
     if (source_name != NotSelectedSource) {
         current_source->mux_copy();
     }
+}
+
+void RoboxAudioMux::volume(float level) {
+    current_source->volume(level);
 }

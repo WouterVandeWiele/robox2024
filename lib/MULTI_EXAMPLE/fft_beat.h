@@ -9,7 +9,7 @@
 
 // #define BEAT_TELEMETRY
 
-#define NUM_LEDS 6
+#define NUM_LEDS 2
 CRGB leds[NUM_LEDS];
 
 PeakDetection peakb0;

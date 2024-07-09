@@ -24,9 +24,10 @@ class RoboxWebRadio: public MuxInterface {
         Web Radio Audio MUX controls
         */
 
-        void mux_start();
-        void mux_stop();
-        void mux_copy();
+        void mux_start() override;
+        void mux_stop() override;
+        void mux_copy() override;
+        void volume(float level) override;
 
         void change_station(std::string station_name);
 

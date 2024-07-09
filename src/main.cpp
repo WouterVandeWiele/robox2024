@@ -10,10 +10,10 @@
  * Select only one of the above
  */
 
-// #define ROBOX_FULL
+#define ROBOX_FULL
 
 // #define ROBOX_EXAMPLE_BLE
-#define ROBOX_EXAMPLE_BLE_BEAT
+// #define ROBOX_EXAMPLE_BLE_BEAT
 // #define ROBOX_EXAMPLE_SD
 // #define ROBOX_EXAMPLE_SD_PLAYER_BEAT
 // #define ROBOX_EXAMPLE_WEB
@@ -39,7 +39,7 @@
 // #define ROBOX_BATTERY
 // #define ROBOX_MOTOR
 // #define ROBOX_TEST_ADC_KEY
-// #define ROBOX_DEBUG_CLI
+#define ROBOX_DEBUG_CLI
 // #define ROBOX_DEBUG_I2C
 // #define ROBOX_DEBUG_I2C_SCANNER
 
@@ -163,7 +163,7 @@ static RoboxLcdScreen* screen;
 static RoboxMotor* motor;
 unsigned long timekeeper = 0;
 uint8_t motor_test_program = 0;
-#define MOTOR_TEST_PROGRAMS 5
+#define MOTOR_TEST_PROGRAMS 4
 #endif
 
 #if defined(ROBOX_BATTERY)
@@ -272,7 +272,7 @@ void setup() {
     #if defined(ROBOX_MOTOR)
     motor->init();
     motor->set_direction(0, 0);
-    motor->set_speed(1.0, 1.0);
+    motor->set_speed(0.1, 0.1);
     motor->enable(1);
 
     timekeeper = millis() + 5000;
@@ -344,28 +344,28 @@ void loop() {
         {
         case 0:
             motor->set_direction(0, 0);
-            motor->set_speed(1.0, 1.0);
+            motor->set_speed(0.1, 0.1);
             break;
 
         case 1:
             motor->set_direction(1, 1);
-            motor->set_speed(1.0, 1.0);
+            motor->set_speed(0.1, 0.1);
             break;
         
         case 2:
             motor->set_direction(1, 0);
-            motor->set_speed(1.0, 1.0);
+            motor->set_speed(0.1, 0.1);
             break;
 
         case 3:
             motor->set_direction(0, 1);
-            motor->set_speed(1.0, 1.0);
+            motor->set_speed(0.1, 0.1);
             break;
 
-        case 4:
-            motor->set_direction(0, 1);
-            motor->set_speed(0.9, 0.1);
-            break;
+        // case 4:
+        //     motor->set_direction(0, 1);
+        //     motor->set_speed(0.3, 0.1);
+        //     break;
 
         default:
             break;
