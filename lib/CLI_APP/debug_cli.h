@@ -69,9 +69,11 @@ void sourceCallback(cmd *c) {
 void muxCallback(cmd *c) {
     Command cmd(c);
 
-    Argument meta_title = cmd.getArgument("c");
+    Argument meta_title = cmd.getArgument("meta_title");
 
     if (meta_title.isSet()) {
+        // const std::lock_guard<std::mutex> lock(mux.meta_mutex);
+        Serial.printf("Current Title: %s\n", (mux.meta.title.c_str()));
         Serial.printf("Current Title: %s\n", mux.meta_tile);
     }
 }

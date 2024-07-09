@@ -1,13 +1,22 @@
 #include "AudioTools.h"
 #include "BluetoothA2DPSink.h"
+#include "robox_audio_mux.h"
 #include "robox_ble.h"
 #include "robox_i2s.h"
 #include "general_definitions.h"
 
 
+extern RoboxAudioMux mux;
+
+
 // callback used by A2DP to provide the sound data
 void avrc_metadata_callback(uint8_t id, const uint8_t *text) {
   Serial.printf("> AVRC metadata rsp: attribute id 0x%x, %s\n", id, text);
+
+  if (id == 0x1) {
+    // const std::lock_guard<std::mutex> lock(mux.meta_mutex);
+    mux.meta.title = String((char*) text);
+  }
 }
 
 void RoboxBluetooth::mux_start() {

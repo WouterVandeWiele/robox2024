@@ -2,6 +2,7 @@
 
 #include "AudioTools.h"
 #include "AudioCodecs/CodecMP3Helix.h"
+#include "robox_audio_mux.h"
 #include "robox_web.h"
 #include "robox_i2s.h"
 #include "general_definitions.h"
@@ -22,6 +23,9 @@
 // };
 
 
+extern RoboxAudioMux mux;
+
+
 const char *urls[] = {
     "http://icecast.vrtcdn.be/mnm_hits-high.mp3"
 };
@@ -38,6 +42,11 @@ void printMetaData(MetaDataType type, const char* str, int len){
   Serial.print(toStr(type));
   Serial.print(": ");
   Serial.println(str);
+
+  if (toStr(type) == "Title") {
+    // const std::lock_guard<std::mutex> lock(mux.meta_mutex);
+    mux.meta.title = String((char*) str);
+  }
 }
 
 void RoboxWebRadio::mux_start() {

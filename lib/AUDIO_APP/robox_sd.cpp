@@ -1,11 +1,15 @@
 #include "robox_i2s.h"
 #include "general_definitions.h"
 
+#include "robox_audio_mux.h"
 #include "robox_sd.h"
 #include "general_definitions.h"
 
 #define USE_HELIX 
 #define USE_SDFAT
+
+
+extern RoboxAudioMux mux;
 
 
 
@@ -14,6 +18,11 @@ static void printMetaData(MetaDataType type, const char* str, int len){
   Serial.print(toStr(type));
   Serial.print(": ");
   Serial.println(str);
+
+  if (toStr(type) == "Title") {
+    // const std::lock_guard<std::mutex> lock(mux.meta_mutex);
+    mux.meta.title = String((char*) str);
+  }
 }
 
 

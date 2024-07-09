@@ -10,7 +10,8 @@
  */
 // robox audio architecture overview [docs/audio_overview.excalidraw.png]
 // #include "AudioTools.h"
-
+#include <mutex>
+#include <Arduino.h>
 #include "robox_mux_interface.h"
 #include "general_definitions.h"
 
@@ -19,9 +20,13 @@
 enum audio_source {NotSelectedSource, BleSource, WebRadioSource, SDSource};
 extern const char* audio_source_names[];
 
+typedef struct MetaData{
+  String title;
+} ExpanderConfig;
+
 class RoboxAudioMux {
     public:
-        RoboxAudioMux(): source_name(NotSelectedSource) {};
+        RoboxAudioMux(): meta(), source_name(NotSelectedSource) {};
 
         void setup();
 
