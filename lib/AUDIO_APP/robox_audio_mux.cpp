@@ -64,3 +64,7 @@ void RoboxAudioMux::copy() {
         current_source->mux_copy();
     }
 }
+
+void RoboxAudioMux::volume(float level) {
+    current_source->volume(level);
+}

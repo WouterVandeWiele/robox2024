@@ -47,3 +47,7 @@ void RoboxSD::mux_stop() {
 void RoboxSD::mux_copy() {
   player.copy();
 }
+
+void RoboxSD::volume(float level) {
+  player.setVolume(level);
+}

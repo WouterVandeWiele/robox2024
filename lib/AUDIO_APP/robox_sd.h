@@ -26,9 +26,10 @@ class RoboxSD: public MuxInterface {
         SD Audio MUX controls
         */
 
-        void mux_start();
-        void mux_stop();
-        void mux_copy();
+        void mux_start() override;
+        void mux_stop() override;
+        void mux_copy() override;
+        void volume(float level) override;
 
     private:
         const char *startFilePath;

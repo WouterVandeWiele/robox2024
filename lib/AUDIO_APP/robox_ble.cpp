@@ -50,3 +50,8 @@ void RoboxBluetooth::mux_stop() {
 
   ESP_LOGI(LOG_BLE_TAG, "<<< BLE stopped");
 }
+
+
+void RoboxBluetooth::volume(float level) {
+  a2dp_sink.set_volume((uint8_t)(0x7f*level));
+}

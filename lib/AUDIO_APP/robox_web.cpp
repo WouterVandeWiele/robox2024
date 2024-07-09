@@ -70,6 +70,10 @@ void RoboxWebRadio::mux_copy() {
     player.copy();
 }
 
+void RoboxWebRadio::volume(float level) {
+  player.setVolume(level);
+}
+
 void RoboxWebRadio::change_station(std::string station_name) {
 //     mux_stop();
 

@@ -34,9 +34,15 @@ class RoboxAudioMux {
 
         void copy();
 
+        void volume(float level);
+
+        MetaData meta;
+        // std::mutex meta_mutex;
     private:
+
         audio_source source_name;
         MuxInterface* current_source;
+
 };
 
 

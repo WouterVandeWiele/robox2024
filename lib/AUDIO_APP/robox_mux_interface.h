@@ -15,6 +15,10 @@ class MuxInterface {
         virtual void mux_copy() {
 
         }
+
+        virtual void volume(float level) {
+            
+        }
 };
 
 
