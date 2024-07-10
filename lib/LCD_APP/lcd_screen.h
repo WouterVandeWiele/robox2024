@@ -6,6 +6,8 @@
 #include "general_definitions.h"
 #include "general_config.h"
 
+/* temporary GEM menu stuff */
+#include <GEM_adafruit_gfx.h>
 
 // robox LCD architecture [docs/lcd_overview.excalidraw.png]
 
@@ -62,12 +64,9 @@ class RoboxLcdScreen: public IoInterface {
             uint8_t *DATA;
         #endif
 
-        #if defined(LCD_RUN_THREADED)
-            LCD_Threaded lcd_t;
-            TaskHandle_t threaded_task;
-        #else
-            SED1530_LCD lcd_t;
-        #endif
+    
+        GEM_adafruit_gfx* menu;
+    
 };
 
 #endif  // LCD_SCREEN_H

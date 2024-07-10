@@ -35,7 +35,7 @@
  * Multiple can be selected
  */
 
-// #define ROBOX_LCD
+#define ROBOX_LCD
 // #define ROBOX_BATTERY
 // #define ROBOX_MOTOR
 // #define ROBOX_TEST_ADC_KEY
@@ -302,7 +302,7 @@ void loop() {
     #if defined(ROBOX_LCD)
         ESP_LOGI(LOG_MAIN_TAG, "LCD loop");
 
-        screen->lcd_gfx_test();
+        // screen->lcd_gfx_test();
     #endif
 
     #if defined(ROBOX_DEBUG_CLI)
