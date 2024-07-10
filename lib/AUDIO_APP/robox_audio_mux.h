@@ -22,7 +22,7 @@ extern const char* audio_source_names[];
 
 typedef struct MetaData{
   String title;
-} ExpanderConfig;
+} MetaData;
 
 class RoboxAudioMux {
     public:
