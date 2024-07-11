@@ -7,6 +7,10 @@
 #include "example_bitmaps.h"
 #include "adc_key.h"
 
+#include "robox_audio_mux.h"
+extern RoboxAudioMux mux;
+
+
 #if defined(LCD_RUN_THREADED)
     static LCD_Threaded lcd_t;
     static TaskHandle_t threaded_task;
@@ -31,12 +35,21 @@
 // static GEMItem menuItemSelectSource("Audio Source", selected_source, menu_source_select, menu_callback_source);
 
 void printData() {
-  // If enablePrint flag is set to true (checkbox on screen is checked)...
   Serial.printf("time since start %ld\n", millis());
 }
-
 GEMItem menuItemButton("Print", printData);
 
+
+void switch_to_source(GEMCallbackData source) {
+    mux.switch_to((audio_source)source.valInt);
+}
+
+static int dummy_variable;
+
+GEMItem buttonSwitchNoSource("No Source", dummy_variable, switch_to_source, (const int)NotSelectedSource);
+GEMItem buttonSwitchBLE("Switch to BLE", dummy_variable, switch_to_source, (const int)BleSource);
+GEMItem buttonSwitchWEB("Switch to WEB", dummy_variable, switch_to_source, (const int)WebRadioSource);
+GEMItem buttonSwitchSD("Switch to SD", dummy_variable, switch_to_source, (const int)SDSource);
 
 GEMPage menuPageMain("Main Menu");
 
@@ -147,6 +160,10 @@ void RoboxLcdScreen::init_lcd() {
     menu->setSplashDelay(3000);
 
     menuPageMain.addMenuItem(menuItemButton);
+    menuPageMain.addMenuItem(buttonSwitchNoSource);
+    menuPageMain.addMenuItem(buttonSwitchBLE);
+    menuPageMain.addMenuItem(buttonSwitchWEB);
+    menuPageMain.addMenuItem(buttonSwitchSD);
 
     menu->setMenuPageCurrent(menuPageMain);
     menu->drawMenu();
