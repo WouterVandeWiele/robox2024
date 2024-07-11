@@ -13,9 +13,14 @@
 
 extern QueueHandle_t xQueueButtons;
 
-enum threshold {TH0, TH1, TH2, PRESSED};
+enum threshold {TH0, TH1, TH2, PRESSED, LONG_PRESSED};
 
-byte compare(uint32_t voltage, threshold &previous, byte button1, byte button2);
+typedef struct ButtonPress{
+  uint8_t button;
+  bool long_press;
+} ButtonPress;
+
+ButtonPress compare(uint32_t voltage, threshold &previous, byte button1, byte button2);
 void adc_key_loop(void* parameter);
 void adc_key_setup();
 

@@ -47,9 +47,9 @@ void switch_to_source(GEMCallbackData source) {
 static int dummy_variable;
 
 GEMItem buttonSwitchNoSource("No Source", dummy_variable, switch_to_source, (const int)NotSelectedSource);
-GEMItem buttonSwitchBLE("Switch to BLE", dummy_variable, switch_to_source, (const int)BleSource);
-GEMItem buttonSwitchWEB("Switch to WEB", dummy_variable, switch_to_source, (const int)WebRadioSource);
-GEMItem buttonSwitchSD("Switch to SD", dummy_variable, switch_to_source, (const int)SDSource);
+GEMItem buttonSwitchBLE("Sw BLE", dummy_variable, switch_to_source, (const int)BleSource);
+GEMItem buttonSwitchWEB("Sw WEB", dummy_variable, switch_to_source, (const int)WebRadioSource);
+GEMItem buttonSwitchSD("Sw SD", dummy_variable, switch_to_source, (const int)SDSource);
 
 GEMPage menuPageMain("Main Menu");
 
@@ -174,6 +174,8 @@ void RoboxLcdScreen::deinit_lcd() {
 }
 
 void RoboxLcdScreen::power_up() {
+    digitalWrite(LCD_DIS_PWR, LOW);
+    delay(100);
     digitalWrite(LCD_DIS_PWR, HIGH);
 }
 
@@ -206,19 +208,42 @@ void RoboxLcdScreen::io_interrupt_observer(std::vector<uint8_t>& data) {
 
 
 void RoboxLcdScreen::lcd_menu_loop() {
-    uint8_t button;
+    ButtonPress button;
 
     if (xQueueButtons != 0) {
         if(xQueueReceive( xQueueButtons, &(button), 0)) {
             
-            // GEM MENU keypresses
-            if ((button >= 1) && (button <= 6)) {
-                // GEM KEYS (up, down, left, right, ok, cancel)
-                menu->registerKeyPress(button);
+            if (button.long_press == false) {
+                // GEM MENU keypresses
+                if ((button.button >= 1) && (button.button <= 6)) {
+                    // GEM KEYS (up, down, left, right, ok, cancel)
+                    menu->registerKeyPress(button.button);
+                }
+                else  {
+                    // OTHER KEYS (volume up, volume down, play/pause, motor stop)
+                    switch (button.button)
+                    {
+                    case VOLUME_UP:
+                        break;
+                    
+                    case VOLUME_DOWN:
+                        break;
+                    
+                    case PLAY_PAUSE:
+                        break;
+
+                    case MOTOR_STOP:
+                        break;
+
+                    default:
+                        break;
+                    }
+                }
             }
             else {
+                // handle long key presses
                 // OTHER KEYS (volume up, volume down, play/pause, motor stop)
-                switch (button)
+                switch (button.button)
                 {
                 case VOLUME_UP:
                     break;

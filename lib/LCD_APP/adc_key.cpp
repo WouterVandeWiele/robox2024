@@ -1,44 +1,57 @@
+#include<list>
 #include "adc_key.h"
 
 static TaskHandle_t AdcKeyTaskHandle;
 
-static threshold v_1ac_prev = TH0;
-static threshold v_1bd_prev = TH0;
-static threshold v_12c_prev = TH0;
-static threshold v_2ac_prev = TH0;
-static threshold v_2bd_prev = TH0;
+static std::list<threshold> v_1ac_prev = {TH0, TH0, TH0};
+static std::list<threshold> v_1bd_prev = {TH0, TH0, TH0};
+static std::list<threshold> v_12c_prev = {TH0, TH0, TH0};
+static std::list<threshold> v_2ac_prev = {TH0, TH0, TH0};
+static std::list<threshold> v_2bd_prev = {TH0, TH0, TH0};
 
 QueueHandle_t xQueueButtons;
 
 
-byte compare(uint32_t voltage, threshold &previous, byte button1, byte button2) {
-    threshold current;
-    byte result = GEM_KEY_NONE;
+ButtonPress compare(uint32_t voltage, std::list<threshold> &buffer, byte button1, byte button2) {
+    // threshold current;
+    ButtonPress result = {
+        .button = GEM_KEY_NONE,
+        .long_press = false,
+    };
 
     // Serial.printf("\n>voltage:%d\n", voltage);
 
     // detect state based on voltage
     if (voltage < KEY_TH_1) {
-        current = TH0;
-        previous = TH0;
-    } else if ((voltage < KEY_TH_2) && (previous != PRESSED)) {
-        current = TH1;
-    } else if ((voltage >= KEY_TH_2) && (previous != PRESSED)) {
-        current = TH2;
+        buffer.emplace_front(TH0);
+    } else if (voltage < KEY_TH_2) {
+        buffer.emplace_front(TH1);
+    } else if (voltage >= KEY_TH_2) {
+        buffer.emplace_front(TH2);
     }
+
+    buffer.pop_back();
 
     // Serial.printf("\n>current:%d\n>previous:%d\n", current, previous);
-
-    // detect first button press or button is still pressed
-    if (((current != TH0) && (current == previous)) || (previous == PRESSED)) {
-        previous = PRESSED;
-        byte b = (current == TH1) ? button1 : button2;
-        // Serial.printf("\n>debug_key:%d\n", b);
-        result = b;
+    uint8_t count_TH1 = 0;
+    uint8_t count_TH2 = 0;
+    uint8_t last_element = 0;
+    for (std::list<threshold>::reverse_iterator  it=buffer.rbegin(); it != buffer.rend(); ++it) {
+        if (*it == TH1) count_TH1++;
+        if (*it == TH2) count_TH2++;
+        last_element = *it;
+        // Serial.printf("%d ", *it);
     }
 
-    previous = current;
+    if ((count_TH1 == 3) || (count_TH2 == 3)) {
+        result.long_press = true;
+        result.button = (buffer.front() == TH1) ? button1 : button2;
+    }
+    else if (((count_TH1 == 2) || (count_TH2 == 2)) && (last_element != TH0)) {
+        result.button = (buffer.front() == TH1) ? button1 : button2;
+    }
 
+    // Serial.printf("\nbuf len: %d, count TH1: %d, count TH2: %d, button: %d, long press %d\n", buffer.size(), count_TH1, count_TH2, result.button, result.long_press ? 1 : 0);
     return result;
     
 }
@@ -48,50 +61,33 @@ void adc_key_loop(void* parameter) {
     while (true) {
         byte trigger = GEM_KEY_NONE;
 
-        byte b_1ac = compare(analogReadMilliVolts(BUTTON_1AC), v_1ac_prev, GEM_KEY_UP, GEM_KEY_DOWN);
-        if (b_1ac) {
-            Serial.printf("\n>key_%d:%d\n", BUTTON_1AC, b_1ac);
+        ButtonPress b_1ac = compare(analogReadMilliVolts(BUTTON_1AC), v_1ac_prev, GEM_KEY_UP, GEM_KEY_DOWN);
+        if (b_1ac.button) {
+            Serial.printf("\n>key_%d:%d long press: %d\n", BUTTON_1AC, b_1ac.button, b_1ac.long_press ? 1 : 0);
             xQueueSend(xQueueButtons, &b_1ac, 0);
         }
 
-        byte b_1bd = compare(analogReadMilliVolts(BUTTON_1BD), v_1bd_prev, GEM_KEY_RIGHT, GEM_KEY_LEFT);
-        if (b_1bd){
-            Serial.printf("\n>key_%d:%d\n", BUTTON_1BD, b_1bd);
+        ButtonPress b_1bd = compare(analogReadMilliVolts(BUTTON_1BD), v_1bd_prev, GEM_KEY_RIGHT, GEM_KEY_LEFT);
+        if (b_1bd.button){
+            Serial.printf("\n>key_%d:%d long press: %d\n", BUTTON_1BD, b_1bd, b_1bd.long_press ? 1 : 0);
             xQueueSend(xQueueButtons, &b_1bd, 0);
         }
 
-        byte b_12c = compare(analogReadMilliVolts(BUTTON_12C), v_12c_prev, GEM_KEY_OK, GEM_KEY_CANCEL);
-        if (b_12c) {
-            Serial.printf("\n>key_%d:%d\n", BUTTON_12C, b_12c);
+        ButtonPress b_12c = compare(analogReadMilliVolts(BUTTON_12C), v_12c_prev, GEM_KEY_OK, GEM_KEY_CANCEL);
+        if (b_12c.button) {
+            Serial.printf("\n>key_%d:%d long press: %d\n", BUTTON_12C, b_12c, b_12c.long_press ? 1 : 0);
             xQueueSend(xQueueButtons, &b_12c, 0);
         }
-
-        // GEM MENU
-        // if (menu.readyForKey()) {
-            // up & down
-            // menu.registerKeyPress(
-                // compare(analogReadMilliVolts(BUTTON_1AC), v_1ac_prev, GEM_KEY_UP, GEM_KEY_DOWN)
-            // );
-            // left & right
-            // menu.registerKeyPress(
-            //     compare(analogReadMilliVolts(BUTTON_1BD), v_1bd_prev, GEM_KEY_RIGHT, GEM_KEY_LEFT)
-            // );
-
-            // // ok & cancel
-            // menu.registerKeyPress(
-            //     compare(analogReadMilliVolts(BUTTON_12C), v_12c_prev, GEM_KEY_OK, GEM_KEY_CANCEL)
-            // );
-        // }
         
-        byte b_2ac = compare(analogReadMilliVolts(BUTTON_2AC), v_2ac_prev, VOLUME_UP, VOLUME_DOWN);
-        if (b_2ac) {
-            Serial.printf("\n>key_%d:%d\n", BUTTON_2AC, b_2ac);
+        ButtonPress b_2ac = compare(analogReadMilliVolts(BUTTON_2AC), v_2ac_prev, VOLUME_UP, VOLUME_DOWN);
+        if (b_2ac.button) {
+            Serial.printf("\n>key_%d:%d long press: %d\n", BUTTON_2AC, b_2ac, b_2ac.long_press ? 1 : 0);
             xQueueSend(xQueueButtons, &b_2ac, 0);
         }
 
-        byte b_2bd = compare(analogReadMilliVolts(BUTTON_2BD), v_2bd_prev, PLAY_PAUSE, MOTOR_STOP);
-        if (b_2bd) {
-            Serial.printf("\n>key_%d:%d\n", BUTTON_2BD, b_2bd);
+        ButtonPress b_2bd = compare(analogReadMilliVolts(BUTTON_2BD), v_2bd_prev, PLAY_PAUSE, MOTOR_STOP);
+        if (b_2bd.button) {
+            Serial.printf("\n>key_%d:%d long press: %d\n", BUTTON_2BD, b_2bd, b_2bd.long_press ? 1 : 0);
             xQueueSend(xQueueButtons, &b_2bd, 0);
         }
 
@@ -102,7 +98,7 @@ void adc_key_loop(void* parameter) {
 void adc_key_setup() {
 
     // create button queue
-    xQueueButtons = xQueueCreate(10, sizeof(uint8_t));
+    xQueueButtons = xQueueCreate(10, sizeof(ButtonPress));
 
     // set the resolution to 12 bits (0-4095)
     analogReadResolution(12);

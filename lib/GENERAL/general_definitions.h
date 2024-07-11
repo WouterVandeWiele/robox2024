@@ -177,7 +177,7 @@
 #define KEY_TH_2 1885   // 1,885mV
 // #define KEY_TC_C 2475   // 2,475mV
 
-#define KEY_DEBOUNCE_DELAY 25
+#define KEY_DEBOUNCE_DELAY 12
 
 // motor pins
 
