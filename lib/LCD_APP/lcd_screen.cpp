@@ -40,16 +40,26 @@ void printData() {
 GEMItem menuItemButton("Print", printData);
 
 
-void switch_to_source(GEMCallbackData source) {
-    mux.switch_to((audio_source)source.valInt);
+void switch_to_no_source() {
+    mux.switch_to(NotSelectedSource);
 }
 
-static int dummy_variable;
+void switch_to_BLE() {
+    mux.switch_to(BleSource);
+}
 
-GEMItem buttonSwitchNoSource("No Source", dummy_variable, switch_to_source, (const int)NotSelectedSource);
-GEMItem buttonSwitchBLE("Sw BLE", dummy_variable, switch_to_source, (const int)BleSource);
-GEMItem buttonSwitchWEB("Sw WEB", dummy_variable, switch_to_source, (const int)WebRadioSource);
-GEMItem buttonSwitchSD("Sw SD", dummy_variable, switch_to_source, (const int)SDSource);
+void switch_to_WEB() {
+    mux.switch_to(WebRadioSource);
+}
+
+void switch_to_SD() {
+    mux.switch_to(SDSource);
+}
+
+GEMItem buttonSwitchNoSource("No Source", switch_to_no_source);
+GEMItem buttonSwitchBLE("Sw BLE", switch_to_BLE);
+GEMItem buttonSwitchWEB("Sw WEB", switch_to_WEB);
+GEMItem buttonSwitchSD("Sw SD", switch_to_SD);
 
 GEMPage menuPageMain("Main Menu");
 
