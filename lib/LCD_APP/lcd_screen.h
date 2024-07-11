@@ -20,7 +20,7 @@ class LCD_Threaded: public SED1530_LCD {
         #if !defined(IO_EXPANDER)
             LCD_Threaded(uint8_t A0, uint8_t RW, uint8_t EN, uint8_t *DATA): SED1530_LCD(A0, RW, EN, DATA) {};
         #elif defined(IO_EXPANDER)
-            LCD_Threaded(RoboxIoExpander &io): SED1530_LCD(io) {};
+            LCD_Threaded(RoboxIoExpander *io): SED1530_LCD(io) {};
         #endif
 
         void updateWholeScreen();

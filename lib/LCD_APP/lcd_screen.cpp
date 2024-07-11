@@ -12,7 +12,7 @@ extern RoboxAudioMux mux;
 
 
 #if defined(LCD_RUN_THREADED)
-    static LCD_Threaded lcd_t;
+    static LCD_Threaded* lcd_t;
     static TaskHandle_t threaded_task;
 #else
     static SED1530_LCD* lcd_t;
@@ -91,7 +91,12 @@ void run_task(void * param) {
 
 #if defined(IO_EXPANDER)
     RoboxLcdScreen::RoboxLcdScreen(RoboxIoExpander* io): io(io) {
+
+        #if defined(LCD_RUN_THREADED)
+        lcd_t = new LCD_Threaded(io);
+        #else
         lcd_t = new SED1530_LCD(io);
+        #endif
 
         // init_lcd();
         pinMode(LCD_DIS_PWR, OUTPUT);
