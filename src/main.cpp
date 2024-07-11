@@ -38,7 +38,7 @@
 #define ROBOX_LCD
 // #define ROBOX_BATTERY
 // #define ROBOX_MOTOR
-// #define ROBOX_TEST_ADC_KEY
+#define ROBOX_TEST_ADC_KEY
 #define ROBOX_DEBUG_CLI
 // #define ROBOX_DEBUG_I2C
 // #define ROBOX_DEBUG_I2C_SCANNER
@@ -300,9 +300,10 @@ void loop() {
 
 
     #if defined(ROBOX_LCD)
-        ESP_LOGI(LOG_MAIN_TAG, "LCD loop");
+        // ESP_LOGI(LOG_MAIN_TAG, "LCD loop");
 
         // screen->lcd_gfx_test();
+        screen->lcd_menu_loop();
     #endif
 
     #if defined(ROBOX_DEBUG_CLI)

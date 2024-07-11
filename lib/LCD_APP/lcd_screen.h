@@ -52,6 +52,8 @@ class RoboxLcdScreen: public IoInterface {
         void init_lcd();
         void deinit_lcd();
 
+        void lcd_menu_loop();
+
 
     private:
 

@@ -5,6 +5,7 @@
 #include "general_definitions.h"
 #include "general_config.h"
 #include "example_bitmaps.h"
+#include "adc_key.h"
 
 #if defined(LCD_RUN_THREADED)
     static LCD_Threaded lcd_t;
@@ -186,6 +187,41 @@ void RoboxLcdScreen::io_interrupt_observer(std::vector<uint8_t>& data) {
     // implement callback code when an interrupt is generated
 }
 
+
+void RoboxLcdScreen::lcd_menu_loop() {
+    uint8_t button;
+
+    if (xQueueButtons != 0) {
+        if(xQueueReceive( xQueueButtons, &(button), 0)) {
+            
+            // GEM MENU keypresses
+            if ((button >= 1) && (button <= 6)) {
+                // GEM KEYS (up, down, left, right, ok, cancel)
+                menu->registerKeyPress(button);
+            }
+            else {
+                // OTHER KEYS (volume up, volume down, play/pause, motor stop)
+                switch (button)
+                {
+                case VOLUME_UP:
+                    break;
+                
+                case VOLUME_DOWN:
+                    break;
+                
+                case PLAY_PAUSE:
+                    break;
+
+                case MOTOR_STOP:
+                    break;
+
+                default:
+                    break;
+                }
+            }
+        }
+    }
+}
 
 void RoboxLcdScreen::lcd_gfx_test() {
 
