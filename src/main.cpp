@@ -31,6 +31,7 @@
  * ROBOX_DEBUG_CLI: include the debug CLI component (headers, init and loop)
  * ROBOX_DEBUG_I2C: test the I2C IO expander component
  * ROBOX_DEBUG_I2C_SCANNER: test the I2C, do a scan to detect which HW addresses are active.
+ * ROBOX_PREFERENCES: initialize ESP32 NVS as Arduino Preferences
  *
  * Multiple can be selected
  */
@@ -42,6 +43,7 @@
 #define ROBOX_DEBUG_CLI
 // #define ROBOX_DEBUG_I2C
 // #define ROBOX_DEBUG_I2C_SCANNER
+#define ROBOX_PREFERENCES
 
 /*
  * compile options logic
@@ -113,6 +115,13 @@
     #include "robox_i2c_scanner.h"
 #endif
 
+#if defined(ROBOX_PREFERENCES)
+    #include <Preferences.h>
+    #define RW_MODE false
+    #define RO_MODE true
+#endif
+
+
 // #include "ble_example.h"
 // #include "ble_copier.h"
 // #include "streams_copy_example.h"
@@ -171,6 +180,14 @@ static RoboxBattery* battery;
 #endif
 
 
+#if defined(ROBOX_PREFERENCES)
+Preferences roboxPrefs;
+const char* wifi_ssid_2;
+const char* wifi_password_2;
+bool motorsOn;
+#endif
+
+
 void setup() {
     Serial.begin(115200);
 
@@ -189,6 +206,47 @@ void setup() {
 
     // esp_log_level_set(BT_AV_TAG, ESP_LOG_NONE);
     // esp_log_level_set(BT_APP_TAG, ESP_LOG_NONE);
+
+    #if defined(ROBOX_PREFERENCES)
+    roboxPrefs.begin("roboxPrefs", RO_MODE); 
+    
+    bool nvsInit = roboxPrefs.isKey("nvsInit");       // Test for the existence
+                                                     // of the "already initialized" key.
+
+    if (nvsInit == false) {
+      // If nvsInit is 'false', the key "nvsInit" does not yet exist therefore this
+      //  must be our first-time run. We need to set up our Preferences namespace keys. So...
+      roboxPrefs.end();                             // close the namespace in RO mode and...
+      roboxPrefs.begin("roboxPrefs", RW_MODE);      //  reopen it in RW mode.
+
+      // The .begin() method created the "roboxPrefs" namespace and since this is our
+      // first-time run we will create
+      // our keys and store the initial "factory default" values.
+
+      roboxPrefs.putString("wifi_ssid_2", "fri3d-badge");
+      roboxPrefs.putString("wifi_password_2", "badge2024");
+      roboxPrefs.putBool("motorsOn", true);
+
+      roboxPrefs.putBool("nvsInit", true);      // Create the "already initialized"
+                                                //  key and store a value.
+
+      // The "factory defaults" are created and stored so...
+      roboxPrefs.end();                             // Close the namespace in RW mode and...
+      roboxPrefs.begin("roboxPrefs", RO_MODE);      //  reopen it in RO mode so the setup code
+                                                    //  outside this first-time run 'if' block
+                                                    //  can retrieve the run-time values
+                                                    //  from the "roboxPrefs" namespace.
+    }
+
+    // Retrieve the operational parameters from the namespace
+    //  and save them into their run-time variables.
+    wifi_ssid_2 = roboxPrefs.getString("wifi_ssid_2").c_str();            //  The LHS variables were defined
+    wifi_password_2 = roboxPrefs.getString("wifi_password_2").c_str();    //   earlier in the sketch.
+    motorsOn = roboxPrefs.getBool("motorsOn");                //
+
+    // All done. Last run state (or the factory default) is now restored.
+    roboxPrefs.end();                                      // Close our preferences namespace.
+    #endif
 
     #if defined(ROBOX_FULL)
         ESP_LOGI(LOG_MAIN_TAG, "Setup mux");
