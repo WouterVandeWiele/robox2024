@@ -13,20 +13,19 @@
 
 #if defined(LCD_RUN_THREADED)
 
+// class LCD_Threaded: public SED1530_LCD {
 
-class LCD_Threaded: public SED1530_LCD {
+//     public:
+//         #if !defined(IO_EXPANDER)
+//             LCD_Threaded(uint8_t A0, uint8_t RW, uint8_t EN, uint8_t *DATA): SED1530_LCD(A0, RW, EN, DATA) {};
+//         #elif defined(IO_EXPANDER)
+//             LCD_Threaded(RoboxIoExpander *io): SED1530_LCD(io) {};
+//         #endif
 
-    public:
-        #if !defined(IO_EXPANDER)
-            LCD_Threaded(uint8_t A0, uint8_t RW, uint8_t EN, uint8_t *DATA): SED1530_LCD(A0, RW, EN, DATA) {};
-        #elif defined(IO_EXPANDER)
-            LCD_Threaded(RoboxIoExpander *io): SED1530_LCD(io) {};
-        #endif
+//         void updateWholeScreen();
 
-        void updateWholeScreen();
-
-        void taskUpdateWholeScreen();
-};
+//         void taskUpdateWholeScreen();
+// };
 
 #endif
 
@@ -38,7 +37,7 @@ class RoboxLcdScreen: public IoInterface {
         #else
             RoboxLcdScreen(uint8_t A0, uint8_t RW, uint8_t EN, uint8_t *DATA);
         #endif
-        void lcd_gfx_test();
+        // void lcd_gfx_test();
 
         void power_up();
         void power_down();
@@ -52,7 +51,7 @@ class RoboxLcdScreen: public IoInterface {
         void init_lcd();
         void deinit_lcd();
 
-        void lcd_menu_loop();
+        // void lcd_menu_loop();
 
 
     private:
@@ -67,7 +66,7 @@ class RoboxLcdScreen: public IoInterface {
         #endif
 
     
-        GEM_adafruit_gfx* menu;
+        // GEM_adafruit_gfx* menu;
     
 };
 

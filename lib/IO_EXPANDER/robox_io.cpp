@@ -16,8 +16,7 @@ void IRAM_ATTR io_isr() {
 
 
 RoboxIoExpander::RoboxIoExpander(uint8_t io_address)
-    : io_mutex()
-    , io_address(io_address)
+    : io_address(io_address)
     , config()
     , observers()
     , _out_buffer()
@@ -49,8 +48,6 @@ void RoboxIoExpander::register_observer(IoInterface* observer, ExpanderConfig ob
 
 
 void RoboxIoExpander::io_set(uint8_t reg_address, uint8_t data) {
-    // const std::lock_guard<std::mutex> lock(io_mutex);
-
     Wire.beginTransmission(io_address);
     Wire.write(reg_address);
     Wire.write(data);
@@ -58,8 +55,6 @@ void RoboxIoExpander::io_set(uint8_t reg_address, uint8_t data) {
 }
 
 void RoboxIoExpander::io_set_multi(uint8_t reg_address, std::vector<uint8_t> data) {
-    // const std::lock_guard<std::mutex> lock(io_mutex);
-
     Wire.beginTransmission(io_address);
     Wire.write(reg_address);
     for (uint8_t d: data) {
@@ -106,7 +101,7 @@ void RoboxIoExpander::io_reset() {
 
 
 
-uint8_t RoboxIoExpander::get_inputs(uint8_t port){
+uint8_t RoboxIoExpander::get_inputs(uint8_t port) {
     return io_get(PORT_ADDRESS(port, INPUT_P0, INPUT_P1));
 }
 
@@ -115,16 +110,22 @@ uint8_t RoboxIoExpander::get_inputs(uint8_t port){
 //     io_set(PORT_ADDRESS(port, CONFIG_P0, CONFIG_P1), data);
 // }
 
-uint8_t RoboxIoExpander::get_configure_outputs(uint8_t port) {
-    return io_get(PORT_ADDRESS(port, CONFIG_P0, CONFIG_P1));
-}
+// uint8_t RoboxIoExpander::get_configure_outputs(uint8_t port) {
+//     return io_get(PORT_ADDRESS(port, CONFIG_P0, CONFIG_P1));
+// }
 
 void RoboxIoExpander::set_output(uint8_t port, uint8_t data, uint8_t mask) {
-    // ESP_LOGI(LOG_I2C_TAG, "IO expander set output port %d - %2x", port, data);
+    // const std::lock_guard<std::mutex> lock(io_mutex);
+
+    // Serial.printf("IO expander set output port %d - %2x\n", port, data);
 
     _out_buffer[port] = (data & mask) | (_out_buffer[port] & ~(mask));
+
+    // Serial.printf("IO expander write: %d\n", _out_buffer[port]);
     
     io_set(PORT_ADDRESS(port, OUTPUT_P0, OUTPUT_P1), _out_buffer[port]);
+
+    // Serial.println("data written");
     // io_set(PORT_ADDRESS(port, OUTPUT_P0, OUTPUT_P1), data);
 }
 
@@ -143,8 +144,6 @@ ExpanderConfig RoboxIoExpander::get_default_config() {
 }
 
 void RoboxIoExpander::io_configure() {
-    const std::lock_guard<std::mutex> lock(io_mutex);
-
     ExpanderConfig agg = get_default_config();
 
     for (ExpanderConfig c: config) {
@@ -200,8 +199,6 @@ void RoboxIoExpander::io_configure() {
 void RoboxIoExpander::loop() {
     if (io_interrupt_generated) {
         // an interrupt was generated
-        const std::lock_guard<std::mutex> lock(io_mutex);
-
         std::vector<uint8_t> interrupt = io_get_multi(INT_STATUS_P0, 2);
         std::vector<uint8_t> data = io_get_multi(INPUT_P0, 2);
 

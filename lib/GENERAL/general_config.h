@@ -5,6 +5,6 @@
 #define IO_EXPANDER
 
 // LCD configuration
-// #define LCD_RUN_THREADED
+#define LCD_RUN_THREADED
 
 #endif  // GENERAL_CONFIG_H

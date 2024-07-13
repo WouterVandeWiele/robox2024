@@ -266,7 +266,7 @@ void setup() {
     #endif
 
     #if defined(ROBOX_TEST_ADC_KEY)
-    adc_key_setup();
+        adc_key_setup();
     #endif
 
     #if defined(ROBOX_MOTOR)
@@ -299,12 +299,12 @@ void loop() {
     #endif
 
 
-    #if defined(ROBOX_LCD)
-        // ESP_LOGI(LOG_MAIN_TAG, "LCD loop");
+    // #if defined(ROBOX_LCD)
+    //     // ESP_LOGI(LOG_MAIN_TAG, "LCD loop");
 
-        // screen->lcd_gfx_test();
-        screen->lcd_menu_loop();
-    #endif
+    //     // screen->lcd_gfx_test();
+    //     screen->lcd_menu_loop();
+    // #endif
 
     #if defined(ROBOX_DEBUG_CLI)
         debug_cli_loop();

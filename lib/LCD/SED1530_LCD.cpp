@@ -163,11 +163,6 @@ void SED1530_LCD::writeData(uint8_t lcdData) {
 }
 
 void SED1530_LCD::lcd_init() {
-  #if defined(IO_EXPANDER)
-  const std::lock_guard<std::mutex> lock(io->io_mutex);
-  #endif
-
-
   // ESP_LOGI(LOG_LCD_TAG, "lcd io setup start");
   // io->set_output(LCD_DATA_PORT, 0x00);
   // io->set_output(LCD_CONTROL_PORT, 0x00);
@@ -200,10 +195,6 @@ void SED1530_LCD::resetDisplay() {
 }
 
 void SED1530_LCD::invertDisplay(bool i) {
-    #if defined(IO_EXPANDER)
-    const std::lock_guard<std::mutex> lock(io->io_mutex);
-    #endif
-
     this->writeCommand(0xA6 + (i ? 0:1));
 }
 
@@ -218,10 +209,6 @@ void SED1530_LCD::invertDisplay(bool i) {
 void SED1530_LCD::setMarker(uint8_t marker, bool on) {
     uint8_t highNibble, lowNibble;
     uint8_t markerLCD;
-
-    #if defined(IO_EXPANDER)
-    const std::lock_guard<std::mutex> lock(io->io_mutex);
-    #endif
 
     switch (marker) {
         case 1 : markerLCD = 20;
@@ -336,11 +323,6 @@ void SED1530_LCD::fillScreen(uint16_t color) {
 }
 
 void SED1530_LCD::updateWholeScreen(void) {
-
-  #if defined(IO_EXPANDER)
-    const std::lock_guard<std::mutex> lock(io->io_mutex);
-  #endif
-
   // uint32_t bytes = ((w + 7) / 8) * h;
   // if ((buffer = (uint8_t *)malloc(bytes))) {
   //   memset(buffer, 0, bytes);
