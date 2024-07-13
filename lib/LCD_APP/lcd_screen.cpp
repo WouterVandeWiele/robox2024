@@ -108,6 +108,7 @@ void menu_task(void * param) {
     menuPageMain.addMenuItem(buttonSwitchSD);
 
     menu->setMenuPageCurrent(menuPageMain);
+    menu->init();
     menu->drawMenu();
 
     while (true) {
