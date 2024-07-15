@@ -10,7 +10,7 @@
 #include "AudioTools.h"
 #include "AudioCodecs/CodecMP3Helix.h"
 #include "robox_i2s.h"
-#include "fft_beat.h"
+#include "robox_fft_beat.h"
 #include "general_definitions.h"
 #include "wifi_credentials.h"
 

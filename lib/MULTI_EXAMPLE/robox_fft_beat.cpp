@@ -1,25 +1,16 @@
-#ifndef ROBOX_FFT_BEAT
-#define ROBOX_FFT_BEAT
-
-#include "AudioLibs/AudioRealFFT.h" // or any other supported inplementation
+#include "robox_fft_beat.h"
+#include "AudioTools.h"
+#include "AudioLibs/AudioRealFFT.h"
 #include "general_definitions.h"
 #include <PeakDetection.h>
 #include <FastLED.h>
 
-
-// #define BEAT_TELEMETRY
-
-#define NUM_LEDS 2
-CRGB leds[NUM_LEDS];
-
-PeakDetection peakb0;
-
-AudioRealFFT fft; // or any other supported inplementation
+static CRGB leds[NUM_LEDS];
 
 // peak detection parameters
-int lag = 30;
-int threshold = 3;
-double influence = 0.6;
+static int lag = 30;
+static int threshold = 3;
+static double influence = 0.6;
 
 
 // peak detection variables
@@ -27,15 +18,18 @@ double influence = 0.6;
  * each fft caclulation we shift in the peak value (boolean)
  * to detect if we have trailing peaks we only change the LED colors if this variable reads 0x1
  */
-#define FILTER_POSITIONS 0b00111111     // determines how many bits we use in the shift register
-uint8_t max_filter = 0;
+static uint8_t max_filter = 0;
+
+
+PeakDetection peakb0;
+AudioRealFFT fft;
 
 
 // https://github.com/Resseguie/FastLED-Patterns/blob/master/fastled-patterns.ino#L269
 
 // Input a value 0 to 255 to get a color value.
 // The colours are a transition r - g - b - back to r.
-CRGB Wheel(byte WheelPos) {
+static CRGB Wheel(byte WheelPos) {
   if(WheelPos < 85) {
     return CRGB(WheelPos * 3, 255 - WheelPos * 3, 0);
   } 
@@ -49,7 +43,7 @@ CRGB Wheel(byte WheelPos) {
   }
 }
 
-CRGB randomColor(){
+static CRGB randomColor(){
   return Wheel(random(256)); 
 }
 
@@ -61,7 +55,7 @@ void allRandom(){
 }
 
 
-// display fft result
+// // display fft result
 void fftResult(AudioFFTBase &fft) {
     float *magnitudes = fft.magnitudes();
 
@@ -74,12 +68,18 @@ void fftResult(AudioFFTBase &fft) {
     }
     
     #if defined(BEAT_TELEMETRY)
-    Serial.printf(">bin0:%.2f\n>maxf:%.2f\n>peak0:%.2f\n>filter0:%.2f\n", magnitudes[0], ((max_filter == 0x01) ? magnitudes[0] : 0) , (peakb0.getPeak()*magnitudes[0]), peakb0.getFilt(), peakb0.getEpsilon());
+    Serial.printf(">bin0:%.2f\n>maxf:%.2f\n>peak0:%.2f\n>filter0:%.2f\n",
+        magnitudes[0],
+        ((max_filter == 0x01) ? magnitudes[0] : 0),
+        (peakb0.getPeak()*magnitudes[0]), 
+        peakb0.getFilt(),
+        peakb0.getEpsilon()
+    );
     #endif
 }
 
 
-void fft_beat_setup(int samplerate = 44100) {
+void fft_beat_setup(int samplerate) {
     // Setup FFT
   auto tcfg = fft.defaultConfig();
   // tcfg.length = 4096;
@@ -122,7 +122,3 @@ void fft_beat_setup(int samplerate = 44100) {
   FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, NUM_LEDS);
 
 }
-
-
-
-#endif  // ROBOX_FFT_BEAT

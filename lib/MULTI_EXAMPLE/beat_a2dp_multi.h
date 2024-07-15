@@ -15,7 +15,7 @@
 #include <PeakDetection.h>
 #include <FastLED.h>
 
-#include "fft_beat.h"
+#include "robox_fft_beat.h"
 
 BluetoothA2DPSink a2dp_sink;
 extern AudioRealFFT fft; // or AudioKissFFT or others

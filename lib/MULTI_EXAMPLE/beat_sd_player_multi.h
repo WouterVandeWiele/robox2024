@@ -14,7 +14,7 @@
 #include "AudioLibs/AudioSourceSDFAT.h"
 #include "AudioCodecs/CodecMP3Helix.h"
 
-#include "fft_beat.h"
+#include "robox_fft_beat.h"
 
 #include "robox_i2s.h"
 #include "general_definitions.h"
