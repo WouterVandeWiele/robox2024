@@ -18,7 +18,10 @@ Web radio Audio MUX controls
 
 class RoboxWebRadio: public MuxInterface {
     public:
-        RoboxWebRadio(): i2s(I2S_PIN_MUTE) {};
+        RoboxWebRadio(bool beat_led=false)
+            : beat_led(beat_led)
+            , i2s(I2S_PIN_MUTE)
+        {};
 
         /*
         Web Radio Audio MUX controls
@@ -32,6 +35,7 @@ class RoboxWebRadio: public MuxInterface {
         void change_station(std::string station_name);
 
     private:
+        bool beat_led;
         I2SStream i2s;
 
 };

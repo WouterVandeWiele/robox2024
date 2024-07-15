@@ -16,47 +16,52 @@ void RoboxAudioMux::setup() {
 
 
 void RoboxAudioMux::switch_to(audio_source new_mux_source) {
-    ESP_LOGI(LOG_MUX_TAG, "Audio Mux switch from: %s", audio_source_names[source_name]);
+    Serial.printf("Audio Mux switch from: %s\n", audio_source_names[source_name]);
 
-    if (source_name != NotSelectedSource) {
-        current_source->mux_stop();
-        current_source->~MuxInterface();
+    if (source_name != new_mux_source) {
+        if (source_name != NotSelectedSource) {
+            current_source->mux_stop();
+            // current_source->~MuxInterface();
+        }
+
+        Serial.printf("Audio Mux switching to: %s\n", audio_source_names[new_mux_source]);
+
+        source_name = NotSelectedSource;
+        
+        Serial.printf("Audio Mux init new driver: %s\n", audio_source_names[new_mux_source]);
+
+        meta.title = "";
+        switch (new_mux_source)
+        {
+        case NotSelectedSource:
+            current_source.reset();
+            break;
+
+        case BleSource:
+            current_source.reset(new RoboxBluetooth(true));
+            current_source->mux_start();
+            break;
+
+        case WebRadioSource:
+            current_source.reset(new RoboxWebRadio(true));
+            current_source->mux_start();
+            break;
+
+        case SDSource:
+            current_source.reset(new RoboxSD(true));
+            current_source->mux_start();
+            break;
+
+        default:
+            Serial.printf("Unsupported audio type %s\n", audio_source_names[new_mux_source]);
+            break;
+        }
+
+        delay(1);
+
+        source_name = new_mux_source;
+        Serial.printf("Audio Mux switch complete\n");
     }
-
-    ESP_LOGI(LOG_MUX_TAG, "Audio Mux switching to: %s", audio_source_names[new_mux_source]);
-
-    source_name = new_mux_source;
-    // const std::lock_guard<std::mutex> lock(meta_mutex);
-    meta.title = "";
-    switch (new_mux_source)
-    {
-    case NotSelectedSource:
-        break;
-
-    case BleSource:
-        current_source = new RoboxBluetooth();
-        break;
-
-    case WebRadioSource:
-        current_source = new RoboxWebRadio();
-        break;
-
-    case SDSource:
-        current_source = new RoboxSD();
-        break;
-
-    default:
-        ESP_LOGW(LOG_MUX_TAG, "Unsupported audio type %s", audio_source_names[new_mux_source]);
-        break;
-    }
-
-    ESP_LOGI(LOG_MUX_TAG, "Audio Mux init new driver: %s", audio_source_names[source_name]);
-
-    if (source_name != NotSelectedSource) {
-        current_source->mux_start();
-    }
-
-    ESP_LOGI(LOG_MUX_TAG, "Audio Mux switch complete");
 }
 
 void RoboxAudioMux::copy() {

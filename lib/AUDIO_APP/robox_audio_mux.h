@@ -10,6 +10,7 @@
  */
 // robox audio architecture overview [docs/audio_overview.excalidraw.png]
 // #include "AudioTools.h"
+#include <memory>
 #include <mutex>
 #include <Arduino.h>
 #include "robox_mux_interface.h"
@@ -40,8 +41,8 @@ class RoboxAudioMux {
         // std::mutex meta_mutex;
     private:
 
-        audio_source source_name;
-        MuxInterface* current_source;
+        volatile audio_source source_name;
+        std::unique_ptr<MuxInterface> current_source;
 
 };
 

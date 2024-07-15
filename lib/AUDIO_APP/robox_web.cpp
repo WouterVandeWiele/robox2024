@@ -1,5 +1,6 @@
 #include <map>
 
+#include <Arduino.h>
 #include "AudioTools.h"
 #include "AudioCodecs/CodecMP3Helix.h"
 #include "robox_audio_mux.h"
@@ -7,6 +8,7 @@
 #include "robox_i2s.h"
 #include "general_definitions.h"
 #include "wifi_credentials.h"
+#include "robox_fft_beat.h"
 
 // https://www.vrt.be/nl/aanbod/kijk-en-luister/radio-luisteren/streamingslinks-radio/
 // std::map<std::string, std::string> station_list = {
@@ -32,9 +34,12 @@ const char *urls[] = {
 
 
 ICYStream urlStream(wifi_ssid, wifi_password);
-AudioSourceURL source(urlStream, urls, "audio/mp3");
-MP3DecoderHelix decoder;
-AudioPlayer player(source, i2s, decoder);
+AudioSourceURL web_source(urlStream, urls, "audio/mp3");
+MultiOutput web_multi_output;
+MP3DecoderHelix web_decoder;
+// AudioPlayer web_player(web_source, web_multi_output, web_decoder);
+AudioPlayer web_player(web_source, i2s, web_decoder);
+// extern AudioRealFFT fft;
 
 // Print Audio Metadata
 void printMetaData(MetaDataType type, const char* str, int len){
@@ -53,25 +58,43 @@ void RoboxWebRadio::mux_start() {
     ESP_LOGI(LOG_SD_TAG, ">>> Web Radio starting...");
     i2s_setup();
 
-    // setup player
-    player.setMetadataCallback(printMetaData);
-    player.begin();
+    if (beat_led) {
+      fft_beat_setup();
+    }
 
-    player.setVolume(0.2);
+    // Setup Multioutput
+    web_multi_output.add(i2s);
+    if (beat_led) {
+      web_multi_output.add(fft);
+    }
+
+    // i2s_driver_install((i2s_port_t)0);
+    web_player.setMetadataCallback(printMetaData);
+    web_player.begin();
+
+    web_player.setVolume(0.2);
 
     ESP_LOGI(LOG_BLE_TAG, "<<< Web Radio completed");
 }
 
 void RoboxWebRadio::mux_stop() {
-    player.end();
+    web_player.setVolume(0);
+    web_player.stop();
+    web_player.end();
+    WiFi.disconnect(true, false);
+    WiFi.mode(WIFI_OFF);
+
+    i2s.end();
+
+    // i2s_driver_uninstall((i2s_port_t)0);
 }
 
 void RoboxWebRadio::mux_copy() {
-    player.copy();
+    web_player.copy();
 }
 
 void RoboxWebRadio::volume(float level) {
-  player.setVolume(level);
+  web_player.setVolume(level);
 }
 
 void RoboxWebRadio::change_station(std::string station_name) {

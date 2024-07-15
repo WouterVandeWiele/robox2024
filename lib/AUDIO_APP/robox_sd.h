@@ -15,11 +15,14 @@ SD Card Audio MUX controls
 
 class RoboxSD: public MuxInterface {
     public:
-        RoboxSD(): 
-            startFilePath("/"),
-            ext("mp3"),
-            source(startFilePath, ext),
-            player(source, i2s, decoder) {
+        RoboxSD(bool beat_led = false)
+            : beat_led(beat_led)
+            // : startFilePath("/")
+            // , ext("mp3")
+            // , source(startFilePath, ext)
+            // , decoder()
+            // , player(source, i2s, decoder) 
+        {
 
         };
         /*
@@ -32,11 +35,12 @@ class RoboxSD: public MuxInterface {
         void volume(float level) override;
 
     private:
-        const char *startFilePath;
-        const char* ext;
-        AudioSourceSDFAT source;
-        MP3DecoderHelix decoder;
-        AudioPlayer player;
+    bool beat_led;
+        // const char *startFilePath;
+        // const char* ext;
+        // AudioSourceSDFAT source;
+        // MP3DecoderHelix decoder;
+        // AudioPlayer player;
 };
 
 
