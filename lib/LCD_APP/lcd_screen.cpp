@@ -98,8 +98,8 @@ void menu_task(void * param) {
     );
 
     menu->setDrawCallback(update_screen);
-    menu->setSplash(100, 48, robox_splash);
-    menu->setSplashDelay(3000);
+    // menu->setSplash(100, 48, robox_splash);
+    // menu->setSplashDelay(3000);
 
     menuPageMain.addMenuItem(menuItemButton);
     menuPageMain.addMenuItem(buttonSwitchNoSource);
@@ -108,7 +108,7 @@ void menu_task(void * param) {
     menuPageMain.addMenuItem(buttonSwitchSD);
 
     menu->setMenuPageCurrent(menuPageMain);
-    menu->init();
+    // menu->init();
     menu->drawMenu();
 
     while (true) {
@@ -302,7 +302,7 @@ void RoboxLcdScreen::deinit_lcd() {
 
 void RoboxLcdScreen::power_up() {
     digitalWrite(LCD_DIS_PWR, LOW);
-    delay(100);
+    delay(2000);
     digitalWrite(LCD_DIS_PWR, HIGH);
 }
 
