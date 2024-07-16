@@ -28,17 +28,17 @@
 extern RoboxAudioMux mux;
 
 
-const char *urls[] = {
-    "http://icecast.vrtcdn.be/mnm_hits-high.mp3"
-};
 
 
-ICYStream urlStream(wifi_ssid, wifi_password);
-AudioSourceURL web_source(urlStream, urls, "audio/mp3");
-MultiOutput web_multi_output;
-MP3DecoderHelix web_decoder;
+
+// ICYStream urlStream(wifi_ssid, wifi_password);
+// AudioSourceURL web_source(urlStream, urls, "audio/mp3");
+// MultiOutput web_multi_output(i2s);
+// MP3DecoderHelix web_decoder;
 // AudioPlayer web_player(web_source, web_multi_output, web_decoder);
-AudioPlayer web_player(web_source, i2s, web_decoder);
+
+
+// AudioPlayer web_player(web_source, i2s, web_decoder);
 // extern AudioRealFFT fft;
 
 // Print Audio Metadata
@@ -63,38 +63,40 @@ void RoboxWebRadio::mux_start() {
     }
 
     // Setup Multioutput
-    web_multi_output.add(i2s);
+    // web_multi_output.add(i2s);
     if (beat_led) {
-      web_multi_output.add(fft);
+      multi_output.add(fft);
     }
 
     // i2s_driver_install((i2s_port_t)0);
-    web_player.setMetadataCallback(printMetaData);
-    web_player.begin();
+    player.setMetadataCallback(printMetaData);
+    player.begin();
 
-    web_player.setVolume(0.2);
+    player.setVolume(0.2);
 
     ESP_LOGI(LOG_BLE_TAG, "<<< Web Radio completed");
 }
 
 void RoboxWebRadio::mux_stop() {
-    web_player.setVolume(0);
-    web_player.stop();
-    web_player.end();
+    player.setVolume(0);
+    player.stop();
+    player.end();
     WiFi.disconnect(true, false);
     WiFi.mode(WIFI_OFF);
 
-    i2s.end();
-
-    // i2s_driver_uninstall((i2s_port_t)0);
+    // i2s.end();
+    // urlStream.end();
+    // web_multi_output.end();
+    // web_decoder.end();
+    i2s_driver_uninstall((i2s_port_t)0);
 }
 
 void RoboxWebRadio::mux_copy() {
-    web_player.copy();
+    player.copy();
 }
 
 void RoboxWebRadio::volume(float level) {
-  web_player.setVolume(level);
+    player.setVolume(level);
 }
 
 void RoboxWebRadio::change_station(std::string station_name) {

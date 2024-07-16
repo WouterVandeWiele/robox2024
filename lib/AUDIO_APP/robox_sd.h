@@ -4,7 +4,7 @@
 #include "AudioTools.h"
 #include "robox_mux_interface.h"
 
-#include "AudioLibs/AudioSourceSDFAT.h"
+#include "AudioLibs/AudioSourceSD.h"
 #include "AudioCodecs/CodecMP3Helix.h"
 
 #include "robox_i2s.h"
@@ -17,11 +17,12 @@ class RoboxSD: public MuxInterface {
     public:
         RoboxSD(bool beat_led = false)
             : beat_led(beat_led)
-            // : startFilePath("/")
-            // , ext("mp3")
-            // , source(startFilePath, ext)
-            // , decoder()
-            // , player(source, i2s, decoder) 
+            , startFilePath("/")
+            , ext("mp3")
+            , multi_output(i2s)
+            , decoder()
+            , source(startFilePath, ext)
+            , player(source, multi_output, decoder) 
         {
 
         };
@@ -36,11 +37,12 @@ class RoboxSD: public MuxInterface {
 
     private:
     bool beat_led;
-        // const char *startFilePath;
-        // const char* ext;
-        // AudioSourceSDFAT source;
-        // MP3DecoderHelix decoder;
-        // AudioPlayer player;
+        const char *startFilePath;
+        const char* ext;
+        MultiOutput multi_output;
+        MP3DecoderHelix decoder;
+        AudioSourceSD source;
+        AudioPlayer player;
 };
 
 

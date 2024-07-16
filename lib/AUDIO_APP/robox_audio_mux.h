@@ -17,7 +17,6 @@
 #include "general_definitions.h"
 
 
-
 enum audio_source {NotSelectedSource, BleSource, WebRadioSource, SDSource};
 extern const char* audio_source_names[];
 

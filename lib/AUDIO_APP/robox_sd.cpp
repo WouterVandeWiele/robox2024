@@ -8,17 +8,27 @@
 #include "general_definitions.h"
 
 #include "robox_fft_beat.h"
+#include "AudioTools.h"
+#include "AudioCodecs/CodecMP3Helix.h"
 
-#define USE_HELIX 
-#define USE_SDFAT
+
+
+// #define USE_HELIX 
+// #define USE_SDFAT
 
 const char *startFilePath="/";
 const char* ext="mp3";
-AudioSourceSDFAT sd_source(startFilePath, ext);
-MultiOutput sd_multi_output;
-MP3DecoderHelix sd_decoder;
+
+// AudioSourceSDFAT sd_source(startFilePath, ext);
+
+
+// MultiOutput sd_multi_output(i2s);
+// MP3DecoderHelix sd_decoder;
+// AudioSourceSD sd_source(startFilePath, ext);
 // AudioPlayer sd_player(sd_source, sd_multi_output, sd_decoder);
-AudioPlayer sd_player(sd_source, i2s, sd_decoder);
+
+
+// AudioPlayer sd_player(sd_source, i2s, sd_decoder);
 extern AudioRealFFT fft;
 
 extern RoboxAudioMux mux;
@@ -48,32 +58,32 @@ void RoboxSD::mux_start() {
     }
 
     // Setup Multioutput
-    sd_multi_output.add(i2s);
+    // sd_multi_output.add(i2s);
     if (beat_led) {
-      sd_multi_output.add(fft);
+      multi_output.add(fft);
     }
 
     // setup player
-    sd_player.setMetadataCallback(printMetaData);
-    sd_player.begin();
+    player.setMetadataCallback(printMetaData);
+    player.begin();
 
-    sd_player.setVolume(0.2);
+    player.setVolume(0.2);
 
     ESP_LOGI(LOG_BLE_TAG, "<<< SD setup completed");
 }
 
 void RoboxSD::mux_stop() {
-  sd_player.setVolume(0);
-  sd_player.stop();
-  sd_player.end();
+  player.setVolume(0);
+  player.stop();
+  player.end();
 
   i2s_driver_uninstall((i2s_port_t)0);
 }
 
 void RoboxSD::mux_copy() {
-  sd_player.copy();
+  player.copy();
 }
 
 void RoboxSD::volume(float level) {
-  sd_player.setVolume(level);
+  player.setVolume(level);
 }

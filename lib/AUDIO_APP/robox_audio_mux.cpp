@@ -24,6 +24,8 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
             // current_source->~MuxInterface();
         }
 
+        delay(100);
+
         Serial.printf("Audio Mux switching to: %s\n", audio_source_names[new_mux_source]);
 
         source_name = NotSelectedSource;
@@ -57,7 +59,7 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
             break;
         }
 
-        delay(1);
+        delay(100);
 
         source_name = new_mux_source;
         Serial.printf("Audio Mux switch complete\n");
