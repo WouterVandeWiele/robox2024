@@ -7,8 +7,6 @@
 #include "AudioLibs/AudioRealFFT.h" // or any other supported inplementation
 #include "general_definitions.h"
 
-// #define BEAT_TELEMETRY
-
 #define NUM_LEDS 2
 #define FILTER_POSITIONS 0b00111111     // determines how many bits we use in the shift register
 
