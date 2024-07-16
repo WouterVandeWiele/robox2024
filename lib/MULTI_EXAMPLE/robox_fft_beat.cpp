@@ -3,6 +3,7 @@
 #include "AudioLibs/AudioRealFFT.h"
 #include "general_definitions.h"
 #include <PeakDetection.h>
+#define FASTLED_FORCE_SOFTWARE_SPI
 #include <FastLED.h>
 
 static CRGB leds[NUM_LEDS];
