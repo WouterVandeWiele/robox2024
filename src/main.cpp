@@ -40,7 +40,7 @@
 // #define ROBOX_BATTERY
 // #define ROBOX_MOTOR
 #define ROBOX_TEST_ADC_KEY
-#define ROBOX_DEBUG_CLI
+// #define ROBOX_DEBUG_CLI
 // #define ROBOX_DEBUG_I2C
 // #define ROBOX_DEBUG_I2C_SCANNER
 #define ROBOX_PREFERENCES
