@@ -22,7 +22,7 @@
 //   "http://streaming.swisstxt.ch/m/drsvirus/mp3_128"
 // };
 
-const char *urls[] = {
+static const char *urls[] = {
     "http://icecast.vrtcdn.be/mnm_hits-high.mp3"
 };
 
