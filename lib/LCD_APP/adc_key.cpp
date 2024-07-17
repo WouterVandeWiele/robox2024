@@ -1,4 +1,5 @@
-#include<list>
+#include <list>
+#include "general_config.h"
 #include "adc_key.h"
 
 static TaskHandle_t AdcKeyTaskHandle;
@@ -103,12 +104,13 @@ void adc_key_setup() {
     // set the resolution to 12 bits (0-4095)
     analogReadResolution(12);
 
-    xTaskCreate(
+    xTaskCreatePinnedToCore(
         adc_key_loop,       //Function to implement the task 
         "adc_key_task", //Name of the task
         6000,       //Stack size in words 
         NULL,       //Task input parameter 
-        0,          //Priority of the task 
-        &AdcKeyTaskHandle       //Task handle.
+        PRIORITY_ADC_BUTTON,          //Priority of the task 
+        &AdcKeyTaskHandle,       //Task handle.
+        1           // Core you want to run the task on (0 or 1)
     );
 }

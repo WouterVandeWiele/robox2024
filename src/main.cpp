@@ -148,6 +148,7 @@
 
 #if defined(ROBOX_FULL)
     RoboxAudioMux mux;
+    static TaskHandle_t AudioCopyTask;
 
 #elif defined(ROBOX_COMPONENT_BLE)
     RoboxBluetooth ble;
@@ -187,6 +188,14 @@ const char* wifi_password_2;
 bool motorsOn;
 #endif
 
+
+void audio_task(void* parameter) {
+    mux.setup();
+
+    while (true) {
+        mux.copy();
+    }
+}
 
 void setup() {
     Serial.begin(115200);
@@ -250,10 +259,20 @@ void setup() {
 
     #if defined(ROBOX_FULL)
         ESP_LOGI(LOG_MAIN_TAG, "Setup mux");
-        mux.setup();
+        // mux.setup();
         // mux.switch_to(BleSource);
         // mux.switch_to(WebRadioSource);
         // mux.switch_to(SDSource);
+
+        // xTaskCreatePinnedToCore(
+        //     audio_task,       //Function to implement the task 
+        //     "audio_task", //Name of the task
+        //     6000,       //Stack size in words 
+        //     NULL,       //Task input parameter 
+        //     7,          //Priority of the task 
+        //     &AudioCopyTask,       //Task handle.
+        //     1           // Core you want to run the task on (0 or 1)
+        // );
 
     #elif defined(ROBOX_COMPONENT_BLE)
         ESP_LOGI(LOG_MAIN_TAG, "ble start");
@@ -336,11 +355,22 @@ void setup() {
     timekeeper = millis() + 5000;
     #endif
 
+
+    xTaskCreatePinnedToCore(
+            audio_task,       //Function to implement the task 
+            "audio_task", //Name of the task
+            6000,       //Stack size in words 
+            NULL,       //Task input parameter 
+            PRIORITY_AUDIO_TASK,          //Priority of the task 
+            &AudioCopyTask,       //Task handle.
+            1           // Core you want to run the task on (0 or 1)
+        );
+
 }
 
 void loop() {
     #if defined(ROBOX_FULL)
-        mux.copy();
+        // mux.copy();
     
     #elif defined(ROBOX_EXAMPLE_BLE) || defined(ROBOX_EXAMPLE_BLE_BEAT) || defined(ROBOX_EXAMPLE_SD) || defined(ROBOX_EXAMPLE_WEB) || defined(ROBOX_EXAMPLE_MULTI_WEB_FFT) || defined(ROBOX_EXAMPLE_WEB_PLAYER_BEAT) || defined(ROBOX_EXAMPLE_SD_PLAYER_BEAT)
         player_loop();

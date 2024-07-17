@@ -263,7 +263,7 @@ void RoboxLcdScreen::init_lcd() {
         6000,       //Stack size in words 
         // (void*)&lcd_t,       //Task input parameter 
         NULL,       //Task input parameter 
-        1,          //Priority of the task 
+        PRIORITY_LCD_TASK,          //Priority of the task 
         &(threaded_lcd_task),       //Task handle.
         1           // Core you want to run the task on (0 or 1)
     );
