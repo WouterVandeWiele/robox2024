@@ -15,8 +15,9 @@ SD Card Audio MUX controls
 
 class RoboxSD: public MuxInterface {
     public:
-        RoboxSD(bool beat_led = false)
-            : beat_led(beat_led)
+        RoboxSD(bool beat_led, float &volume_level)
+            : MuxInterface(volume_level)
+            , beat_led(beat_led)
             , startFilePath("/")
             , ext("mp3")
             , multi_output(i2s)

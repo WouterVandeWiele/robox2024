@@ -147,9 +147,11 @@ void menu_task(void * param) {
                         switch (button.button)
                         {
                         case VOLUME_UP:
+                            mux.volume_increment();
                             break;
                         
                         case VOLUME_DOWN:
+                            mux.volume_decrement();
                             break;
                         
                         case PLAY_PAUSE:

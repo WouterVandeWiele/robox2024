@@ -26,7 +26,11 @@ typedef struct MetaData{
 
 class RoboxAudioMux {
     public:
-        RoboxAudioMux(): meta(), source_name(NotSelectedSource) {};
+        RoboxAudioMux()
+          : meta()
+          , source_name(NotSelectedSource) 
+          , volume_level(0.2)
+        {};
 
         void setup();
 
@@ -35,6 +39,8 @@ class RoboxAudioMux {
         void copy();
 
         void volume(float level);
+        void volume_increment();
+        void volume_decrement();
 
         MetaData meta;
         // std::mutex meta_mutex;
@@ -42,6 +48,7 @@ class RoboxAudioMux {
 
         volatile audio_source source_name;
         std::unique_ptr<MuxInterface> current_source;
+        float volume_level;
 
 };
 

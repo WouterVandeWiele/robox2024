@@ -40,17 +40,17 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
             break;
 
         case BleSource:
-            current_source.reset(new RoboxBluetooth(true));
+            current_source.reset(new RoboxBluetooth(true, volume_level));
             current_source->mux_start();
             break;
 
         case WebRadioSource:
-            current_source.reset(new RoboxWebRadio(true));
+            current_source.reset(new RoboxWebRadio(true, volume_level));
             current_source->mux_start();
             break;
 
         case SDSource:
-            current_source.reset(new RoboxSD(true));
+            current_source.reset(new RoboxSD(true, volume_level));
             current_source->mux_start();
             break;
 
@@ -74,4 +74,12 @@ void RoboxAudioMux::copy() {
 
 void RoboxAudioMux::volume(float level) {
     current_source->volume(level);
+}
+
+void RoboxAudioMux::volume_increment() {
+    current_source->volume_increment();
+}
+
+void RoboxAudioMux::volume_decrement() {
+    current_source->volume_decrement();
 }

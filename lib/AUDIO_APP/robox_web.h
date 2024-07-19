@@ -24,8 +24,9 @@ Web radio Audio MUX controls
 
 class RoboxWebRadio: public MuxInterface {
     public:
-        RoboxWebRadio(bool beat_led=false)
-            : beat_led(beat_led)
+        RoboxWebRadio(bool beat_led, float &volume_level)
+            : MuxInterface(volume_level)
+            , beat_led(beat_led)
             // , i2s(I2S_PIN_MUTE)
             , urlStream(wifi_ssid, wifi_password)
             , source(urlStream, urls, "audio/mp3")

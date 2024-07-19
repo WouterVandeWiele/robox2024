@@ -120,6 +120,17 @@ void RoboxBluetooth::mux_stop() {
 }
 
 
+// void RoboxBluetooth::volume(float level) {
+//     a2dp_sink.set_volume((uint8_t)(0x7f*level));
+// }
+
 void RoboxBluetooth::volume(float level) {
+    if (volume_level > 1.0) {
+        volume_level = 1.0;
+    }
+    else if (volume_level < 0.0) {
+        volume_level = 0.0;
+    }
+
     a2dp_sink.set_volume((uint8_t)(0x7f*level));
 }

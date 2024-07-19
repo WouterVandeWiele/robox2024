@@ -1,8 +1,14 @@
 #ifndef MUX_INTERFACE_H
 #define MUX_INTERFACE_H
 
+#include "general_config.h"
+
 class MuxInterface {
     public:
+
+        MuxInterface(float &volume_level)
+            : volume_level(volume_level)
+        {};
 
         virtual void mux_stop() {
 
@@ -17,8 +23,23 @@ class MuxInterface {
         }
 
         virtual void volume(float level) {
-            
+        
         }
+        
+        virtual void volume_increment() {
+            volume_level += VOLUME_STEP;
+
+            volume(volume_level);
+        }
+
+        virtual void volume_decrement() {
+            volume_level -= VOLUME_STEP;
+
+            volume(volume_level);    
+        }
+
+    protected:
+        float &volume_level;
 };
 
 
