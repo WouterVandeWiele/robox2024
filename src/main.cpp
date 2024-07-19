@@ -194,6 +194,7 @@ void audio_task(void* parameter) {
 
     while (true) {
         mux.copy();
+        vTaskDelay(1);
     }
 }
 
@@ -363,7 +364,7 @@ void setup() {
             NULL,       //Task input parameter 
             PRIORITY_AUDIO_TASK,          //Priority of the task 
             &AudioCopyTask,       //Task handle.
-            1           // Core you want to run the task on (0 or 1)
+            0           // Core you want to run the task on (0 or 1)
         );
 
 }

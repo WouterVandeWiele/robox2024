@@ -359,7 +359,7 @@ void SED1530_LCD::updateWholeScreen(void) {
       }
 
       this->writeData(data);
-      vTaskDelay(1);
+      // vTaskDelay(1);
     }
     // vTaskDelay(1);
     // delay(1);
