@@ -74,8 +74,9 @@ void RoboxSD::mux_start() {
 }
 
 void RoboxSD::mux_stop() {
-  player.setVolume(0);
+  // player.setVolume(0);
   player.stop();
+  delay(1000);
   player.end();
 
   i2s_driver_uninstall((i2s_port_t)0);

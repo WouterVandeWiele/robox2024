@@ -79,8 +79,10 @@ void RoboxWebRadio::mux_start() {
 }
 
 void RoboxWebRadio::mux_stop() {
-    player.setVolume(0);
+    // player.setVolume(0);
     player.stop();
+    // player.writeSilence(10000);
+    delay(1000);
     player.end();
     WiFi.disconnect(true, false);
     WiFi.mode(WIFI_OFF);
