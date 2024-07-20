@@ -155,6 +155,7 @@ void menu_task(void * param) {
                             break;
                         
                         case PLAY_PAUSE:
+                            mux.audio_play_pause();
                             break;
 
                         case MOTOR_STOP:

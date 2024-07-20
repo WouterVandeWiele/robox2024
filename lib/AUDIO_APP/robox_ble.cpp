@@ -10,6 +10,7 @@
 
 
 extern RoboxAudioMux mux;
+static esp_avrc_playback_stat_t playback_status;
 // extern AudioRealFFT fft;
 
 // audio stream + LED beat detection
@@ -21,6 +22,10 @@ static void write_stream_beat_led(const uint8_t *data, uint32_t length) {
 // only audio stream
 static void write_stream(const uint8_t *data, uint32_t length) {
   i2s.write(data, length);
+}
+
+void avrc_rn_playstatus_callback(esp_avrc_playback_stat_t playback) {
+    playback_status = playback;
 }
 
 
@@ -79,6 +84,9 @@ void RoboxBluetooth::mux_start() {
         | ESP_AVRC_MD_ATTR_PLAYING_TIME
     );
 
+    playback_status = ESP_AVRC_PLAYBACK_ERROR;
+    a2dp_sink.set_avrc_rn_playstatus_callback(avrc_rn_playstatus_callback);
+
 
     if (beat_led) {
         a2dp_sink.set_stream_reader(write_stream_beat_led, false);
@@ -133,4 +141,24 @@ void RoboxBluetooth::volume(float level) {
     }
 
     a2dp_sink.set_volume((uint8_t)(0x7f*level));
+}
+
+bool RoboxBluetooth::audio_active() {
+    bool active = false;
+    
+    if ((playback_status == ESP_AVRC_PLAYBACK_PLAYING) || 
+        (playback_status == ESP_AVRC_PLAYBACK_FWD_SEEK) || 
+        (playback_status == ESP_AVRC_PLAYBACK_REV_SEEK)) {
+        active = true;
+    }
+
+    return active;
+}
+
+void RoboxBluetooth::audio_play() {
+    a2dp_sink.play();
+}
+
+void RoboxBluetooth::audio_pause() {
+    a2dp_sink.pause();
 }

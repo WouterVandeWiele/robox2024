@@ -83,3 +83,7 @@ void RoboxAudioMux::volume_increment() {
 void RoboxAudioMux::volume_decrement() {
     current_source->volume_decrement();
 }
+
+void RoboxAudioMux::audio_play_pause() {
+    current_source->audio_play_pause();
+}

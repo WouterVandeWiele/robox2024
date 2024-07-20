@@ -42,7 +42,12 @@ class RoboxWebRadio: public MuxInterface {
         void mux_start() override;
         void mux_stop() override;
         void mux_copy() override;
+
         void volume(float level) override;
+
+        virtual bool audio_active() override;
+        virtual void audio_play() override;
+        virtual void audio_pause() override;
 
         void change_station(std::string station_name);
 

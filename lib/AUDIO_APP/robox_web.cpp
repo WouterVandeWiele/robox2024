@@ -70,6 +70,7 @@ void RoboxWebRadio::mux_start() {
 
     // i2s_driver_install((i2s_port_t)0);
     player.setMetadataCallback(printMetaData);
+    player.setAutoFade(true);
     player.begin();
 
     player.setVolume(0.2);
@@ -97,6 +98,18 @@ void RoboxWebRadio::mux_copy() {
 
 void RoboxWebRadio::volume(float level) {
     player.setVolume(level);
+}
+
+bool RoboxWebRadio::audio_active() {
+  return player.isActive();
+}
+
+void RoboxWebRadio::audio_play() {
+    player.play();
+}
+
+void RoboxWebRadio::audio_pause() {
+    player.stop();
 }
 
 void RoboxWebRadio::change_station(std::string station_name) {

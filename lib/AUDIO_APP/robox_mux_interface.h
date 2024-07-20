@@ -38,6 +38,27 @@ class MuxInterface {
             volume(volume_level);    
         }
 
+        virtual bool audio_active() {
+            return false;
+        }
+
+        virtual void audio_play() {
+
+        }
+
+        virtual void audio_pause() {
+
+        }
+
+        virtual void audio_play_pause() {
+            if (audio_active() == true) {
+                audio_pause();
+            }
+            else {
+                audio_play();
+            }
+        }
+
     protected:
         float &volume_level;
 };

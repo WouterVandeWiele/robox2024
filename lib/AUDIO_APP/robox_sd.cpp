@@ -65,6 +65,7 @@ void RoboxSD::mux_start() {
 
     // setup player
     player.setMetadataCallback(printMetaData);
+    player.setAutoFade(true);
     player.begin();
 
     player.setVolume(0.2);
@@ -86,4 +87,16 @@ void RoboxSD::mux_copy() {
 
 void RoboxSD::volume(float level) {
   player.setVolume(level);
+}
+
+bool RoboxSD::audio_active() {
+  return player.isActive();
+}
+
+void RoboxSD::audio_play() {
+    player.play();
+}
+
+void RoboxSD::audio_pause() {
+    player.stop();
 }
