@@ -85,5 +85,7 @@ void RoboxAudioMux::volume_decrement() {
 }
 
 void RoboxAudioMux::audio_play_pause() {
-    current_source->audio_play_pause();
+    if (source_name != NotSelectedSource) {
+        current_source->audio_play_pause();
+    }
 }
