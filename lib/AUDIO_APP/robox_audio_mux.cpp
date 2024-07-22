@@ -7,10 +7,11 @@
 #include "robox_sd.h"
 
 const char* audio_source_names[] = {"NotSelected", "Ble", "WebRadio", "SD"};
+bool is_audio_paused = false;
 
 void RoboxAudioMux::setup() {
     ESP_LOGI(LOG_MUX_TAG, ">>> Audio Mux starting...");
-
+    pinMode(I2S_PIN_MUTE, OUTPUT);
     ESP_LOGI(LOG_BLE_TAG, "<<< Audio Mux setup completed");
 }
 
@@ -29,6 +30,8 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
         Serial.printf("Audio Mux switching to: %s\n", audio_source_names[new_mux_source]);
 
         source_name = NotSelectedSource;
+        is_audio_paused = false;
+        digitalWrite(I2S_PIN_MUTE, HIGH);
         
         Serial.printf("Audio Mux init new driver: %s\n", audio_source_names[new_mux_source]);
 
@@ -67,7 +70,7 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
 }
 
 void RoboxAudioMux::copy() {
-    if (source_name != NotSelectedSource) {
+    if ((source_name != NotSelectedSource) && (is_audio_paused == false)) {
         current_source->mux_copy();
     }
 }

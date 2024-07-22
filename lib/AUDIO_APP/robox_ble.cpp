@@ -156,9 +156,15 @@ bool RoboxBluetooth::audio_active() {
 }
 
 void RoboxBluetooth::audio_play() {
+    is_audio_paused = false;
+    // digitalWrite(I2S_PIN_MUTE, HIGH);
+    // delay(300);
     a2dp_sink.play();
 }
 
 void RoboxBluetooth::audio_pause() {
+    is_audio_paused = true;
+    // digitalWrite(I2S_PIN_MUTE, LOW);
+    // delay(300);
     a2dp_sink.pause();
 }

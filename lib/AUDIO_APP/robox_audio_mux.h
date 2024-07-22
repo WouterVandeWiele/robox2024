@@ -20,6 +20,8 @@
 enum audio_source {NotSelectedSource, BleSource, WebRadioSource, SDSource};
 extern const char* audio_source_names[];
 
+extern bool is_audio_paused;
+
 typedef struct MetaData{
   String title;
 } MetaData;
