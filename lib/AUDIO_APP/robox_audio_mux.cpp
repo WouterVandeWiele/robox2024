@@ -92,3 +92,15 @@ void RoboxAudioMux::audio_play_pause() {
         current_source->audio_play_pause();
     }
 }
+
+void RoboxAudioMux::audio_next() {
+    if (source_name != NotSelectedSource) {
+        current_source->audio_next();
+    }
+}
+
+void RoboxAudioMux::audio_previous() {
+    if (source_name != NotSelectedSource) {
+        current_source->audio_previous();
+    }
+}

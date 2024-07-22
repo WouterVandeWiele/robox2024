@@ -13,8 +13,16 @@
 
 // extern std::map<std::string, std::string> station_list;
 
+// static const char *urls[] = {
+//     "http://icecast.vrtcdn.be/mnm_hits-high.mp3"
+// };
+
 static const char *urls[] = {
-    "http://icecast.vrtcdn.be/mnm_hits-high.mp3"
+    "http://icecast.vrtcdn.be/mnm_hits-high.mp3",
+    "http://icecast.vrtcdn.be/mnm-high.mp3",
+    "http://icecast.vrtcdn.be/radio1-high.mp3",
+    "http://icecast.vrtcdn.be/ra2ant-high.mp3",
+    "http://icecast.vrtcdn.be/stubru-high.mp3",
 };
 
 
@@ -48,6 +56,9 @@ class RoboxWebRadio: public MuxInterface {
         virtual bool audio_active() override;
         virtual void audio_play() override;
         virtual void audio_pause() override;
+
+        virtual void audio_next() override;
+        virtual void audio_previous() override;
 
         void change_station(std::string station_name);
 

@@ -37,6 +37,8 @@ class RoboxBluetooth : public MuxInterface {
         virtual bool audio_active() override;
         virtual void audio_play() override;
         virtual void audio_pause() override;
+        virtual void audio_next() override;
+        virtual void audio_previous() override;
 
     private:
         bool beat_led;

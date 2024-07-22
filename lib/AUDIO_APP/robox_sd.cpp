@@ -107,3 +107,15 @@ void RoboxSD::audio_pause() {
     delay(300);
     player.stop();
 }
+
+void RoboxSD::audio_next() {
+  audio_pause();
+  player.next();
+  audio_play();
+}
+
+void RoboxSD::audio_previous() {
+  audio_pause();
+  player.previous();
+  audio_play();
+}

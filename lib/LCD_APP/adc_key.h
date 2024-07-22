@@ -10,6 +10,8 @@
 #define VOLUME_DOWN 8
 #define PLAY_PAUSE 9
 #define MOTOR_STOP 10
+#define AUDIO_NEXT 11
+#define AUDIO_PREVIOUS 12
 
 extern QueueHandle_t xQueueButtons;
 

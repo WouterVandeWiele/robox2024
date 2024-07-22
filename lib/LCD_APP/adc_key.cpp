@@ -74,7 +74,7 @@ void adc_key_loop(void* parameter) {
             xQueueSend(xQueueButtons, &b_1bd, 0);
         }
 
-        ButtonPress b_12c = compare(analogReadMilliVolts(BUTTON_12C), v_12c_prev, GEM_KEY_OK, GEM_KEY_CANCEL);
+        ButtonPress b_12c = compare(analogReadMilliVolts(BUTTON_12C), v_12c_prev, GEM_KEY_OK, PLAY_PAUSE);
         if (b_12c.button) {
             Serial.printf("\n>key_%d:%d long press: %d\n", BUTTON_12C, b_12c, b_12c.long_press ? 1 : 0);
             xQueueSend(xQueueButtons, &b_12c, 0);
@@ -86,7 +86,7 @@ void adc_key_loop(void* parameter) {
             xQueueSend(xQueueButtons, &b_2ac, 0);
         }
 
-        ButtonPress b_2bd = compare(analogReadMilliVolts(BUTTON_2BD), v_2bd_prev, PLAY_PAUSE, MOTOR_STOP);
+        ButtonPress b_2bd = compare(analogReadMilliVolts(BUTTON_2BD), v_2bd_prev, AUDIO_NEXT, AUDIO_PREVIOUS);
         if (b_2bd.button) {
             Serial.printf("\n>key_%d:%d long press: %d\n", BUTTON_2BD, b_2bd, b_2bd.long_press ? 1 : 0);
             xQueueSend(xQueueButtons, &b_2bd, 0);

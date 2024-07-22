@@ -120,6 +120,18 @@ void RoboxWebRadio::audio_pause() {
     player.stop();
 }
 
+void RoboxWebRadio::audio_next() {
+  audio_pause();
+  player.next();
+  audio_play();
+}
+
+void RoboxWebRadio::audio_previous() {
+  audio_pause();
+  player.previous();
+  audio_play();
+}
+
 void RoboxWebRadio::change_station(std::string station_name) {
 //     mux_stop();
 

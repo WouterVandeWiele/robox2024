@@ -161,6 +161,13 @@ void menu_task(void * param) {
                         case MOTOR_STOP:
                             break;
 
+                        case AUDIO_NEXT:
+                            mux.audio_next();
+                            break;
+
+                        case AUDIO_PREVIOUS:
+                            mux.audio_previous();
+
                         default:
                             break;
                         }

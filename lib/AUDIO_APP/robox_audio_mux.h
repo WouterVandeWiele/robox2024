@@ -45,6 +45,8 @@ class RoboxAudioMux {
         void volume_decrement();
 
         void audio_play_pause();
+        void audio_next();
+        void audio_previous();
 
         MetaData meta;
         // std::mutex meta_mutex;

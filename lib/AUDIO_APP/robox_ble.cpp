@@ -168,3 +168,15 @@ void RoboxBluetooth::audio_pause() {
     // delay(300);
     a2dp_sink.pause();
 }
+
+void RoboxBluetooth::audio_next() {
+  audio_pause();
+  a2dp_sink.next();
+  audio_play();
+}
+
+void RoboxBluetooth::audio_previous() {
+  audio_pause();
+  a2dp_sink.previous();
+  audio_play();
+}

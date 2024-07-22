@@ -59,6 +59,14 @@ class MuxInterface {
             }
         }
 
+        virtual void audio_next() {
+
+        }
+
+        virtual void audio_previous() {
+            
+        }
+
     protected:
         float &volume_level;
 };
