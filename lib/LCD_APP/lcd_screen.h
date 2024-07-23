@@ -6,8 +6,10 @@
 #include "general_definitions.h"
 #include "general_config.h"
 
-/* temporary GEM menu stuff */
 #include <GEM_adafruit_gfx.h>
+
+extern SED1530_LCD* lcd_t;
+extern GEM_adafruit_gfx* menu;
 
 // robox LCD architecture [docs/lcd_overview.excalidraw.png]
 

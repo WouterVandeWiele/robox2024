@@ -6,7 +6,7 @@
 #include "general_config.h"
 #include "example_bitmaps.h"
 #include "adc_key.h"
-
+#include "lcd_screen_context_loops.h"
 #include "robox_audio_mux.h"
 extern RoboxAudioMux mux;
 
@@ -15,7 +15,8 @@ extern RoboxAudioMux mux;
 //     static LCD_Threaded* lcd_t;
     static TaskHandle_t threaded_lcd_task;
 // #else
-    static SED1530_LCD* lcd_t;
+    SED1530_LCD* lcd_t;
+    GEM_adafruit_gfx* menu;
 // #endif
 
 
@@ -88,7 +89,7 @@ void menu_task(void * param) {
 
     Serial.println("menu setup");
 
-    GEM_adafruit_gfx* menu = new GEM_adafruit_gfx(
+    menu = new GEM_adafruit_gfx(
         *lcd_t, 
         /* menuPointerType= */ GEM_POINTER_ROW, 
         /* menuItemsPerScreen= */ GEM_ITEMS_COUNT_AUTO, 
@@ -109,7 +110,8 @@ void menu_task(void * param) {
 
     menu->setMenuPageCurrent(menuPageMain);
     // menu->init();
-    menu->drawMenu();
+    // menu->drawMenu();
+    playLoop();
 
     while (true) {
         // Serial.println("menu loop");
