@@ -135,65 +135,71 @@ void menu_task(void * param) {
 
         ButtonPress button;
 
-        if (xQueueButtons != 0) {
-            if(xQueueReceive( xQueueButtons, &(button), 0)) {
-                
-                if (button.long_press == false) {
-                    // GEM MENU keypresses
-                    if ((button.button >= 1) && (button.button <= 6)) {
-                        // GEM KEYS (up, down, left, right, ok, cancel)
-                        menu->registerKeyPress(button.button);
-                    }
-                    else  {
-                        // OTHER KEYS (volume up, volume down, play/pause, motor stop)
-                        switch (button.button)
-                        {
-                        case VOLUME_UP:
-                            mux.volume_increment();
-                            break;
-                        
-                        case VOLUME_DOWN:
-                            mux.volume_decrement();
-                            break;
-                        
-                        case PLAY_PAUSE:
-                            mux.audio_play_pause();
-                            break;
 
-                        case MOTOR_STOP:
-                            break;
-
-                        case AUDIO_NEXT:
-                            mux.audio_next();
-                            break;
-
-                        case AUDIO_PREVIOUS:
-                            mux.audio_previous();
-
-                        default:
-                            break;
+        if (xQueuePeek(xQueueButtons, &(button), 0)) {
+            if ((menu->context.loop != nullptr) && (button.long_press == false)) {
+                menu->context.loop();
+            }
+            else {
+                if(xQueueReceive( xQueueButtons, &(button), 0)) {
+                    
+                    if (button.long_press == false) {
+                        // GEM MENU keypresses
+                        if ((button.button >= 1) && (button.button <= 6)) {
+                            // GEM KEYS (up, down, left, right, ok, cancel)
+                            menu->registerKeyPress(button.button);
                         }
-                    }
-                }
-                else {
-                    // handle long key presses
-                    // OTHER KEYS (volume up, volume down, play/pause, motor stop)
-                    switch (button.button)
-                    {
-                    case VOLUME_UP:
-                        break;
-                    
-                    case VOLUME_DOWN:
-                        break;
-                    
-                    case PLAY_PAUSE:
-                        break;
+                    //     else  {
+                    //         // OTHER KEYS (volume up, volume down, play/pause, motor stop)
+                    //         switch (button.button)
+                    //         {
+                    //         case VOLUME_UP:
+                    //             mux.volume_increment();
+                    //             break;
+                            
+                    //         case VOLUME_DOWN:
+                    //             mux.volume_decrement();
+                    //             break;
+                            
+                    //         case PLAY_PAUSE:
+                    //             mux.audio_play_pause();
+                    //             break;
 
-                    case MOTOR_STOP:
-                        break;
+                    //         case MOTOR_STOP:
+                    //             break;
 
-                    default:
-                        break;
+                    //         case AUDIO_NEXT:
+                    //             mux.audio_next();
+                    //             break;
+
+                    //         case AUDIO_PREVIOUS:
+                    //             mux.audio_previous();
+
+                    //         default:
+                    //             break;
+                    //         }
+                    //     }
+                    // }
+                    // else {
+                    //     // handle long key presses
+                    //     // OTHER KEYS (volume up, volume down, play/pause, motor stop)
+                    //     switch (button.button)
+                    //     {
+                    //     case VOLUME_UP:
+                    //         break;
+                        
+                    //     case VOLUME_DOWN:
+                    //         break;
+                        
+                    //     case PLAY_PAUSE:
+                    //         break;
+
+                    //     case MOTOR_STOP:
+                    //         break;
+
+                    //     default:
+                    //         break;
+                    //     }
                     }
                 }
             }

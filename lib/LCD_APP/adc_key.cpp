@@ -2,6 +2,9 @@
 #include "general_config.h"
 #include "adc_key.h"
 
+#include "robox_audio_mux.h"
+extern RoboxAudioMux mux;
+
 static TaskHandle_t AdcKeyTaskHandle;
 
 static std::list<threshold> v_1ac_prev = {TH0, TH0, TH0};
@@ -62,13 +65,13 @@ void adc_key_loop(void* parameter) {
     while (true) {
         byte trigger = GEM_KEY_NONE;
 
-        ButtonPress b_1ac = compare(analogReadMilliVolts(BUTTON_1AC), v_1ac_prev, GEM_KEY_UP, GEM_KEY_DOWN);
+        ButtonPress b_1ac = compare(analogReadMilliVolts(BUTTON_1AC), v_1ac_prev, GEM_KEY_RIGHT, GEM_KEY_LEFT);
         if (b_1ac.button) {
             Serial.printf("\n>key_%d:%d long press: %d\n", BUTTON_1AC, b_1ac.button, b_1ac.long_press ? 1 : 0);
             xQueueSend(xQueueButtons, &b_1ac, 0);
         }
 
-        ButtonPress b_1bd = compare(analogReadMilliVolts(BUTTON_1BD), v_1bd_prev, GEM_KEY_RIGHT, GEM_KEY_LEFT);
+        ButtonPress b_1bd = compare(analogReadMilliVolts(BUTTON_1BD), v_1bd_prev, GEM_KEY_UP, GEM_KEY_DOWN);
         if (b_1bd.button){
             Serial.printf("\n>key_%d:%d long press: %d\n", BUTTON_1BD, b_1bd, b_1bd.long_press ? 1 : 0);
             xQueueSend(xQueueButtons, &b_1bd, 0);
@@ -77,19 +80,36 @@ void adc_key_loop(void* parameter) {
         ButtonPress b_12c = compare(analogReadMilliVolts(BUTTON_12C), v_12c_prev, GEM_KEY_OK, PLAY_PAUSE);
         if (b_12c.button) {
             Serial.printf("\n>key_%d:%d long press: %d\n", BUTTON_12C, b_12c, b_12c.long_press ? 1 : 0);
-            xQueueSend(xQueueButtons, &b_12c, 0);
+            if (b_12c.button == GEM_KEY_OK) {
+                xQueueSend(xQueueButtons, &b_12c, 0);
+            }
+            if ((b_12c.button == PLAY_PAUSE) && (b_12c.long_press == false)) {
+                mux.audio_play_pause();
+            }
         }
         
         ButtonPress b_2ac = compare(analogReadMilliVolts(BUTTON_2AC), v_2ac_prev, VOLUME_UP, VOLUME_DOWN);
         if (b_2ac.button) {
             Serial.printf("\n>key_%d:%d long press: %d\n", BUTTON_2AC, b_2ac, b_2ac.long_press ? 1 : 0);
-            xQueueSend(xQueueButtons, &b_2ac, 0);
+            // xQueueSend(xQueueButtons, &b_2ac, 0);
+            if ((b_2ac.button == VOLUME_UP) && (b_2ac.long_press == false)) {
+                mux.volume_increment();
+            }
+            if ((b_2ac.button == VOLUME_DOWN) && (b_2ac.long_press == false)) {
+                mux.volume_decrement();
+            }
         }
 
         ButtonPress b_2bd = compare(analogReadMilliVolts(BUTTON_2BD), v_2bd_prev, AUDIO_NEXT, AUDIO_PREVIOUS);
         if (b_2bd.button) {
             Serial.printf("\n>key_%d:%d long press: %d\n", BUTTON_2BD, b_2bd, b_2bd.long_press ? 1 : 0);
-            xQueueSend(xQueueButtons, &b_2bd, 0);
+            // xQueueSend(xQueueButtons, &b_2bd, 0);
+            if ((b_2bd.button == AUDIO_NEXT) && (b_2ac.long_press == false)) {
+                mux.audio_next();
+            }
+            if ((b_2bd.button == AUDIO_PREVIOUS) && (b_2ac.long_press == false)) {
+                mux.audio_previous();
+            }
         }
 
         delay(KEY_DEBOUNCE_DELAY);
