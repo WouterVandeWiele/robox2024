@@ -147,8 +147,13 @@ void menu_task(void * param) {
 
         if (xQueuePeek(xQueueButtons, &(button), 0)) {
             if ((menu->context.loop != nullptr) && (button.long_press == false)) {
-                // menu->context.loop();
-                menu->readyForKey();
+                menu->context.loop();
+                // menu->readyForKey();
+
+                if (menu->context.loop == nullptr) {
+                    // draw loop has exited
+                    menu->drawMenu();
+                }
                 // menu->registerKeyPress(GEM_KEY_NONE);
             }
             else {

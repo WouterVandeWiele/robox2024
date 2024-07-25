@@ -179,6 +179,9 @@ static void playContextExit() {
 
   // Draw menu back on screen and clear context
   lcd_t->clearScreen(GLCD_COLOR_CLEAR);
+
+//     menu->reInit();
+//    menu->drawMenu();
   menu->clearContext();
 
     // if (active_button == item_settings) {
@@ -188,9 +191,11 @@ static void playContextExit() {
     //     menu->setMenuPageCurrent(menuPageSwitch);
     // }
 
-  menu->reInit();
+//   menu->reInit();
 //   lcd_t->updateWholeScreen();
-    menu->drawMenu();
+    // menu->drawMenu();
+    // menu->drawMenu();
+
 }
 
 // Setup context
