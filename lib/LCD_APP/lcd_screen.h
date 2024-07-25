@@ -11,6 +11,9 @@
 extern SED1530_LCD* lcd_t;
 extern GEM_adafruit_gfx* menu;
 
+extern GEMPage menuPageSwitch;
+extern GEMPage menuPageSettings;
+
 // robox LCD architecture [docs/lcd_overview.excalidraw.png]
 
 #if defined(LCD_RUN_THREADED)

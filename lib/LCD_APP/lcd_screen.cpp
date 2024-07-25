@@ -62,7 +62,12 @@ GEMItem buttonSwitchBLE("Sw BLE", switch_to_BLE);
 GEMItem buttonSwitchWEB("Sw WEB", switch_to_WEB);
 GEMItem buttonSwitchSD("Sw SD", switch_to_SD);
 
-GEMPage menuPageMain("Main Menu");
+GEMItem menuItemSwitchAudioPlay("Play Audio", playLoop);
+GEMItem menuItemSettingsAudioPlay("Play Audio", playLoop);
+
+GEMPage menuPageSwitch("Switch Audio Source");
+
+GEMPage menuPageSettings("Settings");
 
 
 #if defined(LCD_RUN_THREADED)
@@ -102,13 +107,17 @@ void menu_task(void * param) {
     // menu->setSplash(100, 48, robox_splash);
     // menu->setSplashDelay(3000);
 
-    menuPageMain.addMenuItem(menuItemButton);
-    menuPageMain.addMenuItem(buttonSwitchNoSource);
-    menuPageMain.addMenuItem(buttonSwitchBLE);
-    menuPageMain.addMenuItem(buttonSwitchWEB);
-    menuPageMain.addMenuItem(buttonSwitchSD);
+    menuPageSwitch.addMenuItem(buttonSwitchNoSource);
+    menuPageSwitch.addMenuItem(buttonSwitchBLE);
+    menuPageSwitch.addMenuItem(buttonSwitchWEB);
+    menuPageSwitch.addMenuItem(buttonSwitchSD);
+    // menuPageSwitch.addMenuItem(menuItemButton);
+    menuPageSwitch.addMenuItem(menuItemSwitchAudioPlay);
 
-    menu->setMenuPageCurrent(menuPageMain);
+    menuPageSettings.addMenuItem(menuItemButton);
+    menuPageSettings.addMenuItem(menuItemSettingsAudioPlay);
+
+    menu->setMenuPageCurrent(menuPageSettings);
     // menu->init();
     // menu->drawMenu();
     playLoop();
@@ -138,7 +147,9 @@ void menu_task(void * param) {
 
         if (xQueuePeek(xQueueButtons, &(button), 0)) {
             if ((menu->context.loop != nullptr) && (button.long_press == false)) {
-                menu->context.loop();
+                // menu->context.loop();
+                menu->readyForKey();
+                // menu->registerKeyPress(GEM_KEY_NONE);
             }
             else {
                 if(xQueueReceive( xQueueButtons, &(button), 0)) {
