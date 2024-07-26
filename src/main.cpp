@@ -300,7 +300,7 @@ void setup() {
     String ssid = "ROBOX_" + hostString;
 
     // use for testing, to cleare the stored last ssid/password
-    wifiManager.resetSettings();
+    // wifiManager.resetSettings();
 
     // automatically connect to wifi
     boolean result = wifiManager.autoConnect(ssid.c_str(), NULL); // empty password
