@@ -212,6 +212,8 @@ void setup() {
 
     AudioLogger::instance().begin(Serial, AudioLogger::Info);
 
+    // font generated with https://patorjk.com/software/taag/#p=display&f=Doh&t=ROBOX
+
     Serial.println("\n");
     Serial.println("RRRRRRRRRRRRRRRRR        OOOOOOOOO     BBBBBBBBBBBBBBBBB        OOOOOOOOO     XXXXXXX       XXXXXXX");
     Serial.println("R::::::::::::::::R     OO:::::::::OO   B::::::::::::::::B     OO:::::::::OO   X:::::X       X:::::X");
@@ -299,7 +301,7 @@ void setup() {
     hostString.toUpperCase();
     String ssid = "ROBOX_" + hostString;
 
-    // use for testing, to cleare the stored last ssid/password
+    // use for testing, to clear the stored/last ssid/password
     // wifiManager.resetSettings();
 
     // automatically connect to wifi
