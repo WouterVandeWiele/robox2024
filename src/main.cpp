@@ -44,6 +44,7 @@
 // #define ROBOX_DEBUG_I2C
 // #define ROBOX_DEBUG_I2C_SCANNER
 #define ROBOX_PREFERENCES
+#define ROBOX_WIFI_MANAGER
 
 /*
  * compile options logic
@@ -121,6 +122,10 @@
     #define RO_MODE true
 #endif
 
+#if defined(ROBOX_WIFI_MANAGER)
+    #include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
+    #include "esp_mac.h"
+#endif
 
 // #include "ble_example.h"
 // #include "ble_copier.h"
@@ -188,6 +193,10 @@ const char* wifi_password_2;
 bool motorsOn;
 #endif
 
+#if defined(ROBOX_WIFI_MANAGER)
+    WiFiManager wifiManager;
+#endif
+
 
 void audio_task(void* parameter) {
     mux.setup();
@@ -202,6 +211,31 @@ void setup() {
     Serial.begin(115200);
 
     AudioLogger::instance().begin(Serial, AudioLogger::Info);
+
+    // font generated with https://patorjk.com/software/taag/#p=display&f=Doh&t=ROBOX
+
+    Serial.println("\n");
+    Serial.println("RRRRRRRRRRRRRRRRR        OOOOOOOOO     BBBBBBBBBBBBBBBBB        OOOOOOOOO     XXXXXXX       XXXXXXX");
+    Serial.println("R::::::::::::::::R     OO:::::::::OO   B::::::::::::::::B     OO:::::::::OO   X:::::X       X:::::X");
+    Serial.println("R::::::RRRRRR:::::R  OO:::::::::::::OO B::::::BBBBBB:::::B  OO:::::::::::::OO X:::::X       X:::::X");
+    Serial.println("RR:::::R     R:::::RO:::::::OOO:::::::OBB:::::B     B:::::BO:::::::OOO:::::::OX::::::X     X::::::X");
+    Serial.println("  R::::R     R:::::RO::::::O   O::::::O  B::::B     B:::::BO::::::O   O::::::OXXX:::::X   X:::::XXX");
+    Serial.println("  R::::R     R:::::RO:::::O     O:::::O  B::::B     B:::::BO:::::O     O:::::O   X:::::X X:::::X   ");
+    Serial.println("  R::::RRRRRR:::::R O:::::O     O:::::O  B::::BBBBBB:::::B O:::::O     O:::::O    X:::::X:::::X    ");
+    Serial.println("  R:::::::::::::RR  O:::::O     O:::::O  B:::::::::::::BB  O:::::O     O:::::O     X:::::::::X     ");
+    Serial.println("  R::::RRRRRR:::::R O:::::O     O:::::O  B::::BBBBBB:::::B O:::::O     O:::::O     X:::::::::X     ");
+    Serial.println("  R::::R     R:::::RO:::::O     O:::::O  B::::B     B:::::BO:::::O     O:::::O    X:::::X:::::X    ");
+    Serial.println("  R::::R     R:::::RO:::::O     O:::::O  B::::B     B:::::BO:::::O     O:::::O   X:::::X X:::::X   ");
+    Serial.println("  R::::R     R:::::RO::::::O   O::::::O  B::::B     B:::::BO::::::O   O::::::OXXX:::::X   X:::::XXX");
+    Serial.println("RR:::::R     R:::::RO:::::::OOO:::::::OBB:::::BBBBBB::::::BO:::::::OOO:::::::OX::::::X     X::::::X");
+    Serial.println("R::::::R     R:::::R OO:::::::::::::OO B:::::::::::::::::B  OO:::::::::::::OO X:::::X       X:::::X");
+    Serial.println("R::::::R     R:::::R   OO:::::::::OO   B::::::::::::::::B     OO:::::::::OO   X:::::X       X:::::X");
+    Serial.println("RRRRRRRR     RRRRRRR     OOOOOOOOO     BBBBBBBBBBBBBBBBB        OOOOOOOOO     XXXXXXX       XXXXXXX");
+    Serial.println("\n");
+    Serial.println("Version: 2024.07.26\n");
+    Serial.println("More info on https://github.com/...\n");
+    Serial.println("\n");
+
     
     // setup logging
     esp_log_level_set("*", ESP_LOG_ERROR);
@@ -221,7 +255,7 @@ void setup() {
     roboxPrefs.begin("roboxPrefs", RO_MODE); 
     
     bool nvsInit = roboxPrefs.isKey("nvsInit");       // Test for the existence
-                                                     // of the "already initialized" key.
+                                                      // of the "already initialized" key.
 
     if (nvsInit == false) {
       // If nvsInit is 'false', the key "nvsInit" does not yet exist therefore this
@@ -256,6 +290,31 @@ void setup() {
 
     // All done. Last run state (or the factory default) is now restored.
     roboxPrefs.end();                                      // Close our preferences namespace.
+    #endif
+
+    #if defined(ROBOX_WIFI_MANAGER)
+    // Run this part as soon as you need Wifi
+
+    uint64_t _chipmacid = 0LL;
+    esp_efuse_mac_get_default((uint8_t*) (&_chipmacid));
+    String hostString = String((uint32_t)_chipmacid, HEX);
+    hostString.toUpperCase();
+    String ssid = "ROBOX_" + hostString;
+
+    // use for testing, to clear the stored/last ssid/password
+    // wifiManager.resetSettings();
+
+    // automatically connect to wifi
+    boolean result = wifiManager.autoConnect(ssid.c_str(), NULL); // empty password
+    if (result)
+    {
+        Serial.println("Successfully connected to Wifi.");
+    }
+    else
+    {
+        Serial.println("Failed setting up Wifi.");
+    }
+
     #endif
 
     #if defined(ROBOX_FULL)
