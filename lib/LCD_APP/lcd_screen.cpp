@@ -8,7 +8,11 @@
 #include "adc_key.h"
 #include "lcd_screen_context_loops.h"
 #include "robox_audio_mux.h"
+
+#include <WiFiManager.h>
+
 extern RoboxAudioMux mux;
+extern WiFiManager wifiManager;
 
 
 // #if defined(LCD_RUN_THREADED)
@@ -67,6 +71,28 @@ GEMItem menuItemSettingsAudioPlay("Play Audio", playLoop);
 
 GEMPage menuPageSwitch("Switch Audio Source");
 
+//////////////////////////////////////////////////////////////////////////
+
+extern const char* wifi_ssid_2;
+extern const char* wifi_password_2;
+
+void reset_wifi_credentials() {
+    uint64_t _chipmacid = 0LL;
+    esp_efuse_mac_get_default((uint8_t*) (&_chipmacid));
+    String hostString = String((uint32_t)_chipmacid, HEX);
+    hostString.toUpperCase();
+    String ssid = "ROBOX_" + hostString;
+
+
+    WiFi.disconnect(true, true);
+    WiFi.mode(WIFI_OFF);
+    wifiManager.resetSettings();
+    wifiManager.autoConnect(ssid.c_str(), NULL);
+    // WiFi.begin(wifi_ssid_2, wifi_password_2);
+}
+
+GEMItem menuPageSettingsResetWifiCredentials("Reset Wifi Cred", reset_wifi_credentials);
+
 GEMPage menuPageSettings("Settings");
 
 
@@ -115,6 +141,7 @@ void menu_task(void * param) {
     menuPageSwitch.addMenuItem(menuItemSwitchAudioPlay);
 
     menuPageSettings.addMenuItem(menuItemButton);
+    menuPageSettings.addMenuItem(menuPageSettingsResetWifiCredentials);
     menuPageSettings.addMenuItem(menuItemSettingsAudioPlay);
 
     menu->setMenuPageCurrent(menuPageSettings);

@@ -1,3 +1,4 @@
+#include <WiFiManager.h>
 #include "robox_audio_mux.h"
 #include "robox_i2s.h"
 #include "general_definitions.h"
@@ -5,6 +6,8 @@
 #include "robox_ble.h"
 #include "robox_web.h"
 #include "robox_sd.h"
+
+extern WiFiManager wifiManager;
 
 const char* audio_source_names[] = {"NotSelected", "Ble", "WebRadio", "SD"};
 bool is_audio_paused = false;
@@ -26,6 +29,20 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
         }
 
         delay(100);
+
+        if (source_name == BleSource) {
+            WiFi.disconnect(true, false);
+            WiFi.mode(WIFI_OFF);
+        }
+        else if (WiFi.status() != WL_CONNECTED) {
+            uint64_t _chipmacid = 0LL;
+            esp_efuse_mac_get_default((uint8_t*) (&_chipmacid));
+            String hostString = String((uint32_t)_chipmacid, HEX);
+            hostString.toUpperCase();
+            String ssid = "ROBOX_" + hostString;
+
+            wifiManager.autoConnect(ssid.c_str(), NULL);
+        }
 
         Serial.printf("Audio Mux switching to: %s\n", audio_source_names[new_mux_source]);
 

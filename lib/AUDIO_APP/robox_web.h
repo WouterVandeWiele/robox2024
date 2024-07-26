@@ -5,7 +5,7 @@
 #include "robox_mux_interface.h"
 #include "AudioCodecs/CodecMP3Helix.h"
 // #include "audio_mux.h"
-#include "wifi_credentials.h"
+// #include "wifi_credentials.h"
 #include "general_definitions.h"
 
 #include "robox_i2s.h"
@@ -26,7 +26,6 @@ static const char *urls[] = {
     // "http://streams.radio.dpgmedia.cloud/redirect/qmusic_be/mp3"
 };
 
-
 /*
 Web radio Audio MUX controls
 */
@@ -37,7 +36,8 @@ class RoboxWebRadio: public MuxInterface {
             : MuxInterface(volume_level)
             , beat_led(beat_led)
             // , i2s(I2S_PIN_MUTE)
-            , urlStream(wifi_ssid, wifi_password)
+            // , urlStream(wifi_ssid, wifi_password)
+            , urlStream()
             , source(urlStream, urls, "audio/mp3")
             , multi_output(i2s)
             , decoder()

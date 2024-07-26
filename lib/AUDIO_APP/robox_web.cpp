@@ -7,7 +7,7 @@
 #include "robox_web.h"
 #include "robox_i2s.h"
 #include "general_definitions.h"
-#include "wifi_credentials.h"
+// #include "wifi_credentials.h"
 #include "robox_fft_beat.h"
 
 // https://www.vrt.be/nl/aanbod/kijk-en-luister/radio-luisteren/streamingslinks-radio/
@@ -84,8 +84,6 @@ void RoboxWebRadio::mux_stop() {
     // player.writeSilence(10000);
     delay(1000);
     player.end();
-    WiFi.disconnect(true, false);
-    WiFi.mode(WIFI_OFF);
 
     // i2s.end();
     // urlStream.end();
