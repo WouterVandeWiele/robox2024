@@ -45,6 +45,7 @@
 // #define ROBOX_DEBUG_I2C_SCANNER
 #define ROBOX_PREFERENCES
 #define ROBOX_WIFI_MANAGER
+#define ROBOX_SERVER
 
 /*
  * compile options logic
@@ -125,6 +126,10 @@
 #if defined(ROBOX_WIFI_MANAGER)
     #include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
     #include "esp_mac.h"
+#endif
+
+#if defined(ROBOX_SERVER)
+    #include "robox_server.h"
 #endif
 
 // #include "ble_example.h"
@@ -309,6 +314,8 @@ void setup() {
     if (result)
     {
         Serial.println("Successfully connected to Wifi.");
+        server_setup();
+        server_start();
     }
     else
     {
