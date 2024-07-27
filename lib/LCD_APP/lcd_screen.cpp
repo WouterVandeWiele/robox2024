@@ -174,6 +174,7 @@ void menu_task(void * param) {
 
         if (xQueuePeek(xQueueButtons, &(button), 0)) {
             if ((menu->context.loop != nullptr) && (button.long_press == false)) {
+                // let custom draw loop handle button queue
                 menu->context.loop();
                 // menu->readyForKey();
 
@@ -184,6 +185,7 @@ void menu_task(void * param) {
                 // menu->registerKeyPress(GEM_KEY_NONE);
             }
             else {
+                // let main GEM library handle the button queue
                 if(xQueueReceive( xQueueButtons, &(button), 0)) {
                     
                     if (button.long_press == false) {

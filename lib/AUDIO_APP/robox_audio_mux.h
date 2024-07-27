@@ -50,6 +50,8 @@ class RoboxAudioMux {
 
         MetaData meta;
         // std::mutex meta_mutex;
+
+        bool audio_active();
     private:
 
         volatile audio_source source_name;

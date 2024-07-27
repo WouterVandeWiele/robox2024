@@ -121,3 +121,12 @@ void RoboxAudioMux::audio_previous() {
         current_source->audio_previous();
     }
 }
+
+bool RoboxAudioMux::audio_active() {
+    if (source_name != NotSelectedSource) {
+        return current_source->audio_active();
+    }
+    else {
+        return false;
+    }
+}

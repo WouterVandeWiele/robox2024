@@ -8,8 +8,9 @@ extern RoboxAudioMux mux;
 /******************************************************************************
  * Play menu
  *****************************************************************************/
+uint8_t lm_current_item = 0;
 
-enum playItems {item_switch, item_audio_controls, item_settings, item_play, item_pause, item_reverse, item_forward};
+enum playItems {item_switch, item_audio_controls, item_settings, item_play_pause, item_led_motor, item_reverse, item_forward};
 
 typedef struct ButtonChain{
   playItems active_item;
@@ -36,21 +37,21 @@ const ButtonChain play_item_chain[] = {
     {item_reverse, GEM_KEY_UP, item_reverse},
     {item_reverse, GEM_KEY_DOWN, item_reverse},
     {item_reverse, GEM_KEY_LEFT, item_switch},
-    {item_reverse, GEM_KEY_RIGHT, item_play},
+    {item_reverse, GEM_KEY_RIGHT, item_play_pause},
 
-    {item_play, GEM_KEY_UP, item_pause},
-    {item_play, GEM_KEY_DOWN, item_pause},
-    {item_play, GEM_KEY_LEFT, item_reverse},
-    {item_play, GEM_KEY_RIGHT, item_forward},
+    {item_play_pause, GEM_KEY_UP, item_led_motor},
+    {item_play_pause, GEM_KEY_DOWN, item_led_motor},
+    {item_play_pause, GEM_KEY_LEFT, item_reverse},
+    {item_play_pause, GEM_KEY_RIGHT, item_forward},
 
-    {item_pause, GEM_KEY_UP, item_play},
-    {item_pause, GEM_KEY_DOWN, item_play},
-    {item_pause, GEM_KEY_LEFT, item_reverse},
-    {item_pause, GEM_KEY_RIGHT, item_forward},
+    {item_led_motor, GEM_KEY_UP, item_play_pause},
+    {item_led_motor, GEM_KEY_DOWN, item_play_pause},
+    {item_led_motor, GEM_KEY_LEFT, item_reverse},
+    {item_led_motor, GEM_KEY_RIGHT, item_forward},
 
     {item_forward, GEM_KEY_UP, item_forward},
     {item_forward, GEM_KEY_DOWN, item_forward},
-    {item_forward, GEM_KEY_LEFT, item_play},
+    {item_forward, GEM_KEY_LEFT, item_play_pause},
     {item_forward, GEM_KEY_RIGHT, item_switch},
 };
 
@@ -84,12 +85,40 @@ Serial.println("In play contex loop");
                 if (button.button == GEM_KEY_OK) {
                     switch (active_button)
                     {
-                    case item_play:
-                        // mux.play();
+                    case item_play_pause:
+                        mux.audio_play_pause();
                         break;
 
-                    case item_pause:
-                        // mux.pause();
+                    case item_led_motor:
+                        lm_current_item++;
+                        if (lm_current_item > 3) {
+                            lm_current_item = 0;
+                        }
+                        switch (lm_current_item)
+                        {
+                        case 1:
+                            // led only
+                            break;
+
+                        case 2:
+                            // motor only
+                            break;
+
+                        case 3:
+                            // led and motor
+                            break;
+                        
+                        default:
+                            break;
+                        }
+                        break;
+
+                    case item_reverse:
+                        mux.audio_previous();
+                        break;
+
+                    case item_forward:
+                        mux.audio_next();
                         break;
 
                     case item_switch:
@@ -137,10 +166,37 @@ Serial.println("In play contex loop");
 
         // central controls
 
-        // 14 x 14
-        lcd_t->drawBitmap(52, 14, (active_button == item_play) ? icon_play_circle_fill : icon_play_circle, 14, 14, GLCD_COLOR_SET);
-        lcd_t->drawBitmap(52, 29, (active_button == item_pause) ? icon_pause_circle_fill : icon_pause_circle, 14, 14, GLCD_COLOR_SET);
+        // led - motor
+        lcd_t->setFont();
+        lcd_t->cp437(true);
+        lcd_t->setTextWrap(false);
+        if ((lm_current_item == 1) || (lm_current_item == 3)) {
+            lcd_t->setCursor(53, 20);
+            lcd_t->print("L");
+        }
+        if ((lm_current_item == 2) || (lm_current_item == 3)) {
+            lcd_t->setCursor(60, 20);
+            lcd_t->print("M");
+        }
+        if (lm_current_item == 0) {
+            lcd_t->setCursor(57, 20);
+            lcd_t->print("-");
+        }
+        if (active_button == item_led_motor) {
+            lcd_t->drawRect(51, 18, 16, 11, GLCD_COLOR_SET);
+        }
+
+        // play - pause
+        if (mux.audio_active() == true) {
+            lcd_t->drawBitmap(52, 29, (active_button == item_play_pause) ? icon_pause_circle_fill : icon_pause_circle, 14, 14, GLCD_COLOR_SET);
+        }
+        else {
+            lcd_t->drawBitmap(52, 29, (active_button == item_play_pause) ? icon_play_circle_fill : icon_play_circle, 14, 14, GLCD_COLOR_SET);
+        }
+
+        // rewind
         lcd_t->drawBitmap(34, 26, (active_button == item_reverse) ? icon_rewind_fill : icon_rewind, 14, 14, GLCD_COLOR_SET);
+        // forward
         lcd_t->drawBitmap(70, 26, (active_button == item_forward) ? icon_fast_forward_fill : icon_fast_forward, 14, 14, GLCD_COLOR_SET);
 
         // progress bar
