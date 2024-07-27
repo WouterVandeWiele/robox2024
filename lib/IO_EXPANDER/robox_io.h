@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include "general_definitions.h"
 // #include "lcd_screen.h"
-#include "robox_mux_interface.h"
+// #include "robox_mux_interface.h"
 
 
 #define INPUT_P0 0x00   // input (incomming logic levels) port 0
