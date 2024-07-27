@@ -1,6 +1,7 @@
 #ifndef ADC_KEY_H
 #define ADC_KEY_H
 
+#include <list>
 #include <Arduino.h>
 // #include "lcd_config.h"
 #include <GEM_adafruit_gfx.h>
@@ -20,9 +21,10 @@ enum threshold {TH0, TH1, TH2, PRESSED, LONG_PRESSED};
 typedef struct ButtonPress{
   uint8_t button;
   bool long_press;
+  uint32_t press_time;
 } ButtonPress;
 
-ButtonPress compare(uint32_t voltage, threshold &previous, byte button1, byte button2);
+ButtonPress compare(uint32_t voltage, std::list<threshold> &buffer, byte button1, byte button2);
 void adc_key_loop(void* parameter);
 void adc_key_setup();
 
