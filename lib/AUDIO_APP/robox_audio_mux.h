@@ -41,6 +41,7 @@ class RoboxAudioMux {
         void copy();
 
         void volume(float level);
+        float get_volume();
         void volume_increment();
         void volume_decrement();
 

@@ -218,7 +218,7 @@ Serial.println("In play contex loop");
 
         lcd_t->drawBitmap(74, 15, icon_volume, 10, 10, GLCD_COLOR_SET);
         lcd_t->setCursor(85, 22);
-        lcd_t->print("100%");
+        lcd_t->printf("%d%%", int(mux.get_volume() * 100));
 
         lcd_t->updateWholeScreen();
     }

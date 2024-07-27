@@ -3,6 +3,10 @@
 #include "robox_i2s.h"
 #include "general_definitions.h"
 
+#include <GEM_adafruit_gfx.h>
+
+extern GEM_adafruit_gfx* menu;
+
 #include "robox_ble.h"
 #include "robox_web.h"
 #include "robox_sd.h"
@@ -93,7 +97,21 @@ void RoboxAudioMux::copy() {
 }
 
 void RoboxAudioMux::volume(float level) {
-    current_source->volume(level);
+    if (source_name != NotSelectedSource) {
+        current_source->volume(level);
+        if (menu->context.loop != nullptr) {
+            menu->registerKeyPress(GEM_KEY_NONE);
+        }
+    }
+}
+
+float RoboxAudioMux::get_volume() {
+    if (source_name != NotSelectedSource) {
+        return current_source->get_volume();
+    }
+    else {
+        return 0.0;
+    }
 }
 
 void RoboxAudioMux::volume_increment() {

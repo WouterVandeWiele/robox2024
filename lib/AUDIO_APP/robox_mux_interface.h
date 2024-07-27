@@ -25,6 +25,10 @@ class MuxInterface {
         virtual void volume(float level) {
         
         }
+
+        virtual float get_volume() {
+            return volume_level;
+        }
         
         virtual void volume_increment() {
             volume_level += VOLUME_STEP;
