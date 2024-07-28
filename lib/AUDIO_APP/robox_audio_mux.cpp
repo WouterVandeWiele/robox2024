@@ -117,15 +117,11 @@ float RoboxAudioMux::get_volume() {
 }
 
 void RoboxAudioMux::volume_increment() {
-    if (source_name != NotSelectedSource) {
-        current_source->volume_increment();
-    }
+    current_source->volume_increment();
 }
 
 void RoboxAudioMux::volume_decrement() {
-    if (source_name != NotSelectedSource) {
-        current_source->volume_decrement();
-    }
+    current_source->volume_decrement();
 }
 
 void RoboxAudioMux::audio_play_pause() {
