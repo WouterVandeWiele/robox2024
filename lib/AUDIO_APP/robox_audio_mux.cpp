@@ -10,6 +10,7 @@ extern GEM_adafruit_gfx* menu;
 #include "robox_ble.h"
 #include "robox_web.h"
 #include "robox_sd.h"
+#include "robox_void.h"
 
 extern WiFiManager wifiManager;
 
@@ -19,6 +20,7 @@ bool is_audio_paused = false;
 void RoboxAudioMux::setup() {
     ESP_LOGI(LOG_MUX_TAG, ">>> Audio Mux starting...");
     pinMode(I2S_PIN_MUTE, OUTPUT);
+    current_source.reset(new RoboxVoid(false, volume_level));
     ESP_LOGI(LOG_BLE_TAG, "<<< Audio Mux setup completed");
 }
 
@@ -60,7 +62,7 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
         switch (new_mux_source)
         {
         case NotSelectedSource:
-            current_source.reset();
+            current_source.reset(new RoboxVoid(false, volume_level));
             break;
 
         case BleSource:
@@ -115,11 +117,15 @@ float RoboxAudioMux::get_volume() {
 }
 
 void RoboxAudioMux::volume_increment() {
-    current_source->volume_increment();
+    if (source_name != NotSelectedSource) {
+        current_source->volume_increment();
+    }
 }
 
 void RoboxAudioMux::volume_decrement() {
-    current_source->volume_decrement();
+    if (source_name != NotSelectedSource) {
+        current_source->volume_decrement();
+    }
 }
 
 void RoboxAudioMux::audio_play_pause() {
