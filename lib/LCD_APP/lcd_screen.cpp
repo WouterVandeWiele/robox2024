@@ -23,7 +23,6 @@ extern WiFiManager wifiManager;
     GEM_adafruit_gfx* menu;
 // #endif
 
-
 /* temporary GEM menu stuff */
 #include "splash.h"
 #include "robox_audio_mux.h"
@@ -98,7 +97,9 @@ GEMPage menuPageSettings("Settings");
 
 #if defined(LCD_RUN_THREADED)
 // locking primitives to communicate with the task function
-// static SemaphoreHandle_t xSemaphoreScreenUpdate;    // trigger to the task to update the screen, release this semafore once done (block sequential updateWholeScreen and let them wait untill the draw screen procedure has finished)
+// static SemaphoreHandle_t xSemaphoreScreenUpdate;
+// trigger to the task to update the screen, release this semafore once done (block sequential updateWholeScreen
+// and let them wait untill the draw screen procedure has finished)
 // static portMUX_TYPE spinlockScreenUpdate;
 
 /* The index within the target task's array of task notifications to use. */
@@ -145,44 +146,62 @@ void menu_task(void * param) {
     menuPageSettings.addMenuItem(menuItemSettingsAudioPlay);
 
     menu->setMenuPageCurrent(menuPageSettings);
-    // menu->init();
-    // menu->drawMenu();
-    playLoop();
+    menu->init();
+    menu->drawMenu();
 
-    while (true) {
-
-        ButtonPress button;
-
-
-        if (xQueuePeek(xQueueButtons, &(button), 0)) {
-            if ((menu->context.loop != nullptr) && (button.long_press == false)) {
-                // let custom draw loop handle button queue
-                menu->context.loop();
-                // menu->readyForKey();
-
-                if (menu->context.loop == nullptr) {
-                    // draw loop has exited
-                    menu->drawMenu();
-                }
-                // menu->registerKeyPress(GEM_KEY_NONE);
-            }
-            else {
-                // let main GEM library handle the button queue
-                if(xQueueReceive( xQueueButtons, &(button), 0)) {
-                    
-                    if (button.long_press == false) {
-                        // GEM MENU keypresses
-                        if ((button.button >= 1) && (button.button <= 6)) {
-                            // GEM KEYS (up, down, left, right, ok, cancel)
-                            menu->registerKeyPress(button.button);
-                        }
-                    }
-                }
-            }
+    for (;;) {
+        if (!menu->readyForKey()) {
+            continue;
         }
-
-        delay(50);
+        ButtonPress button;
+        for (;;) {
+            Serial.println("Waiting for buttons");
+            if (!xQueueReceive(xQueueButtons, &button, 100 * portTICK_PERIOD_MS)) {
+                continue;
+            }
+            if (button.long_press) {
+                continue;
+            }
+            if (button.button < GEM_KEY_UP || button.button > GEM_KEY_OK) {
+                continue;
+            }
+            break;
+        }
+        Serial.println("Got button press");
+        menu->registerKeyPress(button.button);
     }
+    // menu->drawMenu();
+    // playLoop();
+
+    // while (true) {
+
+    //     ButtonPress button;
+
+    //     if ((menu->context.loop != nullptr) && (button.long_press == false)) {
+    //         // let custom draw loop handle button queue
+    //         menu->context.loop();
+    //         // menu->readyForKey();
+
+    //         if (menu->context.loop == nullptr) {
+    //             // draw loop has exited
+    //             menu->drawMenu();
+    //         }
+    //         // menu->registerKeyPress(GEM_KEY_NONE);
+    //     }
+    //     if (xQueuePeek(xQueueButtons, &(button), 50 * portTICK_PERIOD_MS)) {
+    //         // let main GEM library handle the button queue
+            //  if(xQueueReceive( xQueueButtons, &(button), 0)) {
+                
+    //             if (button.long_press == false) {
+    //                 // GEM MENU keypresses
+    //                 if ((button.button >= 1) && (button.button <= 6)) {
+    //                     // GEM KEYS (up, down, left, right, ok, cancel)
+    //                     menu->registerKeyPress(button.button);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 }
 
 #endif

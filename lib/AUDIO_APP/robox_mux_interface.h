@@ -23,7 +23,7 @@ class MuxInterface {
         }
 
         virtual void volume(float level) {
-        
+            
         }
 
         virtual float get_volume() {
