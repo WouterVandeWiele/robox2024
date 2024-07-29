@@ -10,11 +10,20 @@
 // #define I2S_PIN_BCLK 33
 // #define I2S_PIN_WS 25
 
+// I2S 
 #define I2S_PIN_MUTE 2
 #define I2S_PIN_DATA 32
 #define I2S_PIN_BCLK 33
 #define I2S_PIN_WS 25
 
+// uSD (SPI)
+#define USD_CS 5
+#define USD_CLK 18
+#define USD_MOSI 23
+#define USD_MISO 19
+#define USD_CARD_DETECT 4
+
+// io expander
 #define IO_RESET 12
 #define IO_INTERRUPT 39
 #define I2C_SCL 27
