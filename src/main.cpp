@@ -125,7 +125,13 @@
 
 #if defined(ROBOX_WIFI_MANAGER)
     #include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
+    #include <ESPmDNS.h>
     #include "esp_mac.h"
+    // #include <WiFi.h>
+
+    // //needed for library
+    // #include <ESPAsyncWebServer.h>
+    // #include <ESPAsyncWiFiManager.h>         //https://github.com/tzapu/WiFiManager
 #endif
 
 #if defined(ROBOX_SERVER)
@@ -200,6 +206,49 @@ bool motorsOn;
 
 #if defined(ROBOX_WIFI_MANAGER)
     WiFiManager wifiManager;
+
+    unsigned int  timeout   = 120; // seconds to run for
+    unsigned int  startTime = millis();
+    bool portalRunning      = false;
+    bool startAP            = false; // start AP and webserver if true, else start only webserver
+
+    // static AsyncWebServer server_manager(80);
+    // static DNSServer dns;
+    // static AsyncWiFiManager wifiManager(&server_manager,&dns);
+
+    void doWiFiManager(){
+  // is auto timeout portal running
+  if(portalRunning){
+    wifiManager.process(); // do processing
+
+    // check for timeout
+    if((millis()-startTime) > (timeout*1000)){
+      Serial.println("portaltimeout");
+      portalRunning = false;
+      if(startAP){
+        wifiManager.stopConfigPortal();
+      }
+      else{
+        wifiManager.stopWebPortal();
+      } 
+   }
+  }
+
+  // is configuration portal requested?
+  if(!portalRunning) {
+    if(startAP){
+      Serial.println("Button Pressed, Starting Config Portal");
+      wifiManager.setConfigPortalBlocking(false);
+      wifiManager.startConfigPortal();
+    }  
+    else{
+      Serial.println("Button Pressed, Starting Web Portal");
+      wifiManager.startWebPortal();
+    }  
+    portalRunning = true;
+    startTime = millis();
+  }
+}
 #endif
 
 
@@ -310,6 +359,9 @@ void setup() {
     // wifiManager.resetSettings();
 
     // automatically connect to wifi
+    WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP  
+    wifiManager.setDebugOutput(true, WM_DEBUG_MAX);
+    // wifiManager.setConfigPortalBlocking(false);
     boolean result = wifiManager.autoConnect(ssid.c_str(), NULL); // empty password
     if (result)
     {
@@ -530,4 +582,8 @@ void loop() {
         motor_test_program++;
     }
     #endif
+
+    // #if defined(ROBOX_WIFI_MANAGER)
+    // doWiFiManager();
+    // #endif
 }

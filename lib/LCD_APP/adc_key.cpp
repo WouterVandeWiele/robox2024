@@ -73,6 +73,14 @@ ButtonPress compare(uint32_t voltage, std::list<threshold> &buffer, byte button1
     
 }
 
+void adc_empty_key() {
+    ButtonPress b_empty = {
+        .button = GEM_KEY_NONE,
+        .long_press = false,
+        .press_time = 0,
+    };
+    xQueueSend(xQueueButtons, &b_empty, 0);
+}
 
 void adc_key_loop(void* parameter) {
     while (true) {
@@ -182,7 +190,7 @@ void adc_key_setup() {
     xTaskCreatePinnedToCore(
         adc_key_loop,       //Function to implement the task 
         "adc_key_task", //Name of the task
-        6000,       //Stack size in words 
+        1000,       //Stack size in words 
         NULL,       //Task input parameter 
         PRIORITY_ADC_BUTTON,          //Priority of the task 
         &AdcKeyTaskHandle,       //Task handle.

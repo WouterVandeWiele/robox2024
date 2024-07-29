@@ -153,8 +153,12 @@ void menu_task(void * param) {
 
         ButtonPress button;
 
+        if (xQueueButtons == NULL) {
+            continue;
+        }
 
-        if (xQueuePeek(xQueueButtons, &(button), 0)) {
+
+        if (xQueuePeek(xQueueButtons, &(button), 0) == pdTRUE) {
             if ((menu->context.loop != nullptr) && (button.long_press == false)) {
                 // let custom draw loop handle button queue
                 menu->context.loop();
@@ -168,7 +172,7 @@ void menu_task(void * param) {
             }
             else {
                 // let main GEM library handle the button queue
-                if(xQueueReceive( xQueueButtons, &(button), 0)) {
+                if(xQueueReceive( xQueueButtons, &(button), 0) == pdTRUE) {
                     
                     if (button.long_press == false) {
                         // GEM MENU keypresses
