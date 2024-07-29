@@ -22,8 +22,11 @@ extern const char* audio_source_names[];
 
 extern bool is_audio_paused;
 
+extern std::mutex meta_data_mtx;
 typedef struct MetaData{
   String title;
+  uint32_t play_time;
+
 } MetaData;
 
 class RoboxAudioMux {

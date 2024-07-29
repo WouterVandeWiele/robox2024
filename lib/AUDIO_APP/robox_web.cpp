@@ -28,30 +28,40 @@
 extern RoboxAudioMux mux;
 
 
-
-
-
-// ICYStream urlStream(wifi_ssid, wifi_password);
-// AudioSourceURL web_source(urlStream, urls, "audio/mp3");
-// MultiOutput web_multi_output(i2s);
-// MP3DecoderHelix web_decoder;
-// AudioPlayer web_player(web_source, web_multi_output, web_decoder);
-
-
-// AudioPlayer web_player(web_source, i2s, web_decoder);
-// extern AudioRealFFT fft;
-
-// Print Audio Metadata
-void printMetaData(MetaDataType type, const char* str, int len){
+// Print Audio Metadata (same as in robox_sd.cpp)
+static void printMetaData(MetaDataType type, const char* str, int len){
+  std::lock_guard<std::mutex> lck(meta_data_mtx);
+  
   Serial.print("==> ");
   Serial.print(toStr(type));
   Serial.print(": ");
   Serial.println(str);
 
-  if (toStr(type) == "Title") {
-    // const std::lock_guard<std::mutex> lock(mux.meta_mutex);
+  switch (type)
+  {
+  case Title:
     mux.meta.title = String((char*) str);
+    break;
+
+  case Artist:
+    break;
+
+  case Album:
+    break;
+
+  case Genre:
+    break;
+
+  case Name:
+    break;
+
+  case Description:
+    break;
+  
+  default:
+    break;
   }
+
 }
 
 void RoboxWebRadio::mux_start() {

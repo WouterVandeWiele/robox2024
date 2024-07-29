@@ -11,40 +11,51 @@
 #include "AudioTools.h"
 #include "AudioCodecs/CodecMP3Helix.h"
 
-
-
 // #define USE_HELIX 
 // #define USE_SDFAT
 
 const char *startFilePath="/";
 const char* ext="mp3";
 
-// AudioSourceSDFAT sd_source(startFilePath, ext);
-
-
-// MultiOutput sd_multi_output(i2s);
-// MP3DecoderHelix sd_decoder;
-// AudioSourceSD sd_source(startFilePath, ext);
-// AudioPlayer sd_player(sd_source, sd_multi_output, sd_decoder);
-
-
-// AudioPlayer sd_player(sd_source, i2s, sd_decoder);
 extern AudioRealFFT fft;
 
 extern RoboxAudioMux mux;
 
 
-
+// Print Audio Metadata (same as in robox_web.cpp)
 static void printMetaData(MetaDataType type, const char* str, int len){
+  std::lock_guard<std::mutex> lck(meta_data_mtx);
+  
   Serial.print("==> ");
   Serial.print(toStr(type));
   Serial.print(": ");
   Serial.println(str);
 
-  if (toStr(type) == "Title") {
-    // const std::lock_guard<std::mutex> lock(mux.meta_mutex);
+  switch (type)
+  {
+  case Title:
     mux.meta.title = String((char*) str);
+    break;
+
+  case Artist:
+    break;
+
+  case Album:
+    break;
+
+  case Genre:
+    break;
+
+  case Name:
+    break;
+
+  case Description:
+    break;
+  
+  default:
+    break;
   }
+
 }
 
 
