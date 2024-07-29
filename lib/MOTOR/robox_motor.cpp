@@ -34,7 +34,7 @@ void RoboxMotor::set_speed(float m1, float m2) {
 }
 
 void RoboxMotor::set_direction(bool m1, bool m2) {
-    digitalWrite(MOTOR_1_DIR, (m1) ? HIGH : LOW);
+    digitalWrite(MOTOR_1_DIR, (m1) ? LOW : HIGH);
     digitalWrite(MOTOR_2_DIR, (m2) ? HIGH : LOW);
 }
 
