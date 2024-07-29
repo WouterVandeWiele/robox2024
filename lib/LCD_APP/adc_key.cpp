@@ -190,7 +190,7 @@ void adc_key_setup() {
     xTaskCreatePinnedToCore(
         adc_key_loop,       //Function to implement the task 
         "adc_key_task", //Name of the task
-        1000,       //Stack size in words 
+        3000,       //Stack size in words 
         NULL,       //Task input parameter 
         PRIORITY_ADC_BUTTON,          //Priority of the task 
         &AdcKeyTaskHandle,       //Task handle.
