@@ -18,7 +18,7 @@ typedef struct ButtonChain{
   playItems next_item;
 } ButtonChain;
 
-const ButtonChain play_item_chain[] = {
+static const ButtonChain play_item_chain[] = {
     {item_switch, GEM_KEY_UP, item_settings},
     {item_switch, GEM_KEY_DOWN, item_audio_controls},
     {item_switch, GEM_KEY_LEFT, item_forward},
@@ -143,6 +143,71 @@ static void playContextEnter() {
     Serial.println("Enter play contex loop");
 }
 
+static void onOkay() {
+     switch (active_button)
+     {
+     case item_play_pause:
+         mux.audio_play_pause();
+         break;
+
+     case item_led_motor:
+         lm_current_item++;
+         if (lm_current_item > 3) {
+             lm_current_item = 0;
+         }
+         switch (lm_current_item)
+         {
+         case 1:
+             // led only
+             break;
+
+         case 2:
+             // motor only
+             break;
+
+         case 3:
+             // led and motor
+             break;
+
+         default:
+             break;
+         }
+         break;
+
+     case item_reverse:
+         mux.audio_previous();
+         break;
+
+     case item_forward:
+         mux.audio_next();
+         break;
+
+     case item_switch:
+         menu->setMenuPageCurrent(menuPageSwitch);
+         menu->context.exit();
+         break;
+
+     case item_settings:
+         menu->setMenuPageCurrent(menuPageSettings);
+         menu->context.exit();
+         break;
+
+     default:
+         break;
+     }
+}
+
+static void nextItem(uint8_t button) {
+     for (uint8_t i = 0; i < length_button_chain; i++) {
+         if ((button == play_item_chain[i].button_press) &&
+             (active_button == play_item_chain[i].active_item)) {
+
+             active_button = play_item_chain[i].next_item;
+             break;
+         }
+     }
+}
+
 // Invoked every loop iteration
 void playContextLoop() {
     ButtonPress button;
@@ -157,6 +222,11 @@ void playContextLoop() {
         case GEM_INVALIDATE:
             renderScreen();
             break;
+        case GEM_KEY_OK:
+            onOkay();
+            break;
+        default:
+            nextItem(button.button);
     }
 
     // if (button.button == GEM_KEY_OK) {
