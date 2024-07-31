@@ -121,7 +121,7 @@ void RoboxIoExpander::set_output(uint8_t port, uint8_t data, uint8_t mask) {
 
     _out_buffer[port] = (data & mask) | (_out_buffer[port] & ~(mask));
 
-    // Serial.printf("IO expander write: %d\n", _out_buffer[port]);
+    Serial.printf("IO expander write: %d\n", _out_buffer[port]);
     
     io_set(PORT_ADDRESS(port, OUTPUT_P0, OUTPUT_P1), _out_buffer[port]);
 
@@ -162,15 +162,15 @@ void RoboxIoExpander::io_configure() {
         agg.drive_strength[3] &= c.drive_strength[3];
     }
 
-    ESP_LOGI(LOG_I2C_TAG, "I2C config:");
-    ESP_LOGI(LOG_I2C_TAG, "- out_state:      %2x - %2x", agg.out_state[0], agg.out_state[1]);
-    ESP_LOGI(LOG_I2C_TAG, "- polarity:       %2x - %2x", agg.polarity[0], agg.polarity[1]);
-    ESP_LOGI(LOG_I2C_TAG, "- out_config:     %2x - %2x", agg.out_config[0], agg.out_config[1]);
-    ESP_LOGI(LOG_I2C_TAG, "- drive_strength: %2x %2x - %2x %2x", agg.drive_strength[0], agg.drive_strength[1], agg.drive_strength[2], agg.drive_strength[3]);
-    ESP_LOGI(LOG_I2C_TAG, "- input_latch:    %2x - %2x", agg.input_latch[0], agg.input_latch[1]);
-    ESP_LOGI(LOG_I2C_TAG, "- pull_en:        %2x - %2x", agg.pull_en[0], agg.pull_en[1]);
-    ESP_LOGI(LOG_I2C_TAG, "- pull_select:    %2x - %2x", agg.pull_select[0], agg.pull_select[1]);
-    ESP_LOGI(LOG_I2C_TAG, "- interrupts:     %2x - %2x", agg.interrupts[0], agg.interrupts[1]);
+    Serial.printf("I2C config:\n");
+    Serial.printf("- out_state:      %2x - %2x\n", agg.out_state[0], agg.out_state[1]);
+    Serial.printf("- polarity:       %2x - %2x\n", agg.polarity[0], agg.polarity[1]);
+    Serial.printf("- out_config:     %2x - %2x\n", agg.out_config[0], agg.out_config[1]);
+    Serial.printf("- drive_strength: %2x %2x - %2x %2x\n", agg.drive_strength[0], agg.drive_strength[1], agg.drive_strength[2], agg.drive_strength[3]);
+    Serial.printf("- input_latch:    %2x - %2x\n", agg.input_latch[0], agg.input_latch[1]);
+    Serial.printf("- pull_en:        %2x - %2x\n", agg.pull_en[0], agg.pull_en[1]);
+    Serial.printf("- pull_select:    %2x - %2x\n", agg.pull_select[0], agg.pull_select[1]);
+    Serial.printf("- interrupts:     %2x - %2x\n", agg.interrupts[0], agg.interrupts[1]);
 
     // _out_buffer[0] = agg.out_state[0];
     // _out_buffer[1] = agg.out_state[1];

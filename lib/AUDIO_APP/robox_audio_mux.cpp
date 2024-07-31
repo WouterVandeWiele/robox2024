@@ -12,7 +12,9 @@ extern GEM_adafruit_gfx* menu;
 #include "robox_sd.h"
 #include "robox_void.h"
 
+#if defined(ROBOX_WIFI_MANAGER)
 extern WiFiManager wifiManager;
+#endif
 
 const char* audio_source_names[] = {"NotSelected", "Ble", "WebRadio", "SD"};
 bool is_audio_paused = false;
@@ -37,6 +39,8 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
 
         delay(100);
 
+        #if defined(ROBOX_WIFI_MANAGER)
+        
         if (source_name == BleSource) {
             WiFi.disconnect(true, false);
             WiFi.mode(WIFI_OFF);
@@ -50,6 +54,7 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
 
             wifiManager.autoConnect(ssid.c_str(), NULL);
         }
+        #endif
 
         Serial.printf("Audio Mux switching to: %s\n", audio_source_names[new_mux_source]);
 

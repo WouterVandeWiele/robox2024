@@ -1,17 +1,20 @@
+#pragma once
 #include "robox_io.h"
 
 
 class RoboxMotor: public IoInterface {
     public:
-        RoboxMotor(RoboxIoExpander* io);
+        RoboxMotor(RoboxIoExpander* io)
+            : io(io)
+        {};
 
         void init();
 
         void set_speed(float m1, float m2);
         void set_direction(bool m1, bool m2);
 
-        void enable(bool enable);
-        void shutdown(bool shutdown);
+        void enable();
+        void shutdown();
 
         // static method that returns the IO expander config expected by this component
         static ExpanderConfig io_config();

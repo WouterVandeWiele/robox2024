@@ -3,7 +3,9 @@
 #include "adc_key.h"
 
 #include "robox_audio_mux.h"
+#if defined(ROBOX_FULL)
 extern RoboxAudioMux mux;
+#endif
 
 static TaskHandle_t AdcKeyTaskHandle;
 
@@ -126,7 +128,9 @@ void adc_key_loop(void* parameter) {
                 xQueueSend(xQueueButtons, &b_12c, 0);
             }
             if ((b_12c.button == PLAY_PAUSE) && (b_12c.long_press == false)) {
+                #if defined(ROBOX_FULL)
                 mux.audio_play_pause();
+                #endif
             }
         }
         else {
@@ -143,10 +147,14 @@ void adc_key_loop(void* parameter) {
             Serial.printf("\n>key_%d:%d long press: %d time: %ld\n", BUTTON_2AC, b_2ac.button, b_2ac.long_press ? 1 : 0, t_2ac);
             // xQueueSend(xQueueButtons, &b_2ac, 0);
             if ((b_2ac.button == AUDIO_NEXT) && (b_2ac.long_press == false)) {
+                #if defined(ROBOX_FULL)
                 mux.audio_next();
+                #endif
             }
             if ((b_2ac.button == AUDIO_PREVIOUS) && (b_2ac.long_press == false)) {
+                #if defined(ROBOX_FULL)
                 mux.audio_previous();
+                #endif
             }
         }
         else {
@@ -163,10 +171,14 @@ void adc_key_loop(void* parameter) {
             Serial.printf("\n>key_%d:%d long press: %d time: %ld\n", BUTTON_2BD, b_2bd.button, b_2bd.long_press ? 1 : 0, t_2bd);
             // xQueueSend(xQueueButtons, &b_2bd, 0);
             if ((b_2bd.button == VOLUME_UP) && (b_2bd.long_press == false)) {
+                #if defined(ROBOX_FULL)
                 mux.volume_increment();
+                #endif
             }
             if ((b_2bd.button == VOLUME_DOWN) && (b_2bd.long_press == false)) {
+                #if defined(ROBOX_FULL)
                 mux.volume_decrement();
+                #endif
             }
             
         }

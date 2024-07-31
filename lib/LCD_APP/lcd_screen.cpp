@@ -11,9 +11,12 @@
 
 #include <WiFiManager.h>
 
+#if defined(ROBOX_FULL)
 extern RoboxAudioMux mux;
+#endif
+#if defined(ROBOX_WIFI_MANAGER)
 extern WiFiManager wifiManager;
-
+#endif
 
 // #if defined(LCD_RUN_THREADED)
 //     static LCD_Threaded* lcd_t;
@@ -44,7 +47,7 @@ void printData() {
 }
 GEMItem menuItemButton("Print", printData);
 
-
+#if defined(ROBOX_FULL)
 void switch_to_no_source() {
     mux.switch_to(NotSelectedSource);
 }
@@ -65,7 +68,7 @@ GEMItem buttonSwitchNoSource("No Source", switch_to_no_source);
 GEMItem buttonSwitchBLE("Sw BLE", switch_to_BLE);
 GEMItem buttonSwitchWEB("Sw WEB", switch_to_WEB);
 GEMItem buttonSwitchSD("Sw SD", switch_to_SD);
-
+#endif
 GEMItem menuItemSwitchAudioPlay("Play Audio", playLoop);
 GEMItem menuItemSettingsAudioPlay("Play Audio", playLoop);
 
@@ -75,6 +78,8 @@ GEMPage menuPageSwitch("Switch Audio Source");
 
 extern const char* wifi_ssid_2;
 extern const char* wifi_password_2;
+
+#if defined(ROBOX_WIFI_MANAGER)
 
 void reset_wifi_credentials() {
     uint64_t _chipmacid = 0LL;
@@ -92,7 +97,7 @@ void reset_wifi_credentials() {
 }
 
 GEMItem menuPageSettingsResetWifiCredentials("Reset Wifi Cred", reset_wifi_credentials);
-
+#endif
 GEMPage menuPageSettings("Settings");
 
 
@@ -132,16 +137,19 @@ void menu_task(void * param) {
     menu->setDrawCallback(update_screen);
     // menu->setSplash(100, 48, robox_splash);
     // menu->setSplashDelay(3000);
-
+    #if defined(ROBOX_FULL)
     menuPageSwitch.addMenuItem(buttonSwitchNoSource);
     menuPageSwitch.addMenuItem(buttonSwitchBLE);
     menuPageSwitch.addMenuItem(buttonSwitchWEB);
     menuPageSwitch.addMenuItem(buttonSwitchSD);
+    #endif
     // menuPageSwitch.addMenuItem(menuItemButton);
     menuPageSwitch.addMenuItem(menuItemSwitchAudioPlay);
 
     menuPageSettings.addMenuItem(menuItemButton);
+    #if defined(ROBOX_WIFI_MANAGER)
     menuPageSettings.addMenuItem(menuPageSettingsResetWifiCredentials);
+    #endif
     menuPageSettings.addMenuItem(menuItemSettingsAudioPlay);
 
     menu->setMenuPageCurrent(menuPageSettings);
@@ -154,6 +162,7 @@ void menu_task(void * param) {
         ButtonPress button;
 
         if (xQueueButtons == NULL) {
+            delay(100);
             continue;
         }
 

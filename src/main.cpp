@@ -10,7 +10,7 @@
  * Select only one of the above
  */
 
-#define ROBOX_FULL
+// #define ROBOX_FULL
 
 // #define ROBOX_EXAMPLE_BLE
 // #define ROBOX_EXAMPLE_BLE_BEAT
@@ -36,15 +36,15 @@
  * Multiple can be selected
  */
 
-#define ROBOX_LCD
+// #define ROBOX_LCD
 // #define ROBOX_BATTERY
-// #define ROBOX_MOTOR
+#define ROBOX_MOTOR
 #define ROBOX_TEST_ADC_KEY
 // #define ROBOX_DEBUG_CLI
 // #define ROBOX_DEBUG_I2C
 // #define ROBOX_DEBUG_I2C_SCANNER
 #define ROBOX_PREFERENCES
-#define ROBOX_WIFI_MANAGER
+// #define ROBOX_WIFI_MANAGER
 #define ROBOX_SERVER
 
 /*
@@ -186,7 +186,7 @@ static RoboxLcdScreen* screen;
 #endif
 
 #if defined(ROBOX_MOTOR)
-static RoboxMotor* motor;
+RoboxMotor* motor;
 unsigned long timekeeper = 0;
 uint8_t motor_test_program = 0;
 #define MOTOR_TEST_PROGRAMS 4
@@ -252,6 +252,7 @@ bool motorsOn;
 #endif
 
 
+#if defined(ROBOX_FULL)
 void audio_task(void* parameter) {
     mux.setup();
 
@@ -260,7 +261,7 @@ void audio_task(void* parameter) {
         vTaskDelay(1);
     }
 }
-
+#endif
 void setup() {
     Serial.begin(115200);
 
@@ -346,36 +347,6 @@ void setup() {
     roboxPrefs.end();                                      // Close our preferences namespace.
     #endif
 
-    #if defined(ROBOX_WIFI_MANAGER)
-    // Run this part as soon as you need Wifi
-
-    uint64_t _chipmacid = 0LL;
-    esp_efuse_mac_get_default((uint8_t*) (&_chipmacid));
-    String hostString = String((uint32_t)_chipmacid, HEX);
-    hostString.toUpperCase();
-    String ssid = "ROBOX_" + hostString;
-
-    // use for testing, to clear the stored/last ssid/password
-    // wifiManager.resetSettings();
-
-    // automatically connect to wifi
-    WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP  
-    wifiManager.setDebugOutput(true, WM_DEBUG_MAX);
-    // wifiManager.setConfigPortalBlocking(false);
-    boolean result = wifiManager.autoConnect(ssid.c_str(), NULL); // empty password
-    if (result)
-    {
-        Serial.println("Successfully connected to Wifi.");
-        server_setup();
-        server_start();
-    }
-    else
-    {
-        Serial.println("Failed setting up Wifi.");
-    }
-
-    #endif
-
     #if defined(ROBOX_FULL)
         ESP_LOGI(LOG_MAIN_TAG, "Setup mux");
         // mux.setup();
@@ -437,7 +408,7 @@ void setup() {
     #endif
 
     #if defined(ROBOX_DEBUG_I2C) || defined(ROBOX_LCD) || defined(ROBOX_MOTOR)
-        ESP_LOGI(LOG_MAIN_TAG, "configure io-expander");
+        Serial.println("configure io-expander");
         io->io_configure();
     #endif
 
@@ -469,21 +440,53 @@ void setup() {
     motor->init();
     motor->set_direction(0, 0);
     motor->set_speed(0.1, 0.1);
-    motor->enable(1);
+    motor->enable();
 
     timekeeper = millis() + 5000;
+    Serial.printf("motor configured %ld\n", timekeeper);
     #endif
 
-
+    #if defined(ROBOX_FULL)
     xTaskCreatePinnedToCore(
-            audio_task,       //Function to implement the task 
-            "audio_task", //Name of the task
-            6000,       //Stack size in words 
-            NULL,       //Task input parameter 
-            PRIORITY_AUDIO_TASK,          //Priority of the task 
-            &AudioCopyTask,       //Task handle.
-            0           // Core you want to run the task on (0 or 1)
-        );
+        audio_task,       //Function to implement the task 
+        "audio_task", //Name of the task
+        6000,       //Stack size in words 
+        NULL,       //Task input parameter 
+        PRIORITY_AUDIO_TASK,          //Priority of the task 
+        &AudioCopyTask,       //Task handle.
+        0           // Core you want to run the task on (0 or 1)
+    );
+    #endif
+
+    #if defined(ROBOX_WIFI_MANAGER)
+    // Run this part as soon as you need Wifi
+
+    uint64_t _chipmacid = 0LL;
+    esp_efuse_mac_get_default((uint8_t*) (&_chipmacid));
+    String hostString = String((uint32_t)_chipmacid, HEX);
+    hostString.toUpperCase();
+    String ssid = "ROBOX_" + hostString;
+
+    // use for testing, to clear the stored/last ssid/password
+    // wifiManager.resetSettings();
+
+    // automatically connect to wifi
+    WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP  
+    wifiManager.setDebugOutput(true, WM_DEBUG_MAX);
+    // wifiManager.setConfigPortalBlocking(false);
+    boolean result = wifiManager.autoConnect(ssid.c_str(), NULL); // empty password
+    if (result)
+    {
+        Serial.println("Successfully connected to Wifi.");
+        server_setup();
+        server_start();
+    }
+    else
+    {
+        Serial.println("Failed setting up Wifi.");
+    }
+
+    #endif
 
 }
 
@@ -545,7 +548,7 @@ void loop() {
     #if defined(ROBOX_MOTOR)
     if (timekeeper < millis()) {
         Serial.printf("new motor program. timekeeper: %ld, program %d\n", timekeeper, (motor_test_program % MOTOR_TEST_PROGRAMS));
-        timekeeper += 5000;
+        timekeeper += 3000;
 
 
         switch (motor_test_program % MOTOR_TEST_PROGRAMS)

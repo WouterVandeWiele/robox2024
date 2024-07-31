@@ -1,8 +1,10 @@
 #include <SimpleCLI.h>
 #include <stdint.h>
 #include "robox_audio_mux.h"
+// #include "robox_motor.h"
 
 extern RoboxAudioMux mux;
+// extern RoboxMotor* motor;
 
 // Can be used to implement a CLI to send debug commands
 // Documentation: https://github.com/SpacehuhnTech/SimpleCLI
@@ -16,6 +18,7 @@ Command help;
 Command print;
 Command audio_source;
 Command mux_info;
+// Command motor_command;
 
 // Callback function for ping command
 void pingCallback(cmd* c) {
@@ -83,6 +86,47 @@ void muxCallback(cmd *c) {
     }
 }
 
+// void motorCallback(cmd *c) {
+//     Command cmd(c);
+
+//     Argument enable = cmd.getArgument("en");
+//     Argument d1 = cmd.getArgument("d1");
+//     Argument d2 = cmd.getArgument("d2");
+//     Argument s1 = cmd.getArgument("s1");
+//     Argument s2 = cmd.getArgument("s2");
+
+//     if (enable.isSet()) {
+//         uint8_t on_off = atoi(enable.getValue().c_str());
+
+//         if (on_off) {
+//             motor->enable();
+//         }
+//         else {
+//             motor->shutdown();
+//         }
+//     }
+
+//     if (d1.isSet() && d2.isSet()) {
+//         uint8_t dir1 = atoi(d1.getValue().c_str());
+//         uint8_t dir2 = atoi(d2.getValue().c_str());
+
+//         motor->set_direction((bool) dir1, (bool) dir2);
+//     }
+
+//     if (s1.isSet() && s2.isSet()) {
+//         float speed1 = atof(s1.getValue().c_str());
+//         float speed2 = atof(s2.getValue().c_str());
+
+//         if ((speed1 >= 0.0) && (speed2 >= 0.0) && 
+//             (speed1 <= 1.0) && (speed2 <= 1.0)) {
+            
+//             motor->set_speed(speed1, speed2);
+//         }
+//     }
+
+//     Serial.printf("-> time: %ld\n", millis());
+// }
+
 // Callback in case of an error
 void errorCallback(cmd_error* e) {
     CommandError cmdError(e); // Create wrapper object
@@ -122,6 +166,14 @@ void debug_cli_setup() {
     mux_info.addFlagArg("meta_title");
     mux_info.addArg("volume");
 
+    // motor_command = cli.addCmd("motor", motorCallback);
+    // motor_command.setDescription("manipulate the robox motors");
+    // motor_command.addArg("en");
+    // motor_command.addArg("d1");
+    // motor_command.addArg("d2");
+    // motor_command.addArg("s1");
+    // motor_command.addArg("s2");
+
     // [Optional] Check if our command was successfully added
     if (!ping) Serial.println(">Ping command not installed!");
     else Serial.println(">Ping was added to the CLI!");
@@ -137,6 +189,9 @@ void debug_cli_setup() {
 
     if (!mux_info) Serial.println(">Mux command not installed!");
     else Serial.println(">Mux was added to the CLI!");
+
+    // if (!motor_command) Serial.println(">Motor command not installed");
+    // else Serial.println(">Motor command was added to the CLI!");
 
     // Set error Callback
     cli.setOnError(errorCallback);

@@ -3,7 +3,9 @@
 #include "icons.h"
 
 #include "robox_audio_mux.h"
+#if defined(ROBOX_FULL)
 extern RoboxAudioMux mux;
+#endif
 
 /******************************************************************************
  * Play menu
@@ -86,7 +88,9 @@ Serial.println("In play contex loop");
                     switch (active_button)
                     {
                     case item_play_pause:
+                        #if defined(ROBOX_FULL)
                         mux.audio_play_pause();
+                        #endif
                         break;
 
                     case item_led_motor:
@@ -114,11 +118,15 @@ Serial.println("In play contex loop");
                         break;
 
                     case item_reverse:
+                        #if defined(ROBOX_FULL)
                         mux.audio_previous();
+                        #endif
                         break;
 
                     case item_forward:
+                        #if defined(ROBOX_FULL)
                         mux.audio_next();
+                        #endif
                         break;
 
                     case item_switch:
@@ -187,12 +195,14 @@ Serial.println("In play contex loop");
         }
 
         // play - pause
+        #if defined(ROBOX_FULL)
         if (mux.audio_active() == true) {
             lcd_t->drawBitmap(52, 29, (active_button == item_play_pause) ? icon_pause_circle_fill : icon_pause_circle, 14, 14, GLCD_COLOR_SET);
         }
         else {
             lcd_t->drawBitmap(52, 29, (active_button == item_play_pause) ? icon_play_circle_fill : icon_play_circle, 14, 14, GLCD_COLOR_SET);
         }
+        #endif
 
         // rewind
         lcd_t->drawBitmap(34, 26, (active_button == item_reverse) ? icon_rewind_fill : icon_rewind, 14, 14, GLCD_COLOR_SET);
@@ -216,10 +226,11 @@ Serial.println("In play contex loop");
 
         // volume level
 
+        #if defined(ROBOX_FULL)
         lcd_t->drawBitmap(74, 15, icon_volume, 10, 10, GLCD_COLOR_SET);
         lcd_t->setCursor(85, 22);
         lcd_t->printf("%d%%", int(mux.get_volume() * 100));
-
+        #endif
         lcd_t->updateWholeScreen();
     }
 }
