@@ -109,12 +109,7 @@ void RoboxAudioMux::volume(float level) {
 }
 
 float RoboxAudioMux::get_volume() {
-    if (source_name != NotSelectedSource) {
-        return current_source->get_volume();
-    }
-    else {
-        return 0.0;
-    }
+    return current_source->get_volume();
 }
 
 void RoboxAudioMux::volume_increment() {

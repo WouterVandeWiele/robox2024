@@ -1,6 +1,7 @@
 #include <list>
 #include "general_config.h"
 #include "adc_key.h"
+#include "lcd_screen.h"
 
 #include "robox_audio_mux.h"
 extern RoboxAudioMux mux;
@@ -164,9 +165,11 @@ void adc_key_loop(void* parameter) {
             // xQueueSend(xQueueButtons, &b_2bd, 0);
             if ((b_2bd.button == VOLUME_UP) && (b_2bd.long_press == false)) {
                 mux.volume_increment();
+                lcd_invalidate(INVALIDATE_VOLUME);
             }
             if ((b_2bd.button == VOLUME_DOWN) && (b_2bd.long_press == false)) {
                 mux.volume_decrement();
+                lcd_invalidate(INVALIDATE_VOLUME);
             }
             
         }

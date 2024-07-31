@@ -4,7 +4,7 @@
 // #define DEFAULT_BUFFER_SIZE 4096
 // #define DEFAULT_BUFFER_SIZE 50000
 
-#define VOLUME_STEP 0.05
+#define VOLUME_STEP 0.05f
 
 
 #define IO_EXPANDER

@@ -14,6 +14,8 @@ extern GEM_adafruit_gfx* menu;
 extern GEMPage menuPageSwitch;
 extern GEMPage menuPageSettings;
 
+#define GEM_INVALIDATE (0x80)
+
 // robox LCD architecture [docs/lcd_overview.excalidraw.png]
 
 #if defined(LCD_RUN_THREADED)
@@ -34,6 +36,15 @@ extern GEMPage menuPageSettings;
 
 #endif
 
+typedef enum {
+    INVALIDATE_ALL,
+    INVALIDATE_VOLUME,
+} LcdInvalidate;
+
+/**
+ * @brief Requests that the LCD display should be redrawn.
+ */
+void lcd_invalidate(LcdInvalidate invalidate);
 
 class RoboxLcdScreen: public IoInterface {
     public:
