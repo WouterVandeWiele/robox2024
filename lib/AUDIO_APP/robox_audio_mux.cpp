@@ -16,6 +16,7 @@ extern WiFiManager wifiManager;
 
 const char* audio_source_names[] = {"NotSelected", "Ble", "WebRadio", "SD"};
 bool is_audio_paused = false;
+std::mutex meta_data_mtx;
 
 void RoboxAudioMux::setup() {
     ESP_LOGI(LOG_MUX_TAG, ">>> Audio Mux starting...");

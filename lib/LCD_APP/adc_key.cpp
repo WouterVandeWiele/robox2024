@@ -74,6 +74,14 @@ ButtonPress compare(uint32_t voltage, std::list<threshold> &buffer, byte button1
     
 }
 
+void adc_empty_key() {
+    ButtonPress b_empty = {
+        .button = GEM_KEY_NONE,
+        .long_press = false,
+        .press_time = 0,
+    };
+    xQueueSend(xQueueButtons, &b_empty, 0);
+}
 
 void adc_key_loop(void* parameter) {
     while (true) {
@@ -127,7 +135,7 @@ void adc_key_loop(void* parameter) {
             t_12c = 0;
         }
         
-        ButtonPress b_2ac = compare(analogReadMilliVolts(BUTTON_2AC), v_2ac_prev, VOLUME_UP, VOLUME_DOWN);
+        ButtonPress b_2ac = compare(analogReadMilliVolts(BUTTON_2AC), v_2ac_prev, AUDIO_NEXT, AUDIO_PREVIOUS);
         if (b_2ac.button) {
             if (b_2ac.long_press == 0) s_2ac = millis();
             else t_2ac = millis() - s_2ac;
@@ -135,13 +143,11 @@ void adc_key_loop(void* parameter) {
 
             Serial.printf("\n>key_%d:%d long press: %d time: %ld\n", BUTTON_2AC, b_2ac.button, b_2ac.long_press ? 1 : 0, t_2ac);
             // xQueueSend(xQueueButtons, &b_2ac, 0);
-            if ((b_2ac.button == VOLUME_UP) && (b_2ac.long_press == false)) {
-                mux.volume_increment();
-                lcd_invalidate(INVALIDATE_VOLUME);
+            if ((b_2ac.button == AUDIO_NEXT) && (b_2ac.long_press == false)) {
+                mux.audio_next();
             }
-            if ((b_2ac.button == VOLUME_DOWN) && (b_2ac.long_press == false)) {
-                mux.volume_decrement();
-                lcd_invalidate(INVALIDATE_VOLUME);
+            if ((b_2ac.button == AUDIO_PREVIOUS) && (b_2ac.long_press == false)) {
+                mux.audio_previous();
             }
         }
         else {
@@ -149,7 +155,7 @@ void adc_key_loop(void* parameter) {
             t_2ac = 0;
         }
 
-        ButtonPress b_2bd = compare(analogReadMilliVolts(BUTTON_2BD), v_2bd_prev, AUDIO_NEXT, AUDIO_PREVIOUS);
+        ButtonPress b_2bd = compare(analogReadMilliVolts(BUTTON_2BD), v_2bd_prev, VOLUME_UP, VOLUME_DOWN);
         if (b_2bd.button) {
             if (b_2bd.long_press == 0) s_2bd = millis();
             else t_2bd = millis() - s_2bd;
@@ -157,12 +163,15 @@ void adc_key_loop(void* parameter) {
 
             Serial.printf("\n>key_%d:%d long press: %d time: %ld\n", BUTTON_2BD, b_2bd.button, b_2bd.long_press ? 1 : 0, t_2bd);
             // xQueueSend(xQueueButtons, &b_2bd, 0);
-            if ((b_2bd.button == AUDIO_NEXT) && (b_2ac.long_press == false)) {
-                mux.audio_next();
+            if ((b_2bd.button == VOLUME_UP) && (b_2bd.long_press == false)) {
+                mux.volume_increment();
+                lcd_invalidate(INVALIDATE_VOLUME);
             }
-            if ((b_2bd.button == AUDIO_PREVIOUS) && (b_2ac.long_press == false)) {
-                mux.audio_previous();
+            if ((b_2bd.button == VOLUME_DOWN) && (b_2bd.long_press == false)) {
+                mux.volume_decrement();
+                lcd_invalidate(INVALIDATE_VOLUME);
             }
+            
         }
         else {
             s_2bd = 0;
@@ -184,7 +193,7 @@ void adc_key_setup() {
     xTaskCreatePinnedToCore(
         adc_key_loop,       //Function to implement the task 
         "adc_key_task", //Name of the task
-        6000,       //Stack size in words 
+        3000,       //Stack size in words 
         NULL,       //Task input parameter 
         PRIORITY_ADC_BUTTON,          //Priority of the task 
         &AdcKeyTaskHandle,       //Task handle.

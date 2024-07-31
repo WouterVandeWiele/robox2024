@@ -32,6 +32,7 @@ void avrc_rn_playstatus_callback(esp_avrc_playback_stat_t playback) {
 // callback used by A2DP to provide the sound data
 void avrc_metadata_callback(uint8_t id, const uint8_t *text) {
     Serial.printf("> AVRC metadata rsp: attribute id 0x%x, %s\n", id, text);
+    std::lock_guard<std::mutex> lck(meta_data_mtx);
 
     switch (id)
     {

@@ -25,7 +25,7 @@ class RoboxSD: public MuxInterface {
             , source(startFilePath, ext)
             , player(source, multi_output, decoder) 
         {
-
+            pinMode(I2S_PIN_MUTE, INPUT);
         };
         /*
         SD Audio MUX controls
@@ -42,6 +42,8 @@ class RoboxSD: public MuxInterface {
         virtual void audio_pause() override;
         virtual void audio_next() override;
         virtual void audio_previous() override;
+
+        bool is_sd_inserted();
 
     private:
     bool beat_led;

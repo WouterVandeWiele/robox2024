@@ -151,6 +151,10 @@ void update_screen() {
     playLoop();
 
     for (;;) {
+        if (xQueueButtons == NULL) {
+            continue;
+        }
+      
         if (!menu->readyForKey()) {
             continue;
         }
