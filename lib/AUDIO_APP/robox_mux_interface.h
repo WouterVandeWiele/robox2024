@@ -31,13 +31,13 @@ class MuxInterface {
         }
         
         virtual void volume_increment() {
-            volume_level += VOLUME_STEP;
+            volume_level = min(volume_level + VOLUME_STEP, 1.f);
 
             volume(volume_level);
         }
 
         virtual void volume_decrement() {
-            volume_level -= VOLUME_STEP;
+            volume_level = max(volume_level - VOLUME_STEP, 0.f);
 
             volume(volume_level);    
         }
