@@ -36,10 +36,15 @@ extern GEMPage menuPageSettings;
 
 #endif
 
+typedef enum {
+    INVALIDATE_ALL,
+    INVALIDATE_VOLUME,
+} LcdInvalidate;
+
 /**
  * @brief Requests that the LCD display should be redrawn.
  */
-void lcd_invalidate();
+void lcd_invalidate(LcdInvalidate invalidate);
 
 class RoboxLcdScreen: public IoInterface {
     public:

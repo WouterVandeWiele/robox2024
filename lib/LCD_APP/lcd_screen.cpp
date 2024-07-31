@@ -110,7 +110,7 @@ void update_screen() {
 }
 
 
-void menu_task(void * param) {
+[[noreturn]] void menu_task(void * param) {
     // LCD_Threaded* p = (LCD_Threaded*)param;
 
     // https://www.freertos.org/RTOS_Task_Notification_As_Counting_Semaphore.html
@@ -131,6 +131,7 @@ void menu_task(void * param) {
     );
 
     menu->setDrawCallback(update_screen);
+    menu->hideVersion();
     // menu->setSplash(100, 48, robox_splash);
     // menu->setSplashDelay(3000);
 
@@ -147,7 +148,7 @@ void menu_task(void * param) {
 
     menu->setMenuPageCurrent(menuPageSettings);
     menu->init();
-    menu->drawMenu();
+    playLoop();
 
     for (;;) {
         if (!menu->readyForKey()) {
@@ -170,38 +171,6 @@ void menu_task(void * param) {
         Serial.println("Got button press");
         menu->registerKeyPress(button.button);
     }
-    // menu->drawMenu();
-    // playLoop();
-
-    // while (true) {
-
-    //     ButtonPress button;
-
-    //     if ((menu->context.loop != nullptr) && (button.long_press == false)) {
-    //         // let custom draw loop handle button queue
-    //         menu->context.loop();
-    //         // menu->readyForKey();
-
-    //         if (menu->context.loop == nullptr) {
-    //             // draw loop has exited
-    //             menu->drawMenu();
-    //         }
-    //         // menu->registerKeyPress(GEM_KEY_NONE);
-    //     }
-    //     if (xQueuePeek(xQueueButtons, &(button), 50 * portTICK_PERIOD_MS)) {
-    //         // let main GEM library handle the button queue
-            //  if(xQueueReceive( xQueueButtons, &(button), 0)) {
-                
-    //             if (button.long_press == false) {
-    //                 // GEM MENU keypresses
-    //                 if ((button.button >= 1) && (button.button <= 6)) {
-    //                     // GEM KEYS (up, down, left, right, ok, cancel)
-    //                     menu->registerKeyPress(button.button);
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 }
 
 #endif

@@ -137,11 +137,11 @@ void adc_key_loop(void* parameter) {
             // xQueueSend(xQueueButtons, &b_2ac, 0);
             if ((b_2ac.button == VOLUME_UP) && (b_2ac.long_press == false)) {
                 mux.volume_increment();
-                lcd_invalidate();
+                lcd_invalidate(INVALIDATE_VOLUME);
             }
             if ((b_2ac.button == VOLUME_DOWN) && (b_2ac.long_press == false)) {
                 mux.volume_decrement();
-                lcd_invalidate();
+                lcd_invalidate(INVALIDATE_VOLUME);
             }
         }
         else {

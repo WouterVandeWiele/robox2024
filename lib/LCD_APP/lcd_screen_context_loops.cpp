@@ -61,6 +61,18 @@ playItems active_button = item_switch;
 
 static volatile bool test_icons_active = false;
 
+static void drawVolume() {
+    lcd_t->setCursor(85, 22);
+    lcd_t->printf("%d%%", int(mux.get_volume() * 100));
+}
+
+static void invalidateVolume() {
+    lcd_t->fillRect(85, 22-6, 20, 6, GLCD_COLOR_CLEAR);
+
+    drawVolume();
+    lcd_t->updateWholeScreen();
+}
+
 static void renderScreen() {
     lcd_t->fillScreen(GLCD_COLOR_CLEAR);
 
@@ -129,10 +141,8 @@ static void renderScreen() {
     lcd_t->setCursor(0, 0);
 
     // volume level
-
     lcd_t->drawBitmap(74, 15, icon_volume, 10, 10, GLCD_COLOR_SET);
-    lcd_t->setCursor(85, 22);
-    lcd_t->printf("%d%%", int(mux.get_volume() * 100));
+    drawVolume();
 
     lcd_t->updateWholeScreen();
 }
@@ -208,6 +218,18 @@ static void nextItem(uint8_t button) {
      }
 }
 
+static void invalidateScreen(LcdInvalidate type) {
+    switch (type) {
+        case INVALIDATE_VOLUME:
+            invalidateVolume();
+            break;
+        case INVALIDATE_ALL:
+        default:
+            renderScreen();
+            break;
+    }
+}
+
 // Invoked every loop iteration
 void playContextLoop() {
     ButtonPress button;
@@ -220,106 +242,27 @@ void playContextLoop() {
 
     switch (button.button) {
         case GEM_INVALIDATE:
-            renderScreen();
+            invalidateScreen(static_cast<LcdInvalidate>(button.press_time));
             break;
         case GEM_KEY_OK:
             onOkay();
             break;
         default:
             nextItem(button.button);
+            break;
     }
-
-    // if (button.button == GEM_KEY_OK) {
-    //     switch (active_button)
-    //     {
-    //     case item_play_pause:
-    //         mux.audio_play_pause();
-    //         break;
-
-    //     case item_led_motor:
-    //         lm_current_item++;
-    //         if (lm_current_item > 3) {
-    //             lm_current_item = 0;
-    //         }
-    //         switch (lm_current_item)
-    //         {
-    //         case 1:
-    //             // led only
-    //             break;
-
-    //         case 2:
-    //             // motor only
-    //             break;
-
-    //         case 3:
-    //             // led and motor
-    //             break;
-            
-    //         default:
-    //             break;
-    //         }
-    //         break;
-
-    //     case item_reverse:
-    //         mux.audio_previous();
-    //         break;
-
-    //     case item_forward:
-    //         mux.audio_next();
-    //         break;
-
-    //     case item_switch:
-    //         menu->setMenuPageCurrent(menuPageSwitch);
-    //         menu->context.exit();
-    //         break;
-
-    //     case item_settings:
-    //         menu->setMenuPageCurrent(menuPageSettings);
-    //         menu->context.exit();
-    //         break;
-        
-    //     default:
-    //         break;
-    //     }
-    // } else {
-    //     for (uint8_t i = 0; i < length_button_chain; i++) {
-    //         if ((button.button == play_item_chain[i].button_press) && 
-    //             (active_button == play_item_chain[i].active_item)) {
-                
-    //             active_button = play_item_chain[i].next_item;
-    //             break;
-    //         }
-    //     }
-    // }
 }
 
 // Invoked once when the GEM_KEY_CANCEL key is pressed
 static void playContextExit() {
-  // Reset variables
-//   previousMillis = 0;
-//   currentFrame = framesCount;
+    Serial.println("Exit play contex loop");
 
-  Serial.println("Exit play contex loop");
+    // Draw menu back on screen and clear context
+    lcd_t->clearScreen(GLCD_COLOR_CLEAR);
 
-
-  // Draw menu back on screen and clear context
-  lcd_t->clearScreen(GLCD_COLOR_CLEAR);
-
-//     menu->reInit();
-//    menu->drawMenu();
-  menu->clearContext();
-
-    // if (active_button == item_settings) {
-    //     menu->setMenuPageCurrent(menuPageSettings);
-    // }
-    // if (active_button == item_switch) {
-    //     menu->setMenuPageCurrent(menuPageSwitch);
-    // }
-
-//   menu->reInit();
-//   lcd_t->updateWholeScreen();
-    // menu->drawMenu();
-    // menu->drawMenu();
+    menu->reInit();
+    menu->drawMenu();
+    menu->clearContext();
 
 }
 
@@ -330,14 +273,13 @@ void playLoop() {
   menu->context.exit = playContextExit;
   menu->context.allowExit = false; // Setting to false will require manual exit from the loop
   menu->context.enter();
-  menu->context.loop();
 }
 
-void lcd_invalidate() {
+void lcd_invalidate(LcdInvalidate invalidate) {
     ButtonPress button = {
         .button = GEM_INVALIDATE,
         .long_press = false,
-        .press_time = 0
+        .press_time = invalidate
     };
     xQueueSend(xQueueButtons, &button, 0);
 }
