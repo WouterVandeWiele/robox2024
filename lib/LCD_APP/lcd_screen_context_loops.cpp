@@ -153,11 +153,25 @@ static void playContextEnter() {
     Serial.println("Enter play contex loop");
 }
 
+static void invalidateScreen(LcdInvalidate type) {
+    switch (type) {
+        case INVALIDATE_VOLUME:
+            invalidateVolume();
+            break;
+        case INVALIDATE_ALL:
+        default:
+            renderScreen();
+            break;
+    }
+}
+
+
 static void onOkay() {
      switch (active_button)
      {
      case item_play_pause:
          mux.audio_play_pause();
+         invalidateScreen(INVALIDATE_ALL);
          break;
 
      case item_led_motor:
@@ -182,6 +196,7 @@ static void onOkay() {
          default:
              break;
          }
+         invalidateScreen(INVALIDATE_ALL);
          break;
 
      case item_reverse:
@@ -218,18 +233,6 @@ static void nextItem(uint8_t button) {
      }
 }
 
-static void invalidateScreen(LcdInvalidate type) {
-    switch (type) {
-        case INVALIDATE_VOLUME:
-            invalidateVolume();
-            break;
-        case INVALIDATE_ALL:
-        default:
-            renderScreen();
-            break;
-    }
-}
-
 // Invoked every loop iteration
 void playContextLoop() {
     ButtonPress button;
@@ -242,13 +245,14 @@ void playContextLoop() {
 
     switch (button.button) {
         case GEM_INVALIDATE:
-            invalidateScreen(static_cast<LcdInvalidate>(button.press_time));
+            invalidateScreen(INVALIDATE_ALL);
             break;
         case GEM_KEY_OK:
             onOkay();
             break;
         default:
             nextItem(button.button);
+            invalidateScreen(INVALIDATE_ALL);
             break;
     }
 }
@@ -279,7 +283,7 @@ void lcd_invalidate(LcdInvalidate invalidate) {
     ButtonPress button = {
         .button = GEM_INVALIDATE,
         .long_press = false,
-        .press_time = invalidate
+        .press_time = 0
     };
     xQueueSend(xQueueButtons, &button, 0);
 }
