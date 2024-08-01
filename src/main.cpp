@@ -38,7 +38,7 @@
 
 #define ROBOX_LCD
 // #define ROBOX_BATTERY
-// #define ROBOX_MOTOR
+#define ROBOX_MOTOR
 #define ROBOX_TEST_ADC_KEY
 // #define ROBOX_DEBUG_CLI
 // #define ROBOX_DEBUG_I2C
@@ -346,36 +346,6 @@ void setup() {
     roboxPrefs.end();                                      // Close our preferences namespace.
     #endif
 
-    #if defined(ROBOX_WIFI_MANAGER)
-    // Run this part as soon as you need Wifi
-
-    uint64_t _chipmacid = 0LL;
-    esp_efuse_mac_get_default((uint8_t*) (&_chipmacid));
-    String hostString = String((uint32_t)_chipmacid, HEX);
-    hostString.toUpperCase();
-    String ssid = "ROBOX_" + hostString;
-
-    // use for testing, to clear the stored/last ssid/password
-    // wifiManager.resetSettings();
-
-    // automatically connect to wifi
-    WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP  
-    wifiManager.setDebugOutput(true, WM_DEBUG_MAX);
-    // wifiManager.setConfigPortalBlocking(false);
-    boolean result = wifiManager.autoConnect(ssid.c_str(), NULL); // empty password
-    if (result)
-    {
-        Serial.println("Successfully connected to Wifi.");
-        server_setup();
-        server_start();
-    }
-    else
-    {
-        Serial.println("Failed setting up Wifi.");
-    }
-
-    #endif
-
     #if defined(ROBOX_FULL)
         ESP_LOGI(LOG_MAIN_TAG, "Setup mux");
         // mux.setup();
@@ -468,7 +438,7 @@ void setup() {
     #if defined(ROBOX_MOTOR)
     motor->init();
     motor->set_direction(0, 0);
-    motor->set_speed(0.1, 0.1);
+    motor->set_speed(0.2, 0.2);
     motor->enable(1);
 
     timekeeper = millis() + 5000;
@@ -476,14 +446,45 @@ void setup() {
 
 
     xTaskCreatePinnedToCore(
-            audio_task,       //Function to implement the task 
-            "audio_task", //Name of the task
-            6000,       //Stack size in words 
-            NULL,       //Task input parameter 
-            PRIORITY_AUDIO_TASK,          //Priority of the task 
-            &AudioCopyTask,       //Task handle.
-            0           // Core you want to run the task on (0 or 1)
-        );
+        audio_task,       //Function to implement the task 
+        "audio_task", //Name of the task
+        6000,       //Stack size in words 
+        NULL,       //Task input parameter 
+        PRIORITY_AUDIO_TASK,          //Priority of the task 
+        &AudioCopyTask,       //Task handle.
+        0           // Core you want to run the task on (0 or 1)
+    );
+
+    
+    #if defined(ROBOX_WIFI_MANAGER)
+    // Run this part as soon as you need Wifi
+
+    uint64_t _chipmacid = 0LL;
+    esp_efuse_mac_get_default((uint8_t*) (&_chipmacid));
+    String hostString = String((uint32_t)_chipmacid, HEX);
+    hostString.toUpperCase();
+    String ssid = "ROBOX_" + hostString;
+
+    // use for testing, to clear the stored/last ssid/password
+    // wifiManager.resetSettings();
+
+    // automatically connect to wifi
+    WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP  
+    wifiManager.setDebugOutput(true, WM_DEBUG_MAX);
+    // wifiManager.setConfigPortalBlocking(false);
+    boolean result = wifiManager.autoConnect(ssid.c_str(), NULL); // empty password
+    if (result)
+    {
+        Serial.println("Successfully connected to Wifi.");
+        server_setup();
+        server_start();
+    }
+    else
+    {
+        Serial.println("Failed setting up Wifi.");
+    }
+
+    #endif
 
 }
 
@@ -552,27 +553,27 @@ void loop() {
         {
         case 0:
             motor->set_direction(0, 0);
-            motor->set_speed(0.1, 0.1);
+            motor->set_speed(0.2, 0.2);
             break;
 
         case 1:
             motor->set_direction(1, 1);
-            motor->set_speed(0.1, 0.1);
+            motor->set_speed(0.2, 0.2);
             break;
         
         case 2:
             motor->set_direction(1, 0);
-            motor->set_speed(0.1, 0.1);
+            motor->set_speed(0.2, 0.2);
             break;
 
         case 3:
             motor->set_direction(0, 1);
-            motor->set_speed(0.1, 0.1);
+            motor->set_speed(0.2, 0.2);
             break;
 
         // case 4:
         //     motor->set_direction(0, 1);
-        //     motor->set_speed(0.3, 0.1);
+        //     motor->set_speed(0.3, 0.2);
         //     break;
 
         default:
