@@ -35,11 +35,13 @@ class RoboxAudioMux {
           : meta()
           , source_name(NotSelectedSource) 
           , volume_level(0.2)
+          , is_startup(true)
         {};
 
         void setup();
 
         void switch_to(audio_source new_mux_source);
+        void switch_startup();
 
         void copy();
 
@@ -63,6 +65,8 @@ class RoboxAudioMux {
         volatile audio_source source_name;
         std::unique_ptr<MuxInterface> current_source;
         float volume_level;
+
+        bool is_startup;
 
 };
 

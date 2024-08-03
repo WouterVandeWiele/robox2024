@@ -1,6 +1,4 @@
-#ifndef MUX_INTERFACE_H
-#define MUX_INTERFACE_H
-
+#pragma once
 #include "general_config.h"
 
 class MuxInterface {
@@ -74,6 +72,3 @@ class MuxInterface {
     protected:
         float &volume_level;
 };
-
-
-#endif  // MUX_INTERFACE_H

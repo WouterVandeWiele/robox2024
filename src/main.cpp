@@ -46,9 +46,11 @@
 // #define ROBOX_DEBUG_I2C
 // #define ROBOX_DEBUG_I2C_SCANNER
 #define ROBOX_PREFERENCES
+// #define ROBOX_WIFI_MANAGER
 // #define ROBOX_WIFI
 // #define ROBOX_IMPROV
 #define ROBOX_SERVER
+#define ROBOX_RESTART
 
 /*
  * compile options logic
@@ -148,6 +150,11 @@
 
 #if defined(ROBOX_SERVER)
     #include "robox_server.h"
+#endif
+
+#if defined(ROBOX_RESTART)
+    #include "robox_restart.h"
+    RoboxRestartManager restart_manager;
 #endif
 
 // #include "ble_example.h"
@@ -512,6 +519,8 @@ void setup() {
     }
 
     #endif
+
+    restart_manager.setupWifi();
 
 }
 

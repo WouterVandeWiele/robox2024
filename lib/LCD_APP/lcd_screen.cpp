@@ -9,9 +9,12 @@
 #include "lcd_screen_context_loops.h"
 #include "robox_audio_mux.h"
 
+#include "robox_restart.h"
+
 #include <WiFiManager.h>
 
 extern RoboxAudioMux mux;
+extern RoboxRestartManager restart_manager;
 #if defined(ROBOX_WIFI_MANAGER)
 extern WiFiManager wifiManager;
 #endif
@@ -135,8 +138,15 @@ void update_screen() {
 
     menu->setDrawCallback(update_screen);
     menu->hideVersion();
-    // menu->setSplash(100, 48, robox_splash);
-    // menu->setSplashDelay(3000);
+
+    if (restart_manager.is_cold_boot() == true) {
+        menu->setSplashDelay(2000);
+        menu->setSplash(100, 48, robox_splash);
+    }
+    else {
+        menu->setSplashDelay(2);
+        menu->setSplash(100, 48, empty_splash);
+    }
 
     menuPageSwitch.addMenuItem(buttonSwitchNoSource);
     menuPageSwitch.addMenuItem(buttonSwitchBLE);
@@ -206,9 +216,11 @@ void update_screen() {
 void RoboxLcdScreen::init_lcd() {
     Serial.println("LCD setup");
 
-    power_up();
+    if (restart_manager.is_cold_boot()) {
+        power_up();
 
-    lcd_t->lcd_init();
+        lcd_t->lcd_init();
+    }
 
     #if defined(LCD_RUN_THREADED)
 
