@@ -52,10 +52,12 @@ class RoboxAudioMux {
         void audio_next();
         void audio_previous();
 
-        MetaData meta;
+        String get_title();
+
         // std::mutex meta_mutex;
 
         bool audio_active();
+        MetaData meta;
     private:
 
         volatile audio_source source_name;

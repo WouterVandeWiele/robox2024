@@ -146,3 +146,9 @@ bool RoboxAudioMux::audio_active() {
         return false;
     }
 }
+
+String RoboxAudioMux::get_title() {
+    std::lock_guard<std::mutex> lck(meta_data_mtx);
+
+    return meta.title;
+}

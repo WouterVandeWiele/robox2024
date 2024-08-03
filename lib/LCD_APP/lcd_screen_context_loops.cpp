@@ -73,6 +73,45 @@ static void invalidateVolume() {
     lcd_t->updateWholeScreen();
 }
 
+static void drawTitle() {
+    String t1 = mux.get_title();
+
+    // String t2 = t1.substring(24, 49);
+    // t1.remove(25);
+
+    // int16_t x, y;
+    // uint16_t w, h, font_height;
+    // uint16_t len1, len2;
+
+    // // first character line
+    // for (len1 = t1.length(); len1 > 0; len1--) {
+    //     lcd_t->getTextBounds(t1.substring(0, len1), 19, 0, &x, &y, &w, &h);
+
+    //     Serial.printf("len %d, x: %d, y: %d, w: %d, h: %d\n", len1, x, y, w, h);
+
+    //     if (w < 100) break;
+    // }
+
+    // // second character line
+    // for (len2 = t1.length()-len1; len2 > 0; len2--) {
+    //     lcd_t->getTextBounds(t1.substring(len1, len2), 19, 0, &x, &y, &w, &h);
+
+    //     Serial.printf("len %d, x: %d, y: %d, w: %d, h: %d\n", len2, x, y, w, h);
+
+    //     if (w < 100) break;
+    // }
+
+    lcd_t->setCursor(19, 0);
+    lcd_t->cp437(true);
+    lcd_t->setTextWrap(false);
+    lcd_t->setTextSize(1);
+    lcd_t->setFont(GEM_FONT_SMALL);
+    lcd_t->print(t1.substring(0, 18).c_str());
+    lcd_t->setCursor(19, 12);
+    lcd_t->print(t1.substring(18, 36).c_str());
+    lcd_t->setCursor(0, 0);
+}
+
 static void renderScreen() {
     lcd_t->fillScreen(GLCD_COLOR_CLEAR);
 
@@ -130,15 +169,7 @@ static void renderScreen() {
     lcd_t->drawRect(33, 44, 52, 3, GLCD_COLOR_SET);
 
     // title - artist
-    lcd_t->setCursor(19, 0);
-    lcd_t->cp437(true);
-    lcd_t->setTextWrap(false);
-    lcd_t->setTextSize(1);
-    lcd_t->setFont(GEM_FONT_SMALL);
-    lcd_t->print("title - artist long");
-    lcd_t->setCursor(19, 12);
-    lcd_t->print("reaching the end");
-    lcd_t->setCursor(0, 0);
+    drawTitle();
 
     // volume level
     lcd_t->drawBitmap(74, 15, icon_volume, 10, 10, GLCD_COLOR_SET);

@@ -160,7 +160,7 @@ void update_screen() {
         }
         ButtonPress button;
         for (;;) {
-            Serial.println("Waiting for buttons");
+            // Serial.println("Waiting for buttons");
             if (!xQueueReceive(xQueueButtons, &button, 100 * portTICK_PERIOD_MS)) {
                 continue;
             }
@@ -210,7 +210,7 @@ void RoboxLcdScreen::init_lcd() {
     xTaskCreatePinnedToCore(
         menu_task,       //Function to implement the task 
         "lcd_thread", //Name of the task
-        6000,       //Stack size in words 
+        3000,       //Stack size in words 
         // (void*)&lcd_t,       //Task input parameter 
         NULL,       //Task input parameter 
         PRIORITY_LCD_TASK,          //Priority of the task 
