@@ -453,7 +453,7 @@ void setup() {
     #if defined(ROBOX_MOTOR)
     motor->init();
     motor->set_direction(0, 0);
-    motor->set_speed(0.2, 0.2);
+    motor->set_speed(0.3, 0.3);
     motor->enable(1);
 
     timekeeper = millis() + 5000;
@@ -580,27 +580,27 @@ void loop() {
         {
         case 0:
             motor->set_direction(0, 0);
-            motor->set_speed(0.2, 0.2);
+            motor->set_speed(0.3, 0.3);
             break;
 
         case 1:
             motor->set_direction(1, 1);
-            motor->set_speed(0.2, 0.2);
+            motor->set_speed(0.3, 0.3);
             break;
         
         case 2:
             motor->set_direction(1, 0);
-            motor->set_speed(0.2, 0.2);
+            motor->set_speed(0.3, 0.3);
             break;
 
         case 3:
             motor->set_direction(0, 1);
-            motor->set_speed(0.2, 0.2);
+            motor->set_speed(0.3, 0.3);
             break;
 
         // case 4:
         //     motor->set_direction(0, 1);
-        //     motor->set_speed(0.3, 0.2);
+        //     motor->set_speed(0.3, 0.3);
         //     break;
 
         default:
