@@ -12,8 +12,9 @@
 #include <WiFiManager.h>
 
 extern RoboxAudioMux mux;
+#if defined(ROBOX_WIFI_MANAGER)
 extern WiFiManager wifiManager;
-
+#endif
 
 // #if defined(LCD_RUN_THREADED)
 //     static LCD_Threaded* lcd_t;
@@ -72,6 +73,7 @@ GEMPage menuPageSwitch("Switch Audio Source");
 
 //////////////////////////////////////////////////////////////////////////
 
+#if defined(ROBOX_WIFI_MANAGER)
 extern const char* wifi_ssid_2;
 extern const char* wifi_password_2;
 
@@ -91,6 +93,7 @@ void reset_wifi_credentials() {
 }
 
 GEMItem menuPageSettingsResetWifiCredentials("Reset Wifi Cred", reset_wifi_credentials);
+#endif
 
 GEMPage menuPageSettings("Settings");
 
@@ -143,7 +146,9 @@ void update_screen() {
     menuPageSwitch.addMenuItem(menuItemSwitchAudioPlay);
 
     menuPageSettings.addMenuItem(menuItemButton);
+    #if defined(ROBOX_WIFI_MANAGER)
     menuPageSettings.addMenuItem(menuPageSettingsResetWifiCredentials);
+    #endif
     menuPageSettings.addMenuItem(menuItemSettingsAudioPlay);
 
     menu->setMenuPageCurrent(menuPageSettings);

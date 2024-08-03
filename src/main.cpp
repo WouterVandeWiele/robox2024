@@ -46,7 +46,8 @@
 // #define ROBOX_DEBUG_I2C
 // #define ROBOX_DEBUG_I2C_SCANNER
 #define ROBOX_PREFERENCES
-#define ROBOX_WIFI_MANAGER
+// #define ROBOX_WIFI
+// #define ROBOX_IMPROV
 #define ROBOX_SERVER
 
 /*
@@ -134,6 +135,15 @@
     // //needed for library
     // #include <ESPAsyncWebServer.h>
     // #include <ESPAsyncWiFiManager.h>         //https://github.com/tzapu/WiFiManager
+#endif
+
+#if defined(ROBOX_WIFI)
+    #include "robox_wifi.h"
+#endif
+
+#if defined(ROBOX_IMPROV)
+    #include <ImprovWiFiLibrary.h>
+    ImprovWiFi improvSerial(&Serial);
 #endif
 
 #if defined(ROBOX_SERVER)
@@ -460,6 +470,18 @@ void setup() {
         0           // Core you want to run the task on (0 or 1)
     );
 
+    #if defined(ROBOX_WIFI)
+        wifi_setup();
+    #endif
+
+    #if defined(ROBOX_IMPROV)
+        improvSerial.setDeviceInfo(
+            ImprovTypes::ChipFamily::CF_ESP32,  // chipFamily
+            "Robox-2024",                       // firmware name
+            "0.0.1",                            // firmware version
+            "Robox 2024"                        // device name
+        );
+    #endif
     
     #if defined(ROBOX_WIFI_MANAGER)
     // Run this part as soon as you need Wifi
@@ -587,6 +609,10 @@ void loop() {
 
         motor_test_program++;
     }
+    #endif
+
+    #if defined(ROBOX_IMPROV)
+        improvSerial.handleSerial();
     #endif
 
     led_breath(true, r_blue);
