@@ -66,11 +66,12 @@ void RoboxIoExpander::io_set_multi(uint8_t reg_address, std::vector<uint8_t> dat
 uint8_t RoboxIoExpander::io_get(uint8_t reg_address) {
     Wire.beginTransmission(io_address);
     Wire.write(reg_address);
-    Wire.endTransmission();
+    Wire.endTransmission(false);
 
 
     Wire.requestFrom(io_address, 1);
     uint8_t data = Wire.read();
+    Wire.endTransmission(true);
 
     return data;
 }
@@ -194,6 +195,9 @@ void RoboxIoExpander::io_configure() {
     io_set(PUPD_SELECT_P1, agg.pull_select[1]);
     io_set(INT_MASK_P0, agg.interrupts[0]);
     io_set(INT_MASK_P1, agg.interrupts[1]);
+
+    Serial.printf("input0 %d\n", get_inputs(0));
+    Serial.printf("input1 %d\n", get_inputs(1));
 }
 
 void RoboxIoExpander::loop() {
