@@ -108,10 +108,14 @@ https://atctwo.net/projects/esp32-partition-editor/
 
 ## burn pip install reedsolo
 
+```shell
 pip install cryptography
 pip install ecdsa
 pip install bitstring
 pip install reedsolo
+```
 
 PlatformIO Core CLI:
-`pio pkg exec -- espefuse.py set_flash_voltage 3.3V --port COM3`
+```shell
+pio pkg exec -- espefuse.py set_flash_voltage 3.3V --port COM3
+```
