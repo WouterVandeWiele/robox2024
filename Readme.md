@@ -105,3 +105,13 @@ Be sure you are not using GPIO2 and GPIO25 when using the DA module.
 ## ESP32 partition calculator
 https://esp32.jgarrettcorbin.com/
 https://atctwo.net/projects/esp32-partition-editor/
+
+## burn pip install reedsolo
+
+pip install cryptography
+pip install ecdsa
+pip install bitstring
+pip install reedsolo
+
+PlatformIO Core CLI:
+`pio pkg exec -- espefuse.py set_flash_voltage 3.3V --port COM3`
