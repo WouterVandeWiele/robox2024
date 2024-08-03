@@ -120,6 +120,64 @@ void fft_beat_setup(int samplerate) {
   // sets the (lag, threshold, influence)
   peakb0.begin(lag, threshold, influence);
 
-  FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, NUM_LEDS);
+}
 
+void led_init() {
+  FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, NUM_LEDS);
+}
+
+
+  uint32_t previousMillis = 0;
+  uint32_t interval = 5; // Update interval (milliseconds)
+  float brightness = 0.0;
+  float increment = 0.5; // How much to change the brightness by each update
+
+  
+void led_breath(bool alternate, LedBreathColors color) {
+  uint32_t currentMillis = millis();
+
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
+
+    brightness += increment;
+    if (brightness <= 0 || brightness >= 255) {
+      increment = -increment; // Reverse the direction of brightness change
+    }
+
+    uint8_t hue, sat;
+
+    switch (color)
+    {
+    case r_red:
+      hue = 0;
+      sat = 255;
+      break;
+
+    case r_green:
+      hue = 85;
+      sat = 255;
+      break;
+
+    case r_blue:    
+    default:
+      hue = 160;
+      sat = 255;
+      break;
+    }
+
+     // Set brightness for LED 0
+    leds[0] = CHSV(hue, sat, (int)brightness); // Blue color for LED 0
+    
+    if (alternate == false) {
+      // Set brightness for LED 1 with synced brightness
+      leds[1] = CHSV(hue, sat, (int)brightness); // Blue color for LED 1 with synced brightness
+    }
+    else {
+      // Set brightness for LED 1 with inverted brightness
+      leds[1] = CHSV(hue, sat, 255 - (int)brightness); // Blue color for LED 1 with inverted brightness
+    }
+
+
+    FastLED.show();
+  }
 }

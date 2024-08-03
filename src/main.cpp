@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include "AudioTools.h"
 
+#include "robox_fft_beat.h"
+
 /*
  * Compile parts of the project:
  * - ROBOX_FULL: the complete audio project, with audio mux
@@ -305,6 +307,9 @@ void setup() {
     // esp_log_level_set(BT_AV_TAG, ESP_LOG_NONE);
     // esp_log_level_set(BT_APP_TAG, ESP_LOG_NONE);
 
+    // fastled setup
+    led_init();
+
     #if defined(ROBOX_PREFERENCES)
     roboxPrefs.begin("roboxPrefs", RO_MODE); 
     
@@ -583,6 +588,8 @@ void loop() {
         motor_test_program++;
     }
     #endif
+
+    led_breath(true, r_blue);
 
     // #if defined(ROBOX_WIFI_MANAGER)
     // doWiFiManager();
