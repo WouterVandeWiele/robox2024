@@ -12,6 +12,7 @@ class RoboxRestartManager {
 
         bool is_cold_boot();
         void setupWifi();
+        void setupWifiOnDemand();
 
     private:
         bool cold_boot;
