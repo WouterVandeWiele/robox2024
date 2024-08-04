@@ -10,19 +10,42 @@ static AsyncWebServer server(80);
 const char* PARAM_MESSAGE = "message";
 
 const char* main_page = R"(
-<body>
-    <script src="https://unpkg.com/mithril/mithril.js"></script>
-    <script>
-    var root = document.body
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#2a3140">
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+  >
+  <script
+    src="https://unpkg.com/htmx.org@2.0.1"
+  ></script>
 
-    m.render(root, [
-        m("main", [
-            m("h1", {class: "title"}, "My first app"),
-            m("button", "A button"),
-        ])
-    ])
-    </script>
+</head>
+<body>
+  <header>
+    <div class="container">
+    <a aria-label="Pico CSS homepage" data-discover="true" href="/">
+    logo
+    </a>
+    <nav>
+      <ul>
+      <li class="hide-before-sm"><a aria-current="page" class="contrast" data-discover="true" href="/examples">Examples</a></li>
+      <li><a class="contrast" data-discover="true" href="/docs">Docs</a></li>
+      </ul>
+      <ul class="icons">
+      <li><a rel="noopener noreferrer" class="contrast" aria-label="GitHub repository" href="https://github.com/picocss/pico" target="_blank"></a></li>
+      <li><a rel="noopener noreferrer" class="contrast" aria-label="Twitter" href="https://twitter.com/picocss" target="_blank">
+      </a></li><li><a class="contrast" aria-label="Turn off dark mode" data-discover="true" href="/examples">moon</a></li>
+      </ul><
+    /nav>
+    </div>
+  </header>
+
 </body>
+</html>
 )";
 
 
