@@ -2,8 +2,6 @@
 #include <Arduino.h>
 #include "robox_audio_mux.h"
 
-// void restart_test();
-
 class RoboxRestartManager {
     public:
         RoboxRestartManager();

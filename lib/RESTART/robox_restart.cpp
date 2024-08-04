@@ -9,19 +9,6 @@ static RTC_NOINIT_ATTR uint8_t _audio_source;
 static WiFiManager wifiManager;
 
 
-// void restart_test() {
-//     esp_reset_reason_t reason = esp_reset_reason();
-
-//     if ((reason != ESP_RST_DEEPSLEEP) && (reason != ESP_RST_SW)) {
-//         _test = 0;
-//     }
-
-//     Serial.printf("test: %ld\n", _test++);
-
-//     delay(2000);
-//     esp_restart();
-// }
-
 RoboxRestartManager::RoboxRestartManager() {
     esp_reset_reason_t reason = restartReason();
 
