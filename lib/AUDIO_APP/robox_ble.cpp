@@ -99,9 +99,16 @@ void RoboxBluetooth::mux_start() {
     ESP_LOGI(LOG_BLE_TAG, "set reconnect");
     a2dp_sink.set_auto_reconnect(true);
 
+    uint64_t _chipmacid = 0LL;
+    esp_efuse_mac_get_default((uint8_t*) (&_chipmacid));
+    String hostString = String((uint32_t)_chipmacid, HEX);
+    hostString.toUpperCase();
+    String ssid = "ROBOX_" + hostString;
+
+    Serial.printf("ble name: %s\n", ssid.c_str());
 
     ESP_LOGI(LOG_BLE_TAG, "start sink");
-    a2dp_sink.start(ble_sink_name);
+    a2dp_sink.start(ssid.c_str());
 
 
     i2s_setup();
@@ -128,6 +135,15 @@ void RoboxBluetooth::mux_stop() {
     ESP_LOGI(LOG_BLE_TAG, "<<< BLE stopped");
 }
 
+String RoboxBluetooth::sink_name() {
+    uint64_t _chipmacid = 0LL;
+    esp_efuse_mac_get_default((uint8_t*) (&_chipmacid));
+    String hostString = String((uint32_t)_chipmacid, HEX);
+    hostString.toUpperCase();
+    String ssid = "ROBOX_" + hostString;
+
+    return ssid;
+}
 
 // void RoboxBluetooth::volume(float level) {
 //     a2dp_sink.set_volume((uint8_t)(0x7f*level));
