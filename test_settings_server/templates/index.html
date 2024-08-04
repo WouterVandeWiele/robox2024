@@ -1,0 +1,92 @@
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#2a3140">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.0.6/css/pico.min.css">
+  <script src="https://unpkg.com/htmx.org@2.0.1" ></script>
+
+</head>
+<body>
+  <header class="container">
+    <div>
+        <nav>
+        <a aria-label="Pico CSS homepage" data-discover="true" href="/">
+            <img src="/static/robox-logo2.svg" alt="Logo" style="width:100%; max-width:200px;">
+        </a>
+      <ul>
+        <!-- <li class="hide-before-sm" style="mark {
+            background: linear-gradient(to right, #d78dd2, #b999ee, #9da5e9, #8fa9f0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }">Examples</li>
+        <li>Docs</li> -->
+      </ul>
+      <li>
+        <details class="dropdown">
+          <summary role="button" class="secondary">Theme</summary>
+          <ul>
+            <li><a href="#" data-theme-switcher="auto">Auto</a></li>
+            <li><a href="#" data-theme-switcher="light">Light</a></li>
+            <li><a href="#" data-theme-switcher="dark">Dark</a></li>
+          </ul>
+        </details>
+      </li>
+    </nav>
+    </div>
+  </header>
+  <main class="container">
+    <section class="examples-hero">
+        <h1>
+            <mark style="background: linear-gradient(to right, #d78dd2, #b999ee, #9da5e9, #8fa9f0); -webkit-background-clip: text; background-clip: text; color: transparent;">Configure Settings</mark>
+        </h1>
+        <p class="secondary">Minimalist templates to discover Pico in action.</p>
+    </section>
+    <section class="example-list">
+    
+        <article>
+            <h2>Preview</h2>
+            <p>A pure HTML example, without dependencies.</p>
+        </article>
+        <article aria-busy="true"></article>
+    
+        <article>
+            <h2>Station list</h2>
+            <div class="overflow-auto">
+            <table class="striped">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">label</th>
+                    <th scope="col">url</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Cell</td>
+                    <td>Cell</td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td>Cell</td>
+                    <td>Cell</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td>Cell</td>
+                    <td>Cell</td>
+                </tr>
+                </tbody>
+            </table>
+            </div>
+        </article>
+
+    </section>
+  </main>
+  
+  <!-- Minimal theme switcher -->
+  <script src="/static/minimal-theme-switcher.js"></script>
+</body>
+</html>
