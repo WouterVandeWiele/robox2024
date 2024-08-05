@@ -47,6 +47,7 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
     }
     else {
         Serial.printf("Same source, not switching\n");
+        lcd_go_to_play_menu();
     }
 }
 

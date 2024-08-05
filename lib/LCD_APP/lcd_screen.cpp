@@ -182,6 +182,11 @@ void update_screen() {
             if (button.long_press) {
                 continue;
             }
+            if (button.button == GEM_PLAY_MENU) {
+                playLoop();
+                Serial.println("go to play menu");
+                break;
+            }
             if (button.button < GEM_KEY_UP || button.button > GEM_KEY_OK) {
                 continue;
             }

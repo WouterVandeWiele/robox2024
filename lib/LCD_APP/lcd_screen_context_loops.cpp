@@ -318,3 +318,12 @@ void lcd_invalidate(LcdInvalidate invalidate) {
     };
     xQueueSend(xQueueButtons, &button, 0);
 }
+
+void lcd_go_to_play_menu() {
+    ButtonPress button = {
+        .button = GEM_PLAY_MENU,
+        .long_press = false,
+        .press_time = 0
+    };
+    xQueueSend(xQueueButtons, &button, 0);
+}

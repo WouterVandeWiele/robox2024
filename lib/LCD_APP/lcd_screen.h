@@ -45,6 +45,7 @@ typedef enum {
  * @brief Requests that the LCD display should be redrawn.
  */
 void lcd_invalidate(LcdInvalidate invalidate);
+void lcd_go_to_play_menu();
 
 class RoboxLcdScreen: public IoInterface {
     public:
