@@ -3,6 +3,8 @@
 
 #include "robox_fft_beat.h"
 
+#include "hal/adc_types.h"
+
 /*
  * Compile parts of the project:
  * - ROBOX_FULL: the complete audio project, with audio mux
@@ -51,6 +53,7 @@
 // #define ROBOX_IMPROV
 #define ROBOX_SERVER
 #define ROBOX_RESTART
+// #define ROBOX_TEST_ADC2
 
 /*
  * compile options logic
@@ -155,6 +158,11 @@
 #if defined(ROBOX_RESTART)
     #include "robox_restart.h"
     RoboxRestartManager restart_manager;
+#endif
+
+#if defined(ROBOX_TEST_ADC2)
+int adc2_pin13;
+uint64_t adc_timekeeper = 5000;
 #endif
 
 // #include "ble_example.h"
@@ -525,6 +533,17 @@ void setup() {
 }
 
 void loop() {
+    #if defined(ROBOX_TEST_ADC2)
+
+    if (millis() > adc_timekeeper) {
+        esp_err_t r = adc2_get_raw(ADC2_CHANNEL_4, ADC_WIDTH_BIT_12, &adc2_pin13);
+        Serial.printf("adc2 pin13[%s]: %d\n", (r == ESP_OK) ? "ADC OK" : "FAIL", adc2_pin13);
+
+        adc_timekeeper = millis() + 5000;
+    }
+    #endif
+
+
     #if defined(ROBOX_FULL)
         // mux.copy();
     
