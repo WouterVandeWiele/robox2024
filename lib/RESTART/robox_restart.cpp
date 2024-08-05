@@ -74,7 +74,7 @@ void RoboxRestartManager::setupWifiOnDemand() {
     String ssid = "ROBOX_" + hostString;
 
     // use for testing, to clear the stored/last ssid/password
-    wifiManager.resetSettings();
+    // wifiManager.resetSettings();
 
     // automatically connect to wifi
     WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP  
