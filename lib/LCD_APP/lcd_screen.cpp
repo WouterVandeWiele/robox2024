@@ -10,11 +10,14 @@
 #include "robox_audio_mux.h"
 
 #include "robox_restart.h"
+#include "robox_language.h"
+// extern Translator translator;
 
 #include <WiFiManager.h>
 
 extern RoboxAudioMux mux;
 extern RoboxRestartManager restart_manager;
+
 #if defined(ROBOX_WIFI_MANAGER)
 extern WiFiManager wifiManager;
 #endif
@@ -45,7 +48,7 @@ extern WiFiManager wifiManager;
 void printData() {
   Serial.printf("time since start %ld\n", millis());
 }
-GEMItem menuItemButton("Print", printData);
+GEMItem menuItemButton(LANG_PRINT, printData);
 
 
 void switch_to_no_source() {
@@ -64,41 +67,26 @@ void switch_to_SD() {
     mux.switch_to(SDSource);
 }
 
-GEMItem buttonSwitchNoSource("No Source", switch_to_no_source);
-GEMItem buttonSwitchBLE("Sw BLE", switch_to_BLE);
-GEMItem buttonSwitchWEB("Sw WEB", switch_to_WEB);
-GEMItem buttonSwitchSD("Sw SD", switch_to_SD);
+GEMItem buttonSwitchNoSource(LANG_SOURCE_NO, switch_to_no_source);
+GEMItem buttonSwitchBLE(LANG_SOURCE_BLE, switch_to_BLE);
+GEMItem buttonSwitchWEB(LANG_SOURCE_WEB, switch_to_WEB);
+GEMItem buttonSwitchSD(LANG_SOURCE_SD, switch_to_SD);
 
-GEMItem menuItemSwitchAudioPlay("Play Audio", playLoop);
-GEMItem menuItemSettingsAudioPlay("Play Audio", playLoop);
+GEMItem menuItemSwitchAudioPlay(LANG_BACK, playLoop);
+GEMItem menuItemSettingsAudioPlay(LANG_BACK, playLoop);
 
-GEMPage menuPageSwitch("Switch Audio Source");
+GEMPage menuPageSwitch(LANG_MENU_SWITCH);
 
 //////////////////////////////////////////////////////////////////////////
 
-#if defined(ROBOX_WIFI_MANAGER)
-extern const char* wifi_ssid_2;
-extern const char* wifi_password_2;
-
 void reset_wifi_credentials() {
-    uint64_t _chipmacid = 0LL;
-    esp_efuse_mac_get_default((uint8_t*) (&_chipmacid));
-    String hostString = String((uint32_t)_chipmacid, HEX);
-    hostString.toUpperCase();
-    String ssid = "ROBOX_" + hostString;
-
-
-    WiFi.disconnect(true, true);
-    WiFi.mode(WIFI_OFF);
-    wifiManager.resetSettings();
-    wifiManager.autoConnect(ssid.c_str(), NULL);
-    // WiFi.begin(wifi_ssid_2, wifi_password_2);
+    restart_manager.resetWifiCred();
+    restart_manager.setupWifiOnDemand();
 }
 
-GEMItem menuPageSettingsResetWifiCredentials("Reset Wifi Cred", reset_wifi_credentials);
-#endif
+GEMItem menuPageSettingsResetWifiCredentials(LANG_RESET_WIFI_CRED, reset_wifi_credentials);
 
-GEMPage menuPageSettings("Settings");
+GEMPage menuPageSettings(LANG_MENU_SETTINGS);
 
 
 #if defined(LCD_RUN_THREADED)
@@ -184,7 +172,6 @@ void update_screen() {
             }
             if (button.button == GEM_PLAY_MENU) {
                 playLoop();
-                Serial.println("go to play menu");
                 break;
             }
             if (button.button < GEM_KEY_UP || button.button > GEM_KEY_OK) {
@@ -192,7 +179,7 @@ void update_screen() {
             }
             break;
         }
-        Serial.println("Got button press");
+        // Serial.println("Got button press");
         menu->registerKeyPress(button.button);
     }
 }

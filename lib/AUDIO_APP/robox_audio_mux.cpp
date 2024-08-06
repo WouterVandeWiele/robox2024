@@ -4,6 +4,7 @@
 #include "general_definitions.h"
 #include "robox_restart.h"
 #include "lcd_screen.h"
+#include "robox_language.h"
 
 #include <GEM_adafruit_gfx.h>
 
@@ -69,14 +70,14 @@ void RoboxAudioMux::switch_startup() {
     case NotSelectedSource:
         current_source.reset(new RoboxVoid(false, volume_level));
 
-        display_text = " <- Select Source" +  String("                                        ");
+        display_text = LANG_TOP_SELECT_SOURCE +  String("                                        ");
         break;
 
     case BleSource:
         current_source.reset(new RoboxBluetooth(true, volume_level));
         current_source->mux_start();
 
-        display_text = "BLE Name          -> " + current_source->sink_name() +  String("                                        ");
+        display_text = LANG_TOP_BLE_NAME + current_source->sink_name() +  String("                                        ");
         break;
 
     case WebRadioSource:

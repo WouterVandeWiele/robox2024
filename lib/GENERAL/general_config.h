@@ -23,4 +23,8 @@
 
 #define ADC_BATTERY_CONVERSION 2
 
+
+#define LANG_NL
+// #define LANG_EN
+
 #endif  // GENERAL_CONFIG_H

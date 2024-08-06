@@ -4,6 +4,8 @@
 #include "lcd_screen.h"
 #include "robox_audio_mux.h"
 
+#include "robox_language.h"
+
 #include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 
 static RTC_NOINIT_ATTR uint32_t _reboot_counter;
@@ -18,7 +20,7 @@ static void configModeCallback (WiFiManager *myWiFiManager) {
 
     Serial.println(myWiFiManager->getConfigPortalSSID());
 
-    String display_text = "Select Wifi Via   ->" + myWiFiManager->getConfigPortalSSID();
+    String display_text = LANG_TOP_WIFI_SELECT + myWiFiManager->getConfigPortalSSID();
 
     std::lock_guard<std::mutex> lck(meta_data_mtx);
     mux.meta.title = String(display_text.c_str());
@@ -64,6 +66,10 @@ void RoboxRestartManager::setupWifi() {
     }
 }
 
+    void RoboxRestartManager::resetWifiCred() {
+    wifiManager.resetSettings();
+}
+
 void RoboxRestartManager::setupWifiOnDemand() {
     // Run this part as soon as you need Wifi
 
@@ -72,9 +78,6 @@ void RoboxRestartManager::setupWifiOnDemand() {
     String hostString = String((uint32_t)_chipmacid, HEX);
     hostString.toUpperCase();
     String ssid = "ROBOX_" + hostString;
-
-    // use for testing, to clear the stored/last ssid/password
-    // wifiManager.resetSettings();
 
     // automatically connect to wifi
     WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP  
@@ -85,7 +88,7 @@ void RoboxRestartManager::setupWifiOnDemand() {
     if (result)
     {
         Serial.println("Successfully connected to Wifi.");
-        String display_text = "Wifi Connected    -> " + WiFi.localIP().toString() + String("                                        ");
+        String display_text = LANG_TOP_WIFI_CONNECTED + WiFi.localIP().toString() + String("                                        ");
 
         std::lock_guard<std::mutex> lck(meta_data_mtx);
         mux.meta.title = String(display_text.c_str());
@@ -94,7 +97,7 @@ void RoboxRestartManager::setupWifiOnDemand() {
     else
     {
         Serial.println("Failed setting up Wifi.");
-        String display_text = "Wifi Failed";
+        String display_text = LANG_TOP_WIFI_FAILED;
 
         std::lock_guard<std::mutex> lck(meta_data_mtx);
         mux.meta.title = String(display_text.c_str()) + String("                                        ");
