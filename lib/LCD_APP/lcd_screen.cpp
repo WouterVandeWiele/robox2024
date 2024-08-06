@@ -8,6 +8,7 @@
 #include "adc_key.h"
 #include "lcd_screen_context_loops.h"
 #include "robox_audio_mux.h"
+#include "robox_battery.h"
 
 #include "robox_restart.h"
 
@@ -171,6 +172,10 @@ void update_screen() {
         }
       
         if (!menu->readyForKey()) {
+            continue;
+        }
+
+        if (xQueueBattery == NULL) {
             continue;
         }
         ButtonPress button;

@@ -75,3 +75,12 @@ void RoboxRestartManager::setupWifi() {
 // #endif
 }
 
+void wifi_suspend()
+{
+    esp_wifi_stop();
+}
+
+void wifi_start()
+{
+    esp_wifi_start();
+}

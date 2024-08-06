@@ -26,3 +26,6 @@ class RoboxRestartManager {
             return esp_reset_reason();
         }
 };
+
+void wifi_suspend();
+void wifi_start();

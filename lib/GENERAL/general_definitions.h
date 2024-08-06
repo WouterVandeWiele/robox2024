@@ -71,8 +71,6 @@
 #define BUTTON_2AC 37
 #define BUTTON_2BD 38
 
-#define BATTERY_ADC 13
-
 #define KEY_TH_1 825    // 0,825mV
 #define KEY_TH_2 1885   // 1,885mV
 // #define KEY_TC_C 2475   // 2,475mV
@@ -94,7 +92,7 @@
 // battery pins
 #define BATTERY_CHARGE 0x01
 #define BATTERY_STANDBY 0x02
-
+#define BATTERY_ADC 39
 
 #endif
 

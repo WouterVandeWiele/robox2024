@@ -6,7 +6,7 @@
 #define MAX_12_BITS 4095
 
 
-RoboxMotor::RoboxMotor(RoboxIoExpander* io): io(io) {
+RoboxMotor::RoboxMotor(RoboxIoExpander* io): io(io), disbabledByLowBattery(false) {
 
 }
 
@@ -39,13 +39,22 @@ void RoboxMotor::set_direction(bool m1, bool m2) {
 }
 
 void RoboxMotor::enable(bool enable) {
-    io->set_output(LCD_CONTROL_PORT, (MOTOR_EN | MOTOR_STANDBY), (MOTOR_EN | MOTOR_STANDBY));
+    if(disbabledByLowBattery == false)
+    {
+        io->set_output(LCD_CONTROL_PORT, (MOTOR_EN | MOTOR_STANDBY), (MOTOR_EN | MOTOR_STANDBY));
+    }
 }
 
 void RoboxMotor::shutdown(bool shutdown) {
     io->set_output(LCD_CONTROL_PORT, ~(MOTOR_EN | MOTOR_STANDBY), (MOTOR_EN | MOTOR_STANDBY));
 }
 
+void RoboxMotor::motorLowBattery(bool _disbabledByLowBattery) {
+    if(_disbabledByLowBattery == true){
+        shutdown(true);
+    }
+    disbabledByLowBattery = _disbabledByLowBattery;
+}
 
 ExpanderConfig RoboxMotor::io_config() {
     ExpanderConfig config = RoboxIoExpander::get_default_config();

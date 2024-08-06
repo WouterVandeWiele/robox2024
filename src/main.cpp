@@ -39,7 +39,7 @@
  */
 
 #define ROBOX_LCD
-// #define ROBOX_BATTERY
+#define ROBOX_BATTERY
 #define ROBOX_MOTOR
 #define ROBOX_TEST_ADC_KEY
 // #define ROBOX_DEBUG_CLI
@@ -49,7 +49,7 @@
 // #define ROBOX_WIFI_MANAGER
 // #define ROBOX_WIFI
 // #define ROBOX_IMPROV
-#define ROBOX_SERVER
+// #define ROBOX_SERVER
 #define ROBOX_RESTART
 
 /*
@@ -205,7 +205,7 @@ static RoboxLcdScreen* screen;
 #endif
 
 #if defined(ROBOX_MOTOR)
-static RoboxMotor* motor;
+RoboxMotor* motor;
 unsigned long timekeeper = 0;
 uint8_t motor_test_program = 0;
 #define MOTOR_TEST_PROGRAMS 4
@@ -309,7 +309,6 @@ void setup() {
     Serial.println("More info on https://github.com/...\n");
     Serial.println("\n");
 
-    
     // setup logging
     esp_log_level_set("*", ESP_LOG_ERROR);
     // esp_log_level_set("*", ESP_LOG_WARN);
@@ -438,6 +437,9 @@ void setup() {
         screen->init_lcd();
     #endif
 
+    #if defined(ROBOX_BATTERY)
+        battery->initBattery();
+    #endif
 
     #if defined(ROBOX_DEBUG_CLI)
         ESP_LOGI(LOG_MAIN_TAG, "select ble source");
@@ -510,8 +512,10 @@ void setup() {
     if (result)
     {
         Serial.println("Successfully connected to Wifi.");
+        #if defined(ROBOX_SERVER)
         server_setup();
         server_start();
+        #endif
     }
     else
     {
