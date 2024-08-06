@@ -13,6 +13,8 @@ class RoboxMotor: public IoInterface {
         void enable(bool enable);
         void shutdown(bool shutdown);
 
+        bool is_shutdown();
+
         // static method that returns the IO expander config expected by this component
         static ExpanderConfig io_config();
 

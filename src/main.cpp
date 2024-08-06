@@ -53,7 +53,10 @@
 // #define ROBOX_IMPROV
 #define ROBOX_SERVER
 #define ROBOX_RESTART
-// #define ROBOX_TEST_ADC2
+// #define ROBOX_TEST_ADC
+
+// #include "robox_language.h"
+// Translator translator(lang_en);
 
 /*
  * compile options logic
@@ -160,7 +163,10 @@
     RoboxRestartManager restart_manager;
 #endif
 
-#if defined(ROBOX_TEST_ADC2)
+#include "robox_led_motor_controller.h"
+LedMotorController led_motor_controller;
+
+#if defined(ROBOX_TEST_ADC)
 int adc2_pin13;
 uint64_t adc_timekeeper = 5000;
 #endif
@@ -213,7 +219,7 @@ static RoboxLcdScreen* screen;
 #endif
 
 #if defined(ROBOX_MOTOR)
-static RoboxMotor* motor;
+RoboxMotor* motor;
 unsigned long timekeeper = 0;
 uint8_t motor_test_program = 0;
 #define MOTOR_TEST_PROGRAMS 4
@@ -533,12 +539,16 @@ void setup() {
 }
 
 void loop() {
-    #if defined(ROBOX_TEST_ADC2)
+    #if defined(ROBOX_TEST_ADC)
 
     if (millis() > adc_timekeeper) {
-        esp_err_t r = adc2_get_raw(ADC2_CHANNEL_4, ADC_WIDTH_BIT_12, &adc2_pin13);
-        Serial.printf("adc2 pin13[%s]: %d\n", (r == ESP_OK) ? "ADC OK" : "FAIL", adc2_pin13);
+        // esp_err_t r = adc2_get_raw(ADC2_CHANNEL_4, ADC_WIDTH_BIT_12, &adc2_pin13);
+        // Serial.printf("adc2 pin13[%s]: %d\n", (r == ESP_OK) ? "ADC OK" : "FAIL", adc2_pin13);
+        // adc1_config_width(ADC_WIDTH_BIT_12);
+        // adc2_pin13 = adc1_get_raw(ADC1_CHANNEL_3);//, ADC_WIDTH_BIT_12, &adc2_pin13);
+        // Serial.printf("adc1 pin39[]: %d\n", adc2_pin13);
 
+        Serial.printf("adc1 pin 39: %ld\n", analogReadMilliVolts(39));
         adc_timekeeper = millis() + 5000;
     }
     #endif

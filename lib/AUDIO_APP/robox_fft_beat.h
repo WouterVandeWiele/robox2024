@@ -16,6 +16,7 @@ extern AudioRealFFT fft;
 
 void fft_beat_setup(int samplerate = 44100);
 
+void led_clear();
 void led_init();
 
 enum LedBreathColors {r_blue, r_red, r_green};

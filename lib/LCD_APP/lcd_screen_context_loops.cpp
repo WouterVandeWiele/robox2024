@@ -2,6 +2,9 @@
 #include "adc_key.h"
 #include "icons.h"
 
+#include "robox_led_motor_controller.h"
+extern LedMotorController led_motor_controller;
+
 #include "robox_audio_mux.h"
 extern RoboxAudioMux mux;
 
@@ -136,15 +139,18 @@ static void renderScreen() {
     lcd_t->setFont();
     lcd_t->cp437(true);
     lcd_t->setTextWrap(false);
-    if ((lm_current_item == 1) || (lm_current_item == 3)) {
+    // if ((lm_current_item == 1) || (lm_current_item == 3)) {
+    if (led_motor_controller.is_led_enabled()) {
         lcd_t->setCursor(53, 20);
         lcd_t->print("L");
     }
-    if ((lm_current_item == 2) || (lm_current_item == 3)) {
+    // if ((lm_current_item == 2) || (lm_current_item == 3)) {
+    if (led_motor_controller.is_motor_enabled()) {
         lcd_t->setCursor(60, 20);
         lcd_t->print("M");
     }
-    if (lm_current_item == 0) {
+    // if (lm_current_item == 0) {
+    if (led_motor_controller.is_nothing_enabled()) {
         lcd_t->setCursor(57, 20);
         lcd_t->print("-");
     }
@@ -166,7 +172,7 @@ static void renderScreen() {
     lcd_t->drawBitmap(70, 26, (active_button == item_forward) ? icon_fast_forward_fill : icon_fast_forward, 14, 14, GLCD_COLOR_SET);
 
     // progress bar
-    lcd_t->drawRect(33, 44, 52, 3, GLCD_COLOR_SET);
+    // lcd_t->drawRect(33, 44, 52, 3, GLCD_COLOR_SET);
 
     // title - artist
     drawTitle();
@@ -206,27 +212,28 @@ static void onOkay() {
          break;
 
      case item_led_motor:
-         lm_current_item++;
-         if (lm_current_item > 3) {
-             lm_current_item = 0;
-         }
-         switch (lm_current_item)
-         {
-         case 1:
-             // led only
-             break;
+        led_motor_controller.next();
+        // lm_current_item++;
+        // if (lm_current_item > 3) {
+        //     lm_current_item = 0;
+        // }
+        // switch (lm_current_item)
+        // {
+        // case 1:
+        //     // led only
+        //     break;
 
-         case 2:
-             // motor only
-             break;
+        // case 2:
+        //     // motor only
+        //     break;
 
-         case 3:
-             // led and motor
-             break;
+        // case 3:
+        //     // led and motor
+        //     break;
 
-         default:
-             break;
-         }
+        // default:
+        //     break;
+        // }
          invalidateScreen(INVALIDATE_ALL);
          break;
 

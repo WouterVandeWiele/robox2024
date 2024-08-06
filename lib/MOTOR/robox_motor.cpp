@@ -64,3 +64,8 @@ void RoboxMotor::io_interrupt_observer(std::vector<uint8_t>& data) {
 
     // implement callback code when an interrupt is generated
 }
+
+bool RoboxMotor::is_shutdown() {
+    // stub
+    return false;
+}
