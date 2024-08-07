@@ -6,6 +6,10 @@
 
 #define VOLUME_STEP 0.05f
 
+#define FIXED_MOTOR_SPEED 0.3f
+#define BEAT_MIN_INTERACTION_TIME 1000
+#define DUMMY_BEAT_RANGE 1000
+
 
 #define IO_EXPANDER
 

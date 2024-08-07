@@ -2,6 +2,7 @@
 #if defined(ROBOX_LED_MOTOR_CONTROLLER)
 // #include "freertos/task.h"
 
+#include "robox_fft_beat.h"
 #include "robox_motor.h"
 
 // Statically allocate and initialize the spinlock
@@ -31,6 +32,17 @@ void LedMotorController::next() {
     default:
         current = lm_none;
         break;
+    }
+
+    if (is_motor_enabled()) {
+        motor->enable(true);
+    }
+    else {
+        motor->shutdown(true);
+    }
+
+    if (!is_led_enabled()) {
+        led_clear();
     }
     // taskEXIT_CRITICAL(&robox_effects_logic);
 //  taskEXIT_CRITICAL();

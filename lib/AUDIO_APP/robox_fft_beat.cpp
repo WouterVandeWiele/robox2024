@@ -1,13 +1,19 @@
 #include "robox_fft_beat.h"
 #include "AudioTools.h"
 #include "AudioLibs/AudioRealFFT.h"
+#include "general_config.h"
 #include "general_definitions.h"
 #include <PeakDetection.h>
 #define FASTLED_FORCE_SOFTWARE_SPI
 #include <FastLED.h>
 
+#include <random>
+
 #include "robox_led_motor_controller.h"
 extern LedMotorController led_motor_controller;
+
+#include "robox_motor.h"
+extern RoboxMotor* motor;
 
 static CRGB leds[NUM_LEDS];
 
@@ -20,7 +26,8 @@ static double influence = 0.6;
 // static uint32_t fft_timekeeper = 0;
 
 // static uint32_t beat_counter = 0;
-// static uint32_t beat_timekeeper = 0;
+uint32_t beat_loop_timestamp = 0;
+static uint32_t beat_timekeeper = 0;
 
 
 // peak detection variables
@@ -69,23 +76,44 @@ void allRandom(){
 void fftResult(AudioFFTBase &fft) {
     float *magnitudes = fft.magnitudes();
 
+    beat_loop_timestamp = millis();
+    
     peakb0.add(magnitudes[0]);
 
     max_filter = FILTER_POSITIONS & ((max_filter << 1) | peakb0.getPeak());
 
     #if defined(ROBOX_LED_MOTOR_CONTROLLER)
+
+    // beat detected within BEAT_MIN_INTERACTION_TIME
     if (max_filter == 0x1) {
+      beat_timekeeper = millis();
+
       if (led_motor_controller.is_led_enabled()) {
         allRandom();
-      } else {
-        led_clear();
       }
 
       if (led_motor_controller.is_motor_enabled()) {
         // Serial.printf("motor move: %ld\n", millis());
         // beat_counter++;
+        motor->random_move();
       }
     }
+
+    // no beat detected, but we still trigger one manually
+    if (millis() > beat_timekeeper + BEAT_MIN_INTERACTION_TIME) {
+      beat_timekeeper = millis() + (rand() % DUMMY_BEAT_RANGE);
+
+      // if (led_motor_controller.is_led_enabled()) {
+      //   allRandom();
+      // } else {
+      //   led_clear();
+      // }
+
+      if (led_motor_controller.is_motor_enabled()) {
+        motor->random_move();
+      }
+    }
+
     #else
     if (max_filter == 0x1) {
       allRandom();

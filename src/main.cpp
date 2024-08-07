@@ -53,7 +53,7 @@
 // #define ROBOX_IMPROV
 #define ROBOX_SERVER
 #define ROBOX_RESTART
-// #define ROBOX_TEST_ADC
+#define ROBOX_TEST_ADC
 
 // #include "robox_language.h"
 // Translator translator(lang_en);
@@ -169,6 +169,8 @@ LedMotorController led_motor_controller;
 #if defined(ROBOX_TEST_ADC)
 int adc2_pin13;
 uint64_t adc_timekeeper = 5000;
+extern uint32_t beat_loop_timestamp;
+static uint32_t beat_loop_timestamp_previous = 0;
 #endif
 
 // #include "ble_example.h"
@@ -473,11 +475,11 @@ void setup() {
 
     #if defined(ROBOX_MOTOR)
     motor->init();
-    motor->set_direction(0, 0);
-    motor->set_speed(0.3, 0.3);
-    motor->enable(1);
+    // motor->set_direction(0, 0);
+    // motor->set_speed(0.3, 0.3);
+    // motor->enable(1);
 
-    timekeeper = millis() + 5000;
+    // timekeeper = millis() + 5000;
     #endif
 
 
@@ -548,8 +550,23 @@ void loop() {
         // adc2_pin13 = adc1_get_raw(ADC1_CHANNEL_3);//, ADC_WIDTH_BIT_12, &adc2_pin13);
         // Serial.printf("adc1 pin39[]: %d\n", adc2_pin13);
 
-        Serial.printf("adc1 pin 39: %ld\n", analogReadMilliVolts(39));
-        adc_timekeeper = millis() + 5000;
+        // Serial.printf("adc1 pin 39: %ld\n", analogReadMilliVolts(39));
+        // Serial.printf("mux last %ld\n", beat_loop_timestamp);
+
+        if (beat_loop_timestamp_previous == beat_loop_timestamp) {
+            // Serial.println("no audio playing");
+
+            motor->shutdown_idempotent();
+        } 
+        else {
+            if (led_motor_controller.is_motor_enabled()) {
+                motor->enable_idempotent();
+            }
+            // Serial.println("audio playing");
+        }
+
+        beat_loop_timestamp_previous = beat_loop_timestamp;
+        adc_timekeeper = millis() + 500;
     }
     #endif
 
@@ -603,55 +620,55 @@ void loop() {
 
     #endif
 
-    #if defined(ROBOX_DEBUG_I2C_SCANNER)
-        scanner_loop();
-        delay(10000);
-    #endif
+    // #if defined(ROBOX_DEBUG_I2C_SCANNER)
+    //     scanner_loop();
+    //     delay(10000);
+    // #endif
 
-    #if defined(ROBOX_MOTOR)
-    if (timekeeper < millis()) {
-        Serial.printf("new motor program. timekeeper: %ld, program %d\n", timekeeper, (motor_test_program % MOTOR_TEST_PROGRAMS));
-        timekeeper += 5000;
+    // #if defined(ROBOX_MOTOR)
+    // if (timekeeper < millis()) {
+    //     Serial.printf("new motor program. timekeeper: %ld, program %d\n", timekeeper, (motor_test_program % MOTOR_TEST_PROGRAMS));
+    //     timekeeper += 5000;
 
 
-        switch (motor_test_program % MOTOR_TEST_PROGRAMS)
-        {
-        case 0:
-            motor->set_direction(0, 0);
-            motor->set_speed(0.3, 0.3);
-            break;
+    //     switch (motor_test_program % MOTOR_TEST_PROGRAMS)
+    //     {
+    //     case 0:
+    //         motor->set_direction(0, 0);
+    //         motor->set_speed(0.3, 0.3);
+    //         break;
 
-        case 1:
-            motor->set_direction(1, 1);
-            motor->set_speed(0.3, 0.3);
-            break;
+    //     case 1:
+    //         motor->set_direction(1, 1);
+    //         motor->set_speed(0.3, 0.3);
+    //         break;
         
-        case 2:
-            motor->set_direction(1, 0);
-            motor->set_speed(0.3, 0.3);
-            break;
+    //     case 2:
+    //         motor->set_direction(1, 0);
+    //         motor->set_speed(0.3, 0.3);
+    //         break;
 
-        case 3:
-            motor->set_direction(0, 1);
-            motor->set_speed(0.3, 0.3);
-            break;
+    //     case 3:
+    //         motor->set_direction(0, 1);
+    //         motor->set_speed(0.3, 0.3);
+    //         break;
 
-        // case 4:
-        //     motor->set_direction(0, 1);
-        //     motor->set_speed(0.3, 0.3);
-        //     break;
+    //     // case 4:
+    //     //     motor->set_direction(0, 1);
+    //     //     motor->set_speed(0.3, 0.3);
+    //     //     break;
 
-        default:
-            break;
-        }
+    //     default:
+    //         break;
+    //     }
 
-        motor_test_program++;
-    }
-    #endif
+    //     motor_test_program++;
+    // }
+    // #endif
 
-    #if defined(ROBOX_IMPROV)
-        improvSerial.handleSerial();
-    #endif
+    // #if defined(ROBOX_IMPROV)
+    //     improvSerial.handleSerial();
+    // #endif
 
     // led_breath(true, r_blue);
 

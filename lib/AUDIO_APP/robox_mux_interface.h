@@ -1,6 +1,9 @@
 #pragma once
 #include "general_config.h"
 
+#include "robox_motor.h"
+extern RoboxMotor* motor;
+
 class MuxInterface {
     public:
 
@@ -55,9 +58,12 @@ class MuxInterface {
         virtual void audio_play_pause() {
             if (audio_active() == true) {
                 audio_pause();
+
+                motor->shutdown(true);
             }
             else {
                 audio_play();
+                motor->enable(true);
             }
         }
 

@@ -1,14 +1,18 @@
 #include <Arduino.h>
 #include <mutex>
 #include "robox_motor.h"
+#include "general_config.h"
 #include "general_definitions.h"
+#include <random>
 
 #define MAX_12_BITS 4095
 
 
-RoboxMotor::RoboxMotor(RoboxIoExpander* io): io(io) {
-
-}
+RoboxMotor::RoboxMotor(RoboxIoExpander* io)
+    : io(io)
+    , is_motor_on(false)
+    , last_random_move(0)
+    {}
 
 
 void RoboxMotor::init() {
@@ -39,10 +43,12 @@ void RoboxMotor::set_direction(bool m1, bool m2) {
 }
 
 void RoboxMotor::enable(bool enable) {
+    is_motor_on = true;
     io->set_output(LCD_CONTROL_PORT, (MOTOR_EN | MOTOR_STANDBY), (MOTOR_EN | MOTOR_STANDBY));
 }
 
 void RoboxMotor::shutdown(bool shutdown) {
+    is_motor_on = false;
     io->set_output(LCD_CONTROL_PORT, ~(MOTOR_EN | MOTOR_STANDBY), (MOTOR_EN | MOTOR_STANDBY));
 }
 
@@ -65,7 +71,70 @@ void RoboxMotor::io_interrupt_observer(std::vector<uint8_t>& data) {
     // implement callback code when an interrupt is generated
 }
 
+void RoboxMotor::shutdown_idempotent() {
+    if (is_motor_on == true) {
+        shutdown(true);
+    }
+}
+
+void RoboxMotor::enable_idempotent() {
+    if (is_motor_on == false) {
+        enable(true);
+    }
+}
+
 bool RoboxMotor::is_shutdown() {
     // stub
     return false;
+}
+
+void RoboxMotor::random_move() {
+
+    if (millis() < (last_random_move + 400)) {
+        return;
+    }
+
+    MotorMoves move = static_cast<MotorMoves>(rand() % mm_last);
+
+    switch (move)
+    {
+    case mm_forward:
+        set_speed(FIXED_MOTOR_SPEED, FIXED_MOTOR_SPEED);
+        set_direction(1, 1);
+        break;
+    case mm_reverse:
+        set_speed(FIXED_MOTOR_SPEED, FIXED_MOTOR_SPEED);
+        set_direction(0, 0);
+        break;
+    case mm_center_left:
+        set_speed(FIXED_MOTOR_SPEED, FIXED_MOTOR_SPEED);
+        set_direction(1, 0);
+        break;
+    case mm_center_right:
+        set_speed(FIXED_MOTOR_SPEED, FIXED_MOTOR_SPEED);
+        set_direction(0, 1);
+        break;
+    case mm_left_forward_only:
+        set_speed(FIXED_MOTOR_SPEED, 0);
+        set_direction(1, 0);
+        break;
+    case mm_left_reverse_only:
+        set_speed(FIXED_MOTOR_SPEED, 0);
+        set_direction(0, 0);
+        break;
+    case mm_right_forward_only:
+        set_speed(0, FIXED_MOTOR_SPEED);
+        set_direction(0, 1);
+        break;
+    case mm_right_reverse_only:
+        set_speed(0, FIXED_MOTOR_SPEED);
+        set_direction(0, 0);
+        break;
+    
+    default:
+        shutdown(true);
+        break;
+    }
+
+    last_random_move = millis();
 }
