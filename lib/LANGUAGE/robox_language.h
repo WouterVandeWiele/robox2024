@@ -54,7 +54,7 @@
 #define LANG_SOURCE_NO "Geen Audio"
 #define LANG_SOURCE_BLE "Bluetooth"
 #define LANG_SOURCE_WEB "Internetradio"
-#define LANG_SOURCE_SD "MP3-Player"
+#define LANG_SOURCE_SD "MP3-Speler"
 
 #define LANG_PRINT "Print"
 #define LANG_BACK "Terug"

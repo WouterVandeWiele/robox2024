@@ -285,7 +285,7 @@ bool motorsOn;
 #endif
 
 
-void audio_task(void* parameter) {
+[[noreturn]] void audio_task(void* parameter) {
     mux.setup();
 
     while (true) {

@@ -25,7 +25,7 @@ typedef struct ButtonPress{
 } ButtonPress;
 
 ButtonPress compare(uint32_t voltage, std::list<threshold> &buffer, byte button1, byte button2);
-void adc_key_loop(void* parameter);
+void adc_key_task(void* parameter);
 void adc_key_setup();
 
 #endif // ADC_KEY_H
