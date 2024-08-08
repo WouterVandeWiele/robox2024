@@ -4,11 +4,13 @@
 
 #include "robox_fft_beat.h"
 #include "robox_motor.h"
+#include "robox_restart.h"
 
 // Statically allocate and initialize the spinlock
 // static portMUX_TYPE robox_effects_logic = portMUX_INITIALIZER_UNLOCKED;
 
 extern RoboxMotor* motor;
+extern RoboxRestartManager restart_manager;
 
 void LedMotorController::next() {
 
@@ -33,6 +35,8 @@ void LedMotorController::next() {
         current = lm_none;
         break;
     }
+
+    restart_manager.set_led_motor(current);
 
     if (is_motor_enabled()) {
         motor->enable(true);

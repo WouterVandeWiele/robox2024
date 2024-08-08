@@ -10,6 +10,7 @@
 
 static RTC_NOINIT_ATTR uint32_t _reboot_counter;
 static RTC_NOINIT_ATTR uint8_t _audio_source;
+static RTC_NOINIT_ATTR uint8_t _led_motor;
 
 static WiFiManager wifiManager;
 extern RoboxAudioMux mux;
@@ -35,6 +36,7 @@ RoboxRestartManager::RoboxRestartManager() {
         // invalidate variables
         _reboot_counter = 0;
         _audio_source = NotSelectedSource;
+        _led_motor = lm_none;
         cold_boot = true;
     }
     else {
@@ -59,6 +61,17 @@ void RoboxRestartManager::reboot_next_source(audio_source source) {
     _audio_source = (uint8_t) source;
     restart();
 }
+
+
+void RoboxRestartManager::set_led_motor(LedMotorEnum lm) {
+    _led_motor = (uint8_t) lm;
+}
+
+LedMotorEnum RoboxRestartManager::get_led_motor() {
+    return (LedMotorEnum) _led_motor;
+}
+
+
 
 void RoboxRestartManager::setupWifi() {
     if (_audio_source == WebRadioSource) {

@@ -340,6 +340,9 @@ void setup() {
     // esp_log_level_set(BT_AV_TAG, ESP_LOG_NONE);
     // esp_log_level_set(BT_APP_TAG, ESP_LOG_NONE);
 
+    // init after restart
+    led_motor_controller.set_current(restart_manager.get_led_motor());
+
     // fastled setup
     led_init();
 
