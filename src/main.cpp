@@ -509,35 +509,8 @@ void setup() {
         );
     #endif
     
-    #if defined(ROBOX_WIFI_MANAGER)
-    // Run this part as soon as you need Wifi
-
-    uint64_t _chipmacid = 0LL;
-    esp_efuse_mac_get_default((uint8_t*) (&_chipmacid));
-    String hostString = String((uint32_t)_chipmacid, HEX);
-    hostString.toUpperCase();
-    String ssid = "ROBOX_" + hostString;
-
-    // use for testing, to clear the stored/last ssid/password
-    // wifiManager.resetSettings();
-
-    // automatically connect to wifi
-    WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP  
-    wifiManager.setDebugOutput(true, WM_DEBUG_MAX);
-    // wifiManager.setConfigPortalBlocking(false);
-    boolean result = wifiManager.autoConnect(ssid.c_str(), NULL); // empty password
-    if (result)
-    {
-        Serial.println("Successfully connected to Wifi.");
-        server_setup();
-        server_start();
-    }
-    else
-    {
-        Serial.println("Failed setting up Wifi.");
-    }
-
-    #endif
+    // server_setup();
+    // server_start();
 
     restart_manager.setupWifi();
 

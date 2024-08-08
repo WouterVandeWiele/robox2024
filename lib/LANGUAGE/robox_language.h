@@ -46,6 +46,10 @@
 #define LANG_TOP_WIFI_CONNECTED "Wifi Connected    -> "
 #define LANG_TOP_WIFI_FAILED "Wifi Setup Failed"
 
+#define LANG_RO_WIFI_SSID "Wifi Name"
+#define LANG_RO_BLE_NAME "Bluetooth Name"
+
+#define LANG_RO_RO "~~Read Only~~~"
 
 #endif
 
@@ -61,13 +65,18 @@
 
 #define LANG_RESET_WIFI_CRED "Reset Wifi Cred"
 
-#define LANG_MENU_SWITCH "Wissel Audio Source"
+#define LANG_MENU_SWITCH "Wissel Audio Bron"
 #define LANG_MENU_SETTINGS "Instellingen"
 
-#define LANG_TOP_SELECT_SOURCE "<- Wissel Source"
+#define LANG_TOP_SELECT_SOURCE "<- Wissel Bron"
 #define LANG_TOP_BLE_NAME "BLE Naam          -> "
 #define LANG_TOP_WIFI_SELECT "Selecteer Wifi Via->"
 #define LANG_TOP_WIFI_CONNECTED "Wifi Geconnecteerd-> "
 #define LANG_TOP_WIFI_FAILED    "Wifi Niet Verbonden"
+
+#define LANG_RO_WIFI_SSID "Wifi Naam"
+#define LANG_RO_BLE_NAME "Bluetooth Naam"
+
+#define LANG_RO_RO "~~Enkel Lezen~"
 
 #endif

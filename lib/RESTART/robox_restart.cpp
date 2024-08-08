@@ -83,14 +83,20 @@ void RoboxRestartManager::setupWifi() {
     wifiManager.resetSettings();
 }
 
-void RoboxRestartManager::setupWifiOnDemand() {
-    // Run this part as soon as you need Wifi
-
+String RoboxRestartManager::getDefaultName() {
     uint64_t _chipmacid = 0LL;
     esp_efuse_mac_get_default((uint8_t*) (&_chipmacid));
     String hostString = String((uint32_t)_chipmacid, HEX);
     hostString.toUpperCase();
     String ssid = "ROBOX_" + hostString;
+
+    return ssid;
+}
+
+void RoboxRestartManager::setupWifiOnDemand() {
+    // Run this part as soon as you need Wifi
+
+    String ssid = getDefaultName();
 
     // automatically connect to wifi
     WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP  

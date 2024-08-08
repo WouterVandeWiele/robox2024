@@ -75,13 +75,6 @@ class MuxInterface {
             
         }
 
-
-        /* ble specific */
-
-        virtual String sink_name() {
-            return "";
-        }
-
     protected:
         float &volume_level;
 };

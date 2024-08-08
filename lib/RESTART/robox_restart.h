@@ -18,6 +18,7 @@ class RoboxRestartManager {
         bool is_cold_boot();
         void setupWifi();
         void resetWifiCred();
+        String getDefaultName();
         void setupWifiOnDemand();
 
     private:

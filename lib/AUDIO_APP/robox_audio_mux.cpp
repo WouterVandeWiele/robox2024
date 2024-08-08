@@ -77,7 +77,7 @@ void RoboxAudioMux::switch_startup() {
         current_source.reset(new RoboxBluetooth(true, volume_level));
         current_source->mux_start();
 
-        display_text = LANG_TOP_BLE_NAME + current_source->sink_name() +  String("                                        ");
+        display_text = LANG_TOP_BLE_NAME + restart_manager.getDefaultName() +  String("                                        ");
         break;
 
     case WebRadioSource:

@@ -26,8 +26,6 @@ class RoboxBluetooth : public MuxInterface {
             , a2dp_sink()
         {};
 
-        String sink_name();
-
         /*
         BLE Audio MUX controls
         */
@@ -45,7 +43,7 @@ class RoboxBluetooth : public MuxInterface {
 
     private:
         bool beat_led;
-        const char *ble_sink_name;
+        // const char *ble_sink_name;
         BluetoothA2DPSink a2dp_sink;
 };
 
