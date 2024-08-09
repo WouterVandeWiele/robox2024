@@ -11,6 +11,8 @@
 #include "robox_fft_beat.h"
 #include "robox_restart.h"
 
+#include "lcd_screen.h"
+
 extern RoboxRestartManager restart_manager;
 
 // https://www.vrt.be/nl/aanbod/kijk-en-luister/radio-luisteren/streamingslinks-radio/
@@ -44,6 +46,7 @@ static void printMetaData(MetaDataType type, const char* str, int len){
   {
   case Title:
     mux.meta.title = String((char*) str);
+    lcd_invalidate(INVALIDATE_ALL);
     break;
 
   case Artist:

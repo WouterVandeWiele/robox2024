@@ -8,6 +8,7 @@
 #include "general_definitions.h"
 #include "robox_fft_beat.h"
 #include "robox_restart.h"
+#include "lcd_screen.h"
 
 extern RoboxAudioMux mux;
 extern RoboxRestartManager restart_manager;
@@ -39,6 +40,7 @@ void avrc_metadata_callback(uint8_t id, const uint8_t *text) {
     {
     case ESP_AVRC_MD_ATTR_TITLE:
         mux.meta.title = String((char*) text);
+        lcd_invalidate(INVALIDATE_ALL);
         break;
 
     case ESP_AVRC_MD_ATTR_ARTIST:

@@ -11,6 +11,8 @@
 #include "AudioTools.h"
 #include "AudioCodecs/CodecMP3Helix.h"
 
+#include "lcd_screen.h"
+
 // #define USE_HELIX 
 // #define USE_SDFAT
 
@@ -35,6 +37,7 @@ static void printMetaData(MetaDataType type, const char* str, int len){
   {
   case Title:
     mux.meta.title = String((char*) str);
+    lcd_invalidate(INVALIDATE_ALL);
     break;
 
   case Artist:
