@@ -28,8 +28,6 @@ QueueHandle_t xQueueBattery;
     uint8_t batteryChargerStatus = 0;
     RoboxIoExpander* io = (RoboxIoExpander*)parameter;
 
-    xQueueBattery = xQueueCreate(1, sizeof(BatteryData));
-
     while (true) {
         // Note: batteryChargerStatus is inverted since the outputs on the charging IC are active low
         batteryChargerStatus = io->get_inputs(LCD_CONTROL_PORT) & (BATTERY_CHARGE | BATTERY_STANDBY);
@@ -45,22 +43,28 @@ QueueHandle_t xQueueBattery;
         Serial.printf("- %d\n", (BatteryStatus.chargerChgStBy) ? 1 : 0);
         Serial.printf("- %d\n", (BatteryStatus.chargerCharging) ? 1 : 0);
 
-        if (BatteryStatus.voltage < BATTERY_LOWVOLTAGE) {
+        if (BatteryStatus.voltage < BATTERY_VERYLOWVOLTAGE) {
+            BatteryStatus.state = battery_verylow;
+        }
+        else if (BatteryStatus.voltage < BATTERY_LOWVOLTAGE) {
             BatteryStatus.state = battery_low;
         }
-        else if (BatteryStatus.voltage < BATTERY_VERYLOWVOLTAGE) {
-            BatteryStatus.state = battery_verylow;
-        }else {
+        else {
             BatteryStatus.state = battery_high;
         }
 
         if (BatteryStatus.chargerChgStBy == 0 || BatteryStatus.chargerCharging == 0 ) {    //if charging or if charging terminated
             motor->motorLowBattery(true);
             Serial.print("let's disable the motors\n");
-        }else
+        }
+        else if ((BatteryStatus.state == battery_high) || (BatteryStatus.state == battery_low))
         {
             motor->motorLowBattery(false);
             Serial.print("let's enable the motors\n");
+        }
+        else {
+            motor->motorLowBattery(true);
+            Serial.print("safe state disable the motors\n");
         }
         xQueueSend(xQueueBattery, &BatteryStatus, 0);
         delay(1000);    //every second
@@ -84,6 +88,8 @@ ExpanderConfig RoboxBattery::io_config() {
 void RoboxBattery::initBattery()
 {
     Serial.println("battery setup");
+
+    xQueueBattery = xQueueCreate(1, sizeof(BatteryData));
 
     xTaskCreatePinnedToCore(
         battery_task,       //Function to implement the task 

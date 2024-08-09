@@ -26,6 +26,7 @@ extern WiFiManager wifiManager;
 // #if defined(LCD_RUN_THREADED)
 //     static LCD_Threaded* lcd_t;
     static TaskHandle_t threaded_lcd_task;
+    static TaskHandle_t threaded_marker_task;
 // #else
     SED1530_LCD* lcd_t;
     GEM_adafruit_gfx* menu;
@@ -126,11 +127,6 @@ void update_screen() {
     // uint32_t ulNotifiedValue;
 
     ButtonPress button;
-    BatteryData battery;
-
-    uint32_t marker_timekeeper = millis() + 1000;
-    bool maker_toggle = false;
-    BatteryState battery_marker = battery_high;
 
     Serial.println("menu setup");
 
@@ -193,29 +189,6 @@ void update_screen() {
         }
 
         for (;;) {
-            if (xQueueBattery != NULL) {
-                if (xQueueReceive(xQueueBattery, &battery, 0)) {
-                    battery_marker = battery.state;
-                }
-            }
-
-            if (millis() > marker_timekeeper) {
-                marker_timekeeper = millis() + 1000;
-
-                switch (battery_marker)
-                {
-                case battery_low:
-                    lcd_t->setMarker(GLCD_MARKER_BATTERY, true);
-                    break;
-                case battery_verylow:
-                default:
-                    lcd_t->setMarker(GLCD_MARKER_BATTERY, maker_toggle);
-                    break;
-                }
-
-                maker_toggle = ~maker_toggle;
-            }
-
             if (!xQueueReceive(xQueueButtons, &button, 100 * portTICK_PERIOD_MS)) {
                 continue;
             }
@@ -264,6 +237,40 @@ void update_screen() {
     }
 #endif
 
+
+[[noreturn]] void marker_task(void * param) {
+    BatteryData battery;
+
+    bool maker_toggle = false;
+    BatteryState battery_marker = battery_high;
+
+    while (true)
+    {
+        delay(1000);
+
+        if (xQueueBattery == NULL) {
+            continue;
+        }
+
+        if (xQueueReceive(xQueueBattery, &battery, 0)) {
+            battery_marker = battery.state;
+
+            if (battery_marker == battery_low) {
+                lcd_t->setMarker(GLCD_MARKER_BATTERY, true);
+            }
+            else if (battery_marker == battery_high) {
+                lcd_t->setMarker(GLCD_MARKER_BATTERY, false);
+            }
+        }
+        if (battery_marker == battery_verylow) {
+            lcd_t->setMarker(GLCD_MARKER_BATTERY, maker_toggle);
+        }
+
+        maker_toggle = !maker_toggle;
+    }
+    
+}
+
 void RoboxLcdScreen::init_lcd() {
     Serial.println("LCD setup");
 
@@ -285,6 +292,19 @@ void RoboxLcdScreen::init_lcd() {
         &(threaded_lcd_task),       //Task handle.
         1           // Core you want to run the task on (0 or 1)
     );
+
+    xTaskCreatePinnedToCore(
+        marker_task,       //Function to implement the task 
+        "marker_thread", //Name of the task
+        3000,       //Stack size in words 
+        // (void*)&lcd_t,       //Task input parameter 
+        NULL,       //Task input parameter 
+        PRIORITY_LCD_TASK,          //Priority of the task 
+        &(threaded_marker_task),       //Task handle.
+        1           // Core you want to run the task on (0 or 1)
+    );
+
+    
     #endif
 
 }

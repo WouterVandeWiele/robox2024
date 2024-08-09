@@ -23,11 +23,11 @@ void LedMotorController::next() {
         break;
 
     case lm_led:
-        current = (motor->is_shutdown()) ? lm_none : lm_motor;
+        current = lm_motor;
         break;
 
     case lm_motor:
-        current = (motor->is_shutdown()) ? lm_none : lm_led_motor;
+        current = lm_led_motor;
         break;
     
     case lm_led_motor:
