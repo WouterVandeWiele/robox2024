@@ -10,6 +10,7 @@
 
 RoboxMotor::RoboxMotor(RoboxIoExpander* io)
     : io(io)
+    , disbabledByLowBattery(false)
     , is_motor_on(false)
     , last_random_move(0)
     {}
@@ -43,8 +44,11 @@ void RoboxMotor::set_direction(bool m1, bool m2) {
 }
 
 void RoboxMotor::enable(bool enable) {
-    is_motor_on = true;
-    io->set_output(LCD_CONTROL_PORT, (MOTOR_EN | MOTOR_STANDBY), (MOTOR_EN | MOTOR_STANDBY));
+    if(disbabledByLowBattery == false)
+    {
+        io->set_output(LCD_CONTROL_PORT, (MOTOR_EN | MOTOR_STANDBY), (MOTOR_EN | MOTOR_STANDBY));
+        is_motor_on = true;
+    }
 }
 
 void RoboxMotor::shutdown(bool shutdown) {
@@ -52,6 +56,12 @@ void RoboxMotor::shutdown(bool shutdown) {
     io->set_output(LCD_CONTROL_PORT, ~(MOTOR_EN | MOTOR_STANDBY), (MOTOR_EN | MOTOR_STANDBY));
 }
 
+void RoboxMotor::motorLowBattery(bool _disbabledByLowBattery) {
+    if(_disbabledByLowBattery == true){
+        shutdown(true);
+    }
+    disbabledByLowBattery = _disbabledByLowBattery;
+}
 
 ExpanderConfig RoboxMotor::io_config() {
     ExpanderConfig config = RoboxIoExpander::get_default_config();

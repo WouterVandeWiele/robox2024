@@ -25,11 +25,15 @@ class RoboxMotor: public IoInterface {
 
         void enable(bool enable);
         void shutdown(bool shutdown);
+
+        void motorLowBattery(bool _disbabledByLowBattery );
+
         void shutdown_idempotent();
         void enable_idempotent();
         bool is_shutdown();
 
         void random_move();
+
 
         // static method that returns the IO expander config expected by this component
         static ExpanderConfig io_config();
@@ -40,6 +44,8 @@ class RoboxMotor: public IoInterface {
 
     private:
         RoboxIoExpander* io;
+        bool disbabledByLowBattery;
+
         bool is_motor_on;
         uint32_t last_random_move;
 };

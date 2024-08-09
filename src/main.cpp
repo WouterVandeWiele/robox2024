@@ -41,7 +41,7 @@
  */
 
 #define ROBOX_LCD
-// #define ROBOX_BATTERY
+#define ROBOX_BATTERY
 #define ROBOX_MOTOR
 #define ROBOX_TEST_ADC_KEY
 // #define ROBOX_DEBUG_CLI
@@ -51,7 +51,7 @@
 // #define ROBOX_WIFI_MANAGER
 // #define ROBOX_WIFI
 // #define ROBOX_IMPROV
-#define ROBOX_SERVER
+// #define ROBOX_SERVER
 #define ROBOX_RESTART
 #define ROBOX_TEST_ADC
 
@@ -325,7 +325,6 @@ void setup() {
     Serial.println("More info on https://github.com/...\n");
     Serial.println("\n");
 
-    
     // setup logging
     esp_log_level_set("*", ESP_LOG_ERROR);
     // esp_log_level_set("*", ESP_LOG_WARN);
@@ -457,6 +456,9 @@ void setup() {
         screen->init_lcd();
     #endif
 
+    #if defined(ROBOX_BATTERY)
+        battery->initBattery();
+    #endif
 
     #if defined(ROBOX_DEBUG_CLI)
         ESP_LOGI(LOG_MAIN_TAG, "select ble source");
@@ -509,6 +511,7 @@ void setup() {
         );
     #endif
     
+
     // server_setup();
     // server_start();
 
