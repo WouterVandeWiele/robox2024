@@ -52,8 +52,8 @@ void RoboxMotor::enable(bool enable) {
 }
 
 void RoboxMotor::shutdown(bool shutdown) {
-    is_motor_on = false;
     io->set_output(LCD_CONTROL_PORT, ~(MOTOR_EN | MOTOR_STANDBY), (MOTOR_EN | MOTOR_STANDBY));
+    is_motor_on = false;
 }
 
 void RoboxMotor::motorLowBattery(bool _disbabledByLowBattery) {
@@ -95,7 +95,7 @@ void RoboxMotor::enable_idempotent() {
 
 bool RoboxMotor::is_shutdown() {
     // stub
-    return false;
+    return is_motor_on;
 }
 
 void RoboxMotor::random_move() {

@@ -7,64 +7,54 @@
 
 extern RoboxMotor* motor;
 
-static uint32_t _battery_voltage = 0;
-static TaskHandle_t batteryTaskHandle;
-static uint8_t _batteryChargerStatusCharging = 0;
-static uint8_t _batteryChargerStatusChgStBy = 0;
+// static uint32_t _battery_voltage = 0;
+// static uint8_t _batteryChargerStatusCharging = 0;
+// static uint8_t _batteryChargerStatusChgStBy = 0;
 
+static BatteryData BatteryStatus = {
+    .voltage = 0,
+    .chargerCharging = 0,
+    .chargerChgStBy = 0,
+    .state = battery_high,
+};   
+
+static TaskHandle_t batteryTaskHandle;
 QueueHandle_t xQueueBattery;
 
-typedef struct BatteryData{
-  uint32_t battery_voltage;
-  uint8_t batteryChargerStatusCharging;
-  uint8_t batteryChargerStatusChgStBy;
-  uint8_t batteryLow;
-} BatteryData;
-
-void battery_loop(void* parameter) {
+[[noreturn]] void battery_task(void* parameter) {
     Serial.println("battery loop setup");
 
     uint32_t raw_adc = 0;
     uint8_t batteryChargerStatus = 0;
     RoboxIoExpander* io = (RoboxIoExpander*)parameter;
-    BatteryData BatteryDataStatus = {
-        .battery_voltage = 0,
-        .batteryChargerStatusCharging = 0,
-        .batteryChargerStatusChgStBy = 0,
-        .batteryLow = BATTERYHIGH,
-    };    
+
     xQueueBattery = xQueueCreate(1, sizeof(BatteryData));
 
     while (true) {
-        Serial.printf("input0 %d\n", io->get_inputs(0));
-        Serial.printf("input1 %d\n", io->get_inputs(1));
+        // Note: batteryChargerStatus is inverted since the outputs on the charging IC are active low
         batteryChargerStatus = io->get_inputs(LCD_CONTROL_PORT) & (BATTERY_CHARGE | BATTERY_STANDBY);
-        _batteryChargerStatusCharging = batteryChargerStatus & BATTERY_CHARGE;
-        _batteryChargerStatusChgStBy = (batteryChargerStatus & BATTERY_STANDBY) >> 1;
-
-        raw_adc = analogReadMilliVolts(BATTERY_ADC);
-        _battery_voltage = raw_adc * ADC_BATTERY_CONVERSION;
-
-        Serial.printf(">battery_voltage:%ld\n", _battery_voltage);
-
-        BatteryDataStatus.battery_voltage = _battery_voltage;
-        BatteryDataStatus.batteryChargerStatusCharging = _batteryChargerStatusCharging;
-        BatteryDataStatus.batteryChargerStatusChgStBy = _batteryChargerStatusChgStBy;
-        BatteryDataStatus.battery_voltage = _battery_voltage;
         
-        Serial.println("charger pins");
-        Serial.println(_batteryChargerStatusChgStBy);
-        Serial.println(_batteryChargerStatusCharging);
+        BatteryStatus.chargerCharging = (batteryChargerStatus & BATTERY_CHARGE) ? true : false;
+        BatteryStatus.chargerChgStBy = (batteryChargerStatus & BATTERY_STANDBY) ? true : false;
 
-        if (_battery_voltage < BATTERYLOWVOLTAGE) {
-            BatteryDataStatus.batteryLow = BATTERYLOW;
+        BatteryStatus.voltage = analogReadMilliVolts(BATTERY_ADC) * ADC_BATTERY_CONVERSION;
+
+        Serial.printf(">battery_voltage:%ld\n", BatteryStatus.voltage);
+        
+        Serial.println("charger pins:");
+        Serial.printf("- %d\n", (BatteryStatus.chargerChgStBy) ? 1 : 0);
+        Serial.printf("- %d\n", (BatteryStatus.chargerCharging) ? 1 : 0);
+
+        if (BatteryStatus.voltage < BATTERY_LOWVOLTAGE) {
+            BatteryStatus.state = battery_low;
         }
-        else if (_battery_voltage < BATTERYVERYLOWVOLTAGE) {
-            BatteryDataStatus.batteryLow = BATTERYVERYLOW;
+        else if (BatteryStatus.voltage < BATTERY_VERYLOWVOLTAGE) {
+            BatteryStatus.state = battery_verylow;
         }else {
-            BatteryDataStatus.batteryLow = BATTERYHIGH;
+            BatteryStatus.state = battery_high;
         }
-        if (_batteryChargerStatusChgStBy == 0 || _batteryChargerStatusCharging == 0 ) {    //if charging or if charging terminated
+
+        if (BatteryStatus.chargerChgStBy == 0 || BatteryStatus.chargerCharging == 0 ) {    //if charging or if charging terminated
             motor->motorLowBattery(true);
             Serial.print("let's disable the motors\n");
         }else
@@ -72,8 +62,8 @@ void battery_loop(void* parameter) {
             motor->motorLowBattery(false);
             Serial.print("let's enable the motors\n");
         }
-        xQueueSend(xQueueBattery, &BatteryDataStatus, 0);
-        delay(1000);    //every 1seconds
+        xQueueSend(xQueueBattery, &BatteryStatus, 0);
+        delay(1000);    //every second
     }
 }
 
@@ -96,7 +86,7 @@ void RoboxBattery::initBattery()
     Serial.println("battery setup");
 
     xTaskCreatePinnedToCore(
-        battery_loop,       //Function to implement the task 
+        battery_task,       //Function to implement the task 
         "battery_task", //Name of the task
         3000,       //Stack size in words 
         (void *) io,       //Task input parameter 
@@ -107,15 +97,15 @@ void RoboxBattery::initBattery()
 }
 
 uint32_t RoboxBattery::battery_voltage() {
-    return _battery_voltage;
+    return BatteryStatus.voltage;
 }
 
 uint8_t RoboxBattery::batteryChargerStatusCharging() {
-    return _batteryChargerStatusCharging;
+    return BatteryStatus.chargerCharging;
 }
 
 uint8_t RoboxBattery::batteryChargerStatusChgStBy() {
-    return _batteryChargerStatusChgStBy;
+    return BatteryStatus.chargerChgStBy;
 }
 
 void RoboxBattery::io_interrupt_observer(std::vector<uint8_t>& data) {

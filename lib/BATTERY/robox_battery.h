@@ -1,6 +1,20 @@
+#pragma once
 #include "robox_io.h"
 
 extern QueueHandle_t xQueueBattery;
+
+enum BatteryState {
+    battery_high,
+    battery_low,
+    battery_verylow,
+};
+
+typedef struct BatteryData{
+    uint32_t voltage;
+    bool chargerCharging;
+    bool chargerChgStBy;
+    BatteryState state;
+} BatteryData;
 
 class RoboxBattery: public IoInterface {
     public:

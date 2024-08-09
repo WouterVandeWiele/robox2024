@@ -125,6 +125,13 @@ void update_screen() {
     // // const TickType_t xBlockTime = portMAX_DELAY ;
     // uint32_t ulNotifiedValue;
 
+    ButtonPress button;
+    BatteryData battery;
+
+    uint32_t marker_timekeeper = millis() + 1000;
+    bool maker_toggle = false;
+    BatteryState battery_marker = battery_high;
+
     Serial.println("menu setup");
 
     menu = new GEM_adafruit_gfx(
@@ -185,12 +192,30 @@ void update_screen() {
             continue;
         }
 
-        if (xQueueBattery == NULL) {
-            continue;
-        }
-        ButtonPress button;
         for (;;) {
-            // Serial.println("Waiting for buttons");
+            if (xQueueBattery != NULL) {
+                if (xQueueReceive(xQueueBattery, &battery, 0)) {
+                    battery_marker = battery.state;
+                }
+            }
+
+            if (millis() > marker_timekeeper) {
+                marker_timekeeper = millis() + 1000;
+
+                switch (battery_marker)
+                {
+                case battery_low:
+                    lcd_t->setMarker(GLCD_MARKER_BATTERY, true);
+                    break;
+                case battery_verylow:
+                default:
+                    lcd_t->setMarker(GLCD_MARKER_BATTERY, maker_toggle);
+                    break;
+                }
+
+                maker_toggle = ~maker_toggle;
+            }
+
             if (!xQueueReceive(xQueueButtons, &button, 100 * portTICK_PERIOD_MS)) {
                 continue;
             }
