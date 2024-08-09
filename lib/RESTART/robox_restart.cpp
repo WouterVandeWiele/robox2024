@@ -29,7 +29,9 @@ static void configModeCallback (WiFiManager *myWiFiManager) {
 }
 
 
-RoboxRestartManager::RoboxRestartManager() {
+RoboxRestartManager::RoboxRestartManager()
+    : _is_wifi_initialized(false)
+ {
     esp_reset_reason_t reason = restartReason();
 
     if ((reason != ESP_RST_DEEPSLEEP) && (reason != ESP_RST_SW)) {
@@ -106,6 +108,7 @@ void RoboxRestartManager::setupWifiOnDemand() {
     boolean result = wifiManager.autoConnect(ssid.c_str(), NULL); // empty password
     if (result)
     {
+        _is_wifi_initialized = true;
         Serial.println("Successfully connected to Wifi.");
         String display_text = LANG_TOP_WIFI_CONNECTED + WiFi.localIP().toString() + String("                                        ");
 
@@ -122,4 +125,8 @@ void RoboxRestartManager::setupWifiOnDemand() {
         mux.meta.title = String(display_text.c_str()) + String("                                        ");
         lcd_invalidate(INVALIDATE_ALL);
     }
+}
+
+bool RoboxRestartManager::is_wifi_initialized() {
+    return _is_wifi_initialized;
 }

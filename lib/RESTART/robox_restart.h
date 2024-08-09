@@ -21,9 +21,11 @@ class RoboxRestartManager {
         String getDefaultName();
         void setupWifiOnDemand();
 
+        bool is_wifi_initialized();
+
     private:
         bool cold_boot;
-
+        bool _is_wifi_initialized;
 
         void restart() {
             delay(100);
