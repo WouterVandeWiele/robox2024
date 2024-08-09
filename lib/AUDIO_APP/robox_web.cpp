@@ -9,6 +9,9 @@
 #include "general_definitions.h"
 // #include "wifi_credentials.h"
 #include "robox_fft_beat.h"
+#include "robox_restart.h"
+
+extern RoboxRestartManager restart_manager;
 
 // https://www.vrt.be/nl/aanbod/kijk-en-luister/radio-luisteren/streamingslinks-radio/
 // std::map<std::string, std::string> station_list = {
@@ -66,6 +69,12 @@ static void printMetaData(MetaDataType type, const char* str, int len){
 
 void RoboxWebRadio::mux_start() {
     ESP_LOGI(LOG_SD_TAG, ">>> Web Radio starting...");
+
+    while (restart_manager.is_wifi_initialized() == false) {
+      Serial.println("wait unitill wifi is initialized");
+      delay(500);
+    }
+
     i2s_setup();
 
     if (beat_led) {
