@@ -7,9 +7,10 @@
 #include "robox_i2s.h"
 #include "general_definitions.h"
 #include "robox_fft_beat.h"
-
+#include "robox_restart.h"
 
 extern RoboxAudioMux mux;
+extern RoboxRestartManager restart_manager;
 static esp_avrc_playback_stat_t playback_status;
 // extern AudioRealFFT fft;
 
@@ -99,9 +100,12 @@ void RoboxBluetooth::mux_start() {
     ESP_LOGI(LOG_BLE_TAG, "set reconnect");
     a2dp_sink.set_auto_reconnect(true);
 
+    String ssid = restart_manager.getDefaultName();
+
+    Serial.printf("ble name: %s\n", ssid.c_str());
 
     ESP_LOGI(LOG_BLE_TAG, "start sink");
-    a2dp_sink.start(ble_sink_name);
+    a2dp_sink.start(ssid.c_str());
 
 
     i2s_setup();
@@ -127,11 +131,6 @@ void RoboxBluetooth::mux_stop() {
 
     ESP_LOGI(LOG_BLE_TAG, "<<< BLE stopped");
 }
-
-
-// void RoboxBluetooth::volume(float level) {
-//     a2dp_sink.set_volume((uint8_t)(0x7f*level));
-// }
 
 void RoboxBluetooth::volume(float level) {
     if (volume_level > 1.0) {

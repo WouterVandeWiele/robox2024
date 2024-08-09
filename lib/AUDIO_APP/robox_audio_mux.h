@@ -24,7 +24,7 @@ extern bool is_audio_paused;
 
 extern std::mutex meta_data_mtx;
 typedef struct MetaData{
-  String title;
+  String title;         // serves now as text buffer for the LCD
   uint32_t play_time;
 
 } MetaData;

@@ -83,7 +83,7 @@ void adc_empty_key() {
     xQueueSend(xQueueButtons, &b_empty, 0);
 }
 
-void adc_key_loop(void* parameter) {
+[[noreturn]] void adc_key_task(void* parameter) {
     while (true) {
         byte trigger = GEM_KEY_NONE;
 
@@ -191,7 +191,7 @@ void adc_key_setup() {
     analogReadResolution(12);
 
     xTaskCreatePinnedToCore(
-        adc_key_loop,       //Function to implement the task 
+        adc_key_task,       //Function to implement the task 
         "adc_key_task", //Name of the task
         3000,       //Stack size in words 
         NULL,       //Task input parameter 

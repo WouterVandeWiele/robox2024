@@ -11,11 +11,14 @@
 #include "robox_battery.h"
 
 #include "robox_restart.h"
+#include "robox_language.h"
+// extern Translator translator;
 
 #include <WiFiManager.h>
 
 extern RoboxAudioMux mux;
 extern RoboxRestartManager restart_manager;
+
 #if defined(ROBOX_WIFI_MANAGER)
 extern WiFiManager wifiManager;
 #endif
@@ -46,7 +49,7 @@ extern WiFiManager wifiManager;
 void printData() {
   Serial.printf("time since start %ld\n", millis());
 }
-GEMItem menuItemButton("Print", printData);
+GEMItem menuItemButton(LANG_PRINT, printData);
 
 
 void switch_to_no_source() {
@@ -65,41 +68,37 @@ void switch_to_SD() {
     mux.switch_to(SDSource);
 }
 
-GEMItem buttonSwitchNoSource("No Source", switch_to_no_source);
-GEMItem buttonSwitchBLE("Sw BLE", switch_to_BLE);
-GEMItem buttonSwitchWEB("Sw WEB", switch_to_WEB);
-GEMItem buttonSwitchSD("Sw SD", switch_to_SD);
+static GEMItem buttonSwitchNoSource(LANG_SOURCE_NO, switch_to_no_source);
+static GEMItem buttonSwitchBLE(LANG_SOURCE_BLE, switch_to_BLE);
+static GEMItem buttonSwitchWEB(LANG_SOURCE_WEB, switch_to_WEB);
+static GEMItem buttonSwitchSD(LANG_SOURCE_SD, switch_to_SD);
+static GEMItem menuItemSwitchAudioPlay(LANG_BACK, playLoop);
+static GEMItem menuItemSettingsAudioPlay(LANG_BACK, playLoop);
+GEMPage menuPageSwitch(LANG_MENU_SWITCH);
 
-GEMItem menuItemSwitchAudioPlay("Play Audio", playLoop);
-GEMItem menuItemSettingsAudioPlay("Play Audio", playLoop);
 
-GEMPage menuPageSwitch("Switch Audio Source");
+void dummy() {};
+
+static bool first_update = false;
+static uint32_t dummy_counter = 0;
+static GEMItem menuROstart1("", dummy);
+static GEMItem menuROstart2(LANG_RO_RO, dummy);
+static GEMItem menuROssid_label(LANG_RO_WIFI_SSID, dummy);
+static GEMItem menuROssid_value(String("ROBOX").c_str(), dummy);
+static GEMItem menuRObreak1("     ~~~~     ", dummy);
+static GEMItem menuROble_label(LANG_RO_BLE_NAME, dummy);
+static GEMItem menuROble_value(String("ROBOX_bb").c_str(), dummy);
 
 //////////////////////////////////////////////////////////////////////////
 
-#if defined(ROBOX_WIFI_MANAGER)
-extern const char* wifi_ssid_2;
-extern const char* wifi_password_2;
-
 void reset_wifi_credentials() {
-    uint64_t _chipmacid = 0LL;
-    esp_efuse_mac_get_default((uint8_t*) (&_chipmacid));
-    String hostString = String((uint32_t)_chipmacid, HEX);
-    hostString.toUpperCase();
-    String ssid = "ROBOX_" + hostString;
-
-
-    WiFi.disconnect(true, true);
-    WiFi.mode(WIFI_OFF);
-    wifiManager.resetSettings();
-    wifiManager.autoConnect(ssid.c_str(), NULL);
-    // WiFi.begin(wifi_ssid_2, wifi_password_2);
+    restart_manager.resetWifiCred();
+    restart_manager.setupWifiOnDemand();
 }
 
-GEMItem menuPageSettingsResetWifiCredentials("Reset Wifi Cred", reset_wifi_credentials);
-#endif
+static GEMItem menuPageSettingsResetWifiCredentials(LANG_RESET_WIFI_CRED, reset_wifi_credentials);
 
-GEMPage menuPageSettings("Settings");
+GEMPage menuPageSettings(LANG_MENU_SETTINGS);
 
 
 #if defined(LCD_RUN_THREADED)
@@ -156,14 +155,25 @@ void update_screen() {
     // menuPageSwitch.addMenuItem(menuItemButton);
     menuPageSwitch.addMenuItem(menuItemSwitchAudioPlay);
 
-    menuPageSettings.addMenuItem(menuItemButton);
+    // menuPageSettings.addMenuItem(menuItemButton);
     #if defined(ROBOX_WIFI_MANAGER)
     menuPageSettings.addMenuItem(menuPageSettingsResetWifiCredentials);
     #endif
     menuPageSettings.addMenuItem(menuItemSettingsAudioPlay);
 
+    // Read only menu
+    menuPageSettings.addMenuItem(menuROstart1);
+    menuPageSettings.addMenuItem(menuROstart2);
+    menuPageSettings.addMenuItem(menuROssid_label);
+    menuPageSettings.addMenuItem(menuROssid_value);
+    menuPageSettings.addMenuItem(menuRObreak1);
+    menuPageSettings.addMenuItem(menuROble_label);
+    menuPageSettings.addMenuItem(menuROble_value);
+
+
     menu->setMenuPageCurrent(menuPageSettings);
     menu->init();
+    
     playLoop();
 
     for (;;) {
@@ -187,13 +197,24 @@ void update_screen() {
             if (button.long_press) {
                 continue;
             }
+            if (button.button == GEM_PLAY_MENU) {
+                playLoop();
+                break;
+            }
             if (button.button < GEM_KEY_UP || button.button > GEM_KEY_OK) {
                 continue;
             }
             break;
         }
-        Serial.println("Got button press");
+        // Serial.println("Got button press");
+        // menuTestChangeLabel.setTitle("Counter");
+
+
         menu->registerKeyPress(button.button);
+        if (first_update == false) {
+            menuROssid_value.setTitle(restart_manager.getDefaultName().c_str());
+            menuROble_value.setTitle(restart_manager.getDefaultName().c_str());
+        }
     }
 }
 

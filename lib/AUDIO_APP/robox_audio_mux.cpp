@@ -3,6 +3,8 @@
 #include "robox_i2s.h"
 #include "general_definitions.h"
 #include "robox_restart.h"
+#include "lcd_screen.h"
+#include "robox_language.h"
 
 #include <GEM_adafruit_gfx.h>
 
@@ -26,12 +28,12 @@ void RoboxAudioMux::setup() {
     pinMode(I2S_PIN_MUTE, OUTPUT);
 
     if (restart_manager.is_cold_boot()) {
-        current_source.reset(new RoboxVoid(false, volume_level));
+        source_name = NotSelectedSource;
     }
     else {
         source_name = restart_manager.get_startup_source();
-        switch_startup();
     }
+    switch_startup();
 
     ESP_LOGI(LOG_BLE_TAG, "<<< Audio Mux setup completed");
 }
@@ -46,6 +48,7 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
     }
     else {
         Serial.printf("Same source, not switching\n");
+        lcd_go_to_play_menu();
     }
 }
 
@@ -58,15 +61,23 @@ void RoboxAudioMux::switch_startup() {
     Serial.printf("Audio Mux init new driver: %s\n", audio_source_names[source_name]);
 
     meta.title = "";
+    String display_text = "";
+
+    lcd_invalidate(INVALIDATE_ALL);
+
     switch (source_name)
     {
     case NotSelectedSource:
         current_source.reset(new RoboxVoid(false, volume_level));
+
+        display_text = LANG_TOP_SELECT_SOURCE +  String("                                        ");
         break;
 
     case BleSource:
         current_source.reset(new RoboxBluetooth(true, volume_level));
         current_source->mux_start();
+
+        display_text = LANG_TOP_BLE_NAME + restart_manager.getDefaultName() +  String("                                        ");
         break;
 
     case WebRadioSource:
@@ -83,6 +94,11 @@ void RoboxAudioMux::switch_startup() {
         Serial.printf("Unsupported audio type %s\n", audio_source_names[source_name]);
         break;
     }
+
+
+    std::lock_guard<std::mutex> lck(meta_data_mtx);
+    meta.title = String(display_text.c_str());
+    lcd_invalidate(INVALIDATE_ALL);
 
     delay(100);
 

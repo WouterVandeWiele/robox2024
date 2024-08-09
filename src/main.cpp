@@ -3,6 +3,8 @@
 
 #include "robox_fft_beat.h"
 
+#include "hal/adc_types.h"
+
 /*
  * Compile parts of the project:
  * - ROBOX_FULL: the complete audio project, with audio mux
@@ -51,6 +53,10 @@
 // #define ROBOX_IMPROV
 // #define ROBOX_SERVER
 #define ROBOX_RESTART
+#define ROBOX_TEST_ADC
+
+// #include "robox_language.h"
+// Translator translator(lang_en);
 
 /*
  * compile options logic
@@ -155,6 +161,16 @@
 #if defined(ROBOX_RESTART)
     #include "robox_restart.h"
     RoboxRestartManager restart_manager;
+#endif
+
+#include "robox_led_motor_controller.h"
+LedMotorController led_motor_controller;
+
+#if defined(ROBOX_TEST_ADC)
+int adc2_pin13;
+uint64_t adc_timekeeper = 5000;
+extern uint32_t beat_loop_timestamp;
+static uint32_t beat_loop_timestamp_previous = 0;
 #endif
 
 // #include "ble_example.h"
@@ -271,7 +287,7 @@ bool motorsOn;
 #endif
 
 
-void audio_task(void* parameter) {
+[[noreturn]] void audio_task(void* parameter) {
     mux.setup();
 
     while (true) {
@@ -322,6 +338,9 @@ void setup() {
 
     // esp_log_level_set(BT_AV_TAG, ESP_LOG_NONE);
     // esp_log_level_set(BT_APP_TAG, ESP_LOG_NONE);
+
+    // init after restart
+    led_motor_controller.set_current(restart_manager.get_led_motor());
 
     // fastled setup
     led_init();
@@ -461,11 +480,11 @@ void setup() {
 
     #if defined(ROBOX_MOTOR)
     motor->init();
-    motor->set_direction(0, 0);
-    motor->set_speed(0.3, 0.3);
-    motor->enable(1);
+    // motor->set_direction(0, 0);
+    // motor->set_speed(0.3, 0.3);
+    // motor->enable(1);
 
-    timekeeper = millis() + 5000;
+    // timekeeper = millis() + 5000;
     #endif
 
 
@@ -492,43 +511,45 @@ void setup() {
         );
     #endif
     
-    #if defined(ROBOX_WIFI_MANAGER)
-    // Run this part as soon as you need Wifi
 
-    uint64_t _chipmacid = 0LL;
-    esp_efuse_mac_get_default((uint8_t*) (&_chipmacid));
-    String hostString = String((uint32_t)_chipmacid, HEX);
-    hostString.toUpperCase();
-    String ssid = "ROBOX_" + hostString;
-
-    // use for testing, to clear the stored/last ssid/password
-    // wifiManager.resetSettings();
-
-    // automatically connect to wifi
-    WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP  
-    wifiManager.setDebugOutput(true, WM_DEBUG_MAX);
-    // wifiManager.setConfigPortalBlocking(false);
-    boolean result = wifiManager.autoConnect(ssid.c_str(), NULL); // empty password
-    if (result)
-    {
-        Serial.println("Successfully connected to Wifi.");
-        #if defined(ROBOX_SERVER)
-        server_setup();
-        server_start();
-        #endif
-    }
-    else
-    {
-        Serial.println("Failed setting up Wifi.");
-    }
-
-    #endif
+    // server_setup();
+    // server_start();
 
     restart_manager.setupWifi();
 
 }
 
 void loop() {
+    #if defined(ROBOX_TEST_ADC)
+
+    if (millis() > adc_timekeeper) {
+        // esp_err_t r = adc2_get_raw(ADC2_CHANNEL_4, ADC_WIDTH_BIT_12, &adc2_pin13);
+        // Serial.printf("adc2 pin13[%s]: %d\n", (r == ESP_OK) ? "ADC OK" : "FAIL", adc2_pin13);
+        // adc1_config_width(ADC_WIDTH_BIT_12);
+        // adc2_pin13 = adc1_get_raw(ADC1_CHANNEL_3);//, ADC_WIDTH_BIT_12, &adc2_pin13);
+        // Serial.printf("adc1 pin39[]: %d\n", adc2_pin13);
+
+        // Serial.printf("adc1 pin 39: %ld\n", analogReadMilliVolts(39));
+        // Serial.printf("mux last %ld\n", beat_loop_timestamp);
+
+        if (beat_loop_timestamp_previous == beat_loop_timestamp) {
+            // Serial.println("no audio playing");
+
+            motor->shutdown_idempotent();
+        } 
+        else {
+            if (led_motor_controller.is_motor_enabled()) {
+                motor->enable_idempotent();
+            }
+            // Serial.println("audio playing");
+        }
+
+        beat_loop_timestamp_previous = beat_loop_timestamp;
+        adc_timekeeper = millis() + 500;
+    }
+    #endif
+
+
     #if defined(ROBOX_FULL)
         // mux.copy();
     
@@ -578,55 +599,55 @@ void loop() {
 
     #endif
 
-    #if defined(ROBOX_DEBUG_I2C_SCANNER)
-        scanner_loop();
-        delay(10000);
-    #endif
+    // #if defined(ROBOX_DEBUG_I2C_SCANNER)
+    //     scanner_loop();
+    //     delay(10000);
+    // #endif
 
-    #if defined(ROBOX_MOTOR)
-    if (timekeeper < millis()) {
-        Serial.printf("new motor program. timekeeper: %ld, program %d\n", timekeeper, (motor_test_program % MOTOR_TEST_PROGRAMS));
-        timekeeper += 5000;
+    // #if defined(ROBOX_MOTOR)
+    // if (timekeeper < millis()) {
+    //     Serial.printf("new motor program. timekeeper: %ld, program %d\n", timekeeper, (motor_test_program % MOTOR_TEST_PROGRAMS));
+    //     timekeeper += 5000;
 
 
-        switch (motor_test_program % MOTOR_TEST_PROGRAMS)
-        {
-        case 0:
-            motor->set_direction(0, 0);
-            motor->set_speed(0.3, 0.3);
-            break;
+    //     switch (motor_test_program % MOTOR_TEST_PROGRAMS)
+    //     {
+    //     case 0:
+    //         motor->set_direction(0, 0);
+    //         motor->set_speed(0.3, 0.3);
+    //         break;
 
-        case 1:
-            motor->set_direction(1, 1);
-            motor->set_speed(0.3, 0.3);
-            break;
+    //     case 1:
+    //         motor->set_direction(1, 1);
+    //         motor->set_speed(0.3, 0.3);
+    //         break;
         
-        case 2:
-            motor->set_direction(1, 0);
-            motor->set_speed(0.3, 0.3);
-            break;
+    //     case 2:
+    //         motor->set_direction(1, 0);
+    //         motor->set_speed(0.3, 0.3);
+    //         break;
 
-        case 3:
-            motor->set_direction(0, 1);
-            motor->set_speed(0.3, 0.3);
-            break;
+    //     case 3:
+    //         motor->set_direction(0, 1);
+    //         motor->set_speed(0.3, 0.3);
+    //         break;
 
-        // case 4:
-        //     motor->set_direction(0, 1);
-        //     motor->set_speed(0.3, 0.3);
-        //     break;
+    //     // case 4:
+    //     //     motor->set_direction(0, 1);
+    //     //     motor->set_speed(0.3, 0.3);
+    //     //     break;
 
-        default:
-            break;
-        }
+    //     default:
+    //         break;
+    //     }
 
-        motor_test_program++;
-    }
-    #endif
+    //     motor_test_program++;
+    // }
+    // #endif
 
-    #if defined(ROBOX_IMPROV)
-        improvSerial.handleSerial();
-    #endif
+    // #if defined(ROBOX_IMPROV)
+    //     improvSerial.handleSerial();
+    // #endif
 
     // led_breath(true, r_blue);
 

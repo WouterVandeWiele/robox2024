@@ -1,10 +1,19 @@
 #include "robox_fft_beat.h"
 #include "AudioTools.h"
 #include "AudioLibs/AudioRealFFT.h"
+#include "general_config.h"
 #include "general_definitions.h"
 #include <PeakDetection.h>
 #define FASTLED_FORCE_SOFTWARE_SPI
 #include <FastLED.h>
+
+#include <random>
+
+#include "robox_led_motor_controller.h"
+extern LedMotorController led_motor_controller;
+
+#include "robox_motor.h"
+extern RoboxMotor* motor;
 
 static CRGB leds[NUM_LEDS];
 
@@ -12,6 +21,13 @@ static CRGB leds[NUM_LEDS];
 static int lag = 30;
 static int threshold = 3;
 static double influence = 0.6;
+
+// static uint32_t fft_counter = 0;
+// static uint32_t fft_timekeeper = 0;
+
+// static uint32_t beat_counter = 0;
+uint32_t beat_loop_timestamp = 0;
+static uint32_t beat_timekeeper = 0;
 
 
 // peak detection variables
@@ -60,13 +76,49 @@ void allRandom(){
 void fftResult(AudioFFTBase &fft) {
     float *magnitudes = fft.magnitudes();
 
+    beat_loop_timestamp = millis();
+    
     peakb0.add(magnitudes[0]);
 
     max_filter = FILTER_POSITIONS & ((max_filter << 1) | peakb0.getPeak());
 
+    #if defined(ROBOX_LED_MOTOR_CONTROLLER)
+
+    // beat detected within BEAT_MIN_INTERACTION_TIME
+    if (max_filter == 0x1) {
+      beat_timekeeper = millis();
+
+      if (led_motor_controller.is_led_enabled()) {
+        allRandom();
+      }
+
+      if (led_motor_controller.is_motor_enabled()) {
+        // Serial.printf("motor move: %ld\n", millis());
+        // beat_counter++;
+        motor->random_move();
+      }
+    }
+
+    // no beat detected, but we still trigger one manually
+    if (millis() > beat_timekeeper + BEAT_MIN_INTERACTION_TIME) {
+      beat_timekeeper = millis() + (rand() % DUMMY_BEAT_RANGE);
+
+      // if (led_motor_controller.is_led_enabled()) {
+      //   allRandom();
+      // } else {
+      //   led_clear();
+      // }
+
+      if (led_motor_controller.is_motor_enabled()) {
+        motor->random_move();
+      }
+    }
+
+    #else
     if (max_filter == 0x1) {
       allRandom();
     }
+    #endif
     
     #if defined(BEAT_TELEMETRY)
     Serial.printf(">bin0:%.2f\n>maxf:%.2f\n>peak0:%.2f\n>filter0:%.2f\n",
@@ -77,10 +129,32 @@ void fftResult(AudioFFTBase &fft) {
         peakb0.getEpsilon()
     );
     #endif
+
+    // fft_counter++;
+
+    // if (millis() > fft_timekeeper) {
+    //   Serial.printf("fft beat [%ld] %ld/s\n", millis(), fft_counter);
+
+    //   fft_counter = 0;
+    //   fft_timekeeper = millis() + 1000;
+    // }
+
+    // if (millis() > beat_timekeeper) {
+    //   Serial.printf("count beat [%ld] %ld/s\n", millis(), beat_counter);
+
+    //   beat_counter = 0;
+    //   beat_timekeeper = millis() + 1000;
+    // }
 }
 
 
 void fft_beat_setup(int samplerate) {
+  // fft_counter = 0;
+  // fft_timekeeper = millis() + 1000;
+
+  // beat_counter = 0;
+  // beat_timekeeper = millis() + 1000;
+
     // Setup FFT
   auto tcfg = fft.defaultConfig();
   // tcfg.length = 4096;
@@ -122,16 +196,20 @@ void fft_beat_setup(int samplerate) {
 
 }
 
+void led_clear() {
+  FastLED.clear(true);
+}
+
 void led_init() {
   FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, NUM_LEDS);
+  led_clear();
 }
 
 
-  uint32_t previousMillis = 0;
-  uint32_t interval = 5; // Update interval (milliseconds)
-  float brightness = 0.0;
-  float increment = 0.5; // How much to change the brightness by each update
-
+uint32_t previousMillis = 0;
+uint32_t interval = 5; // Update interval (milliseconds)
+float brightness = 0.0;
+float increment = 0.5; // How much to change the brightness by each update
   
 void led_breath(bool alternate, LedBreathColors color) {
   uint32_t currentMillis = millis();
