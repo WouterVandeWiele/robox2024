@@ -63,6 +63,8 @@
         "ble_cpp": "c",
         "bluetootha2dpsink.h": "c",
         "general_definitions.h": "c",
-        "audiotools.h": "c"
+        "audiotools.h": "c",
+        "wifi_credentials.h": "c",
+        "maincpp_app": "c"
     }
 }
