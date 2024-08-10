@@ -100,8 +100,12 @@ void RoboxRestartManager::setupWifiOnDemand() {
 
     String ssid = getDefaultName();
 
+    std::vector<const char*> wmMenuItems = { "wifi", "info", "exit" };
+
     // automatically connect to wifi
     WiFi.mode(WIFI_STA); // explicitly set mode, esp defaults to STA+AP  
+    wifiManager.setMenu(wmMenuItems);
+    wifiManager.setHostname(ssid);
     wifiManager.setAPCallback(configModeCallback);
     // wifiManager.setDebugOutput(true, WM_DEBUG_MAX);
     // wifiManager.setConfigPortalBlocking(false);
