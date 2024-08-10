@@ -321,7 +321,8 @@ void lcd_invalidate(LcdInvalidate invalidate) {
     ButtonPress button = {
         .button = GEM_INVALIDATE,
         .long_press = false,
-        .press_time = 0
+        .press_start_time = 0,
+        .last_event = true,
     };
     xQueueSend(xQueueButtons, &button, 0);
 }
@@ -330,7 +331,8 @@ void lcd_go_to_play_menu() {
     ButtonPress button = {
         .button = GEM_PLAY_MENU,
         .long_press = false,
-        .press_time = 0
+        .press_start_time = 0,
+        .last_event = true,
     };
     xQueueSend(xQueueButtons, &button, 0);
 }

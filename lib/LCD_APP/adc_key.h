@@ -19,12 +19,13 @@ extern QueueHandle_t xQueueButtons;
 enum threshold {TH0, TH1, TH2, PRESSED, LONG_PRESSED};
 
 typedef struct ButtonPress{
-  uint8_t button;
-  bool long_press;
-  uint32_t press_time;
+    uint8_t button;
+    bool long_press;
+    uint32_t press_start_time;
+    bool last_event;
 } ButtonPress;
 
-ButtonPress compare(uint32_t voltage, std::list<threshold> &buffer, byte button1, byte button2);
+void compare(uint32_t voltage, std::list<threshold> &buffer, ButtonPress &result, byte button1, byte button2);
 void adc_key_task(void* parameter);
 void adc_key_setup();
 

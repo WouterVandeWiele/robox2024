@@ -59,11 +59,11 @@ class MuxInterface {
             if (audio_active() == true) {
                 audio_pause();
 
-                motor->shutdown(true);
+                motor->shutdown_idempotent();
             }
             else {
                 audio_play();
-                motor->enable(true);
+                motor->enable_idempotent();
             }
         }
 

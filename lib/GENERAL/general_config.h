@@ -18,6 +18,7 @@
 
 // fft beat detection teleplot telemetry
 // #define BEAT_TELEMETRY
+// #define BATTERY_TELEMETRY
 
 
 #define PRIORITY_AUDIO_TASK 6
@@ -29,6 +30,9 @@
 #define BATTERY_VERYLOWVOLTAGE 3200
 #define BATTERY_LOWVOLTAGE 3400
 
+#define BUTTON_SHORT_LONG_TH 500
+
+// #define DEBUG_MOTOR_MOVE_WHILE_PLUGIN
 
 #define LANG_NL
 // #define LANG_EN

@@ -44,6 +44,7 @@ void RoboxMotor::set_direction(bool m1, bool m2) {
 }
 
 void RoboxMotor::enable(bool enable) {
+    std::lock_guard<std::mutex> lck(io_operations);
     if(disbabledByLowBattery == false)
     {
         io->set_output(LCD_CONTROL_PORT, (MOTOR_EN | MOTOR_STANDBY), (MOTOR_EN | MOTOR_STANDBY));
@@ -52,6 +53,7 @@ void RoboxMotor::enable(bool enable) {
 }
 
 void RoboxMotor::shutdown(bool shutdown) {
+    std::lock_guard<std::mutex> lck(io_operations);
     io->set_output(LCD_CONTROL_PORT, ~(MOTOR_EN | MOTOR_STANDBY), (MOTOR_EN | MOTOR_STANDBY));
     is_motor_on = false;
 }

@@ -8,7 +8,7 @@
 #define PORT_ADDRESS(port, low, high) (port ? high : low)
 
 static bool io_interrupt_generated = false;
-
+std::mutex io_operations;
 
 void IRAM_ATTR io_isr() {
 	io_interrupt_generated = true;
@@ -103,6 +103,8 @@ void RoboxIoExpander::io_reset() {
 
 
 uint8_t RoboxIoExpander::get_inputs(uint8_t port) {
+    // only used by battery and motor fault
+    std::lock_guard<std::mutex> lck(io_operations);
     return io_get(PORT_ADDRESS(port, INPUT_P0, INPUT_P1));
 }
 

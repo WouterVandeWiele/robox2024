@@ -37,11 +37,11 @@ QueueHandle_t xQueueBattery;
 
         BatteryStatus.voltage = analogReadMilliVolts(BATTERY_ADC) * ADC_BATTERY_CONVERSION;
 
+        #if defined(BATTERY_TELEMETRY)
         Serial.printf(">battery_voltage:%ld\n", BatteryStatus.voltage);
-        
-        Serial.println("charger pins:");
-        Serial.printf("- %d\n", (BatteryStatus.chargerChgStBy) ? 1 : 0);
-        Serial.printf("- %d\n", (BatteryStatus.chargerCharging) ? 1 : 0);
+        Serial.printf(">battery_chg_stby: %d\n", BatteryStatus.chargerChgStBy ? 1 : 0);
+        Serial.printf(">battery_chg_ind: %d\n", BatteryStatus.chargerCharging ? 1 : 0);
+        #endif
 
         if (BatteryStatus.voltage < BATTERY_VERYLOWVOLTAGE) {
             BatteryStatus.state = battery_verylow;
@@ -54,17 +54,32 @@ QueueHandle_t xQueueBattery;
         }
 
         if (BatteryStatus.chargerChgStBy == 0 || BatteryStatus.chargerCharging == 0 ) {    //if charging or if charging terminated
+            #if !defined(DEBUG_MOTOR_MOVE_WHILE_PLUGIN)
             motor->motorLowBattery(true);
+            #endif
+
+            #if defined(BATTERY_TELEMETRY)
             Serial.print("let's disable the motors\n");
+            #endif
         }
         else if ((BatteryStatus.state == battery_high) || (BatteryStatus.state == battery_low))
         {
+            #if !defined(DEBUG_MOTOR_MOVE_WHILE_PLUGIN)
             motor->motorLowBattery(false);
+            #endif
+
+            #if defined(BATTERY_TELEMETRY)
             Serial.print("let's enable the motors\n");
+            #endif
         }
         else {
+            #if !defined(DEBUG_MOTOR_MOVE_WHILE_PLUGIN)
             motor->motorLowBattery(true);
+            #endif
+
+            #if defined(BATTERY_TELEMETRY)
             Serial.print("safe state disable the motors\n");
+            #endif
         }
         xQueueSend(xQueueBattery, &BatteryStatus, 0);
         delay(1000);    //every second

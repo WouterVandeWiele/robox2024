@@ -36,18 +36,13 @@ void LedMotorController::next() {
         break;
     }
 
-    restart_manager.set_led_motor(current);
 
-    if (is_motor_enabled()) {
-        motor->enable(true);
-    }
-    else {
-        motor->shutdown(true);
-    }
+    bool m_en = is_motor_enabled();
 
     if (!is_led_enabled()) {
         led_clear();
     }
+    restart_manager.set_led_motor(current);
     // taskEXIT_CRITICAL(&robox_effects_logic);
 //  taskEXIT_CRITICAL();
 }
@@ -86,6 +81,9 @@ bool LedMotorController::is_motor_enabled() {
 //  taskENTER_CRITICAL();
     if ((current == lm_motor) || (current == lm_led_motor)) {
         ret = true;
+        motor->enable_idempotent();
+    } else {
+        motor->shutdown_idempotent();
     }
     // taskEXIT_CRITICAL(&robox_effects_logic);
 //  taskEXIT_CRITICAL();

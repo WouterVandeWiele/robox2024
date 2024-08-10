@@ -53,6 +53,8 @@
 // 	bool flag;
 // };
 
+extern std::mutex io_operations;
+
 
 typedef struct ExpanderConfig{
   uint8_t out_state[2];         // default ALL 1 - if output: 1 = write HIGH, 0 = write LOW
