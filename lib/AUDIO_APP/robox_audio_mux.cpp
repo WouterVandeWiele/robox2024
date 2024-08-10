@@ -63,8 +63,6 @@ void RoboxAudioMux::switch_startup() {
     meta.title = "";
     String display_text = "";
 
-    lcd_invalidate(INVALIDATE_ALL);
-
     switch (source_name)
     {
     case NotSelectedSource:
@@ -95,10 +93,8 @@ void RoboxAudioMux::switch_startup() {
         break;
     }
 
-
     std::lock_guard<std::mutex> lck(meta_data_mtx);
     meta.title = String(display_text.c_str());
-    lcd_invalidate(INVALIDATE_ALL);
 
     delay(100);
 
@@ -110,22 +106,18 @@ void RoboxAudioMux::switch_startup() {
 
 void RoboxAudioMux::copy() {
     if ((source_name == WebRadioSource) && !restart_manager.is_wifi_initialized()) {
-        Serial.println("is wifi and wifi not configured");
         return;
     }
 
     if (source_name == NotSelectedSource) {
-        Serial.println("no source selected");
         return;
     }
 
     if (is_audio_paused == true) {
-        Serial.println("audio is paused");
         return;
     }
 
     if (is_startup == true) {
-        Serial.println("is startup");
         return;
     }
     // Serial.println("audio copy");

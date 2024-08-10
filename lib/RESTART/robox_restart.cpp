@@ -89,7 +89,7 @@ void RoboxRestartManager::setupWifi() {
     }
 }
 
-    void RoboxRestartManager::resetWifiCred() {
+void RoboxRestartManager::resetWifiCred() {
     wifiManager.resetSettings();
 }
 
