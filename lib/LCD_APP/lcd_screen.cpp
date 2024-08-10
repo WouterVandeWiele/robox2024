@@ -269,6 +269,8 @@ void update_screen() {
 
     bool maker_toggle = false;
     BatteryState battery_marker = battery_high;
+    bool is_charging = false;
+    bool is_charge_stby = false;
 
     pinMode(USD_CARD_DETECT, INPUT);
 
@@ -283,17 +285,31 @@ void update_screen() {
         // battery indicators
         if (xQueueReceive(xQueueBattery, &battery, 0)) {
             battery_marker = battery.state;
+            is_charging = battery.chargerCharging;
+            is_charge_stby = battery.chargerChgStBy;
 
-            if (battery_marker == battery_low) {
-                lcd_t->setMarker(GLCD_MARKER_BATTERY, true);
-            }
-            else if (battery_marker == battery_high) {
-                lcd_t->setMarker(GLCD_MARKER_BATTERY, false);
-            }
         }
 
+        // battery indicator
+        if (battery_marker == battery_low) {
+            lcd_t->setMarker(GLCD_MARKER_BATTERY, true);
+        }
+        else if (battery_marker == battery_high) {
+            lcd_t->setMarker(GLCD_MARKER_BATTERY, false);
+        }
         if (battery_marker == battery_verylow) {
             lcd_t->setMarker(GLCD_MARKER_BATTERY, maker_toggle);
+        }
+
+        // charge indicator
+        if (!is_charge_stby) {
+            lcd_t->setMarker(GLCD_MARKER_STAR, maker_toggle);
+        }
+        else if (!is_charging) {
+            lcd_t->setMarker(GLCD_MARKER_STAR, true);
+        }
+        else {
+            lcd_t->setMarker(GLCD_MARKER_STAR, false);
         }
 
         // SD card detect
