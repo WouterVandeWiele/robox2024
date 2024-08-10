@@ -1,0 +1,186 @@
+#include <Arduino.h>
+#include "AudioTools.h"
+
+#include "AudioCodecs/CodecMP3Helix.h"
+#include "zero.h"
+
+#include "robox_i2s.h"
+#include "robox_fft_beat.h"
+#include "lcd_screen.h"
+#include "robox_motor.h"
+#include "adc_key.h"
+#include "robox_battery.h"
+#include "robox_io.h"
+#include "robox_audio_mux.h"
+
+#include "SED1530_LCD.h"
+#include "general_definitions.h"
+#include "general_config.h"
+
+
+#include <GEM_adafruit_gfx.h>
+
+#define ROBOX_LCD
+#define ROBOX_BATTERY
+#define ROBOX_MOTOR
+#define ROBOX_TEST_ADC_KEY
+
+extern SED1530_LCD* lcd_t;
+
+#include "robox_restart.h"
+RoboxRestartManager restart_manager;
+
+#include "robox_led_motor_controller.h"
+LedMotorController led_motor_controller;
+
+RoboxAudioMux mux;
+static TaskHandle_t AudioCopyTask;
+
+MemoryStream mp3(zero_mp3, zero_mp3_len);
+// I2SStream i2s;  
+MP3DecoderHelix helix;
+EncodedAudioStream out(&i2s, &helix); // output to decoder
+StreamCopy copier(out, mp3);    // copy in to i2s
+
+
+static RoboxIoExpander* io;
+
+static RoboxLcdScreen* screen;
+
+
+RoboxMotor* motor;
+unsigned long timekeeper = 0;
+uint8_t motor_test_program = 0;
+#define MOTOR_TEST_PROGRAMS 4
+
+static RoboxBattery* battery;
+static bool stop_audio_loop = false;
+
+void setup() {
+    Serial.begin(115200);
+
+    AudioLogger::instance().begin(Serial, AudioLogger::Info);
+
+    // fastled setup
+    led_init();
+
+    io = new RoboxIoExpander(IO_EXPANDER_W_ADDRESS);
+
+
+     #if defined(ROBOX_LCD)
+        ESP_LOGI(LOG_MAIN_TAG, "lcd setup");
+
+        screen = new RoboxLcdScreen(io);
+        io->register_observer(screen, RoboxLcdScreen::io_config());
+    #endif
+
+    #if defined(ROBOX_MOTOR)
+        ESP_LOGI(LOG_MAIN_TAG, "motor setup");
+        motor = new RoboxMotor(io);
+        io->register_observer(motor, RoboxMotor::io_config());
+    #endif
+
+    #if defined(ROBOX_BATTERY)
+        ESP_LOGI(LOG_MAIN_TAG, "battery setup");
+        battery = new RoboxBattery(io);
+        io->register_observer(battery, RoboxBattery::io_config());
+    #endif
+
+    #if defined(ROBOX_DEBUG_I2C) || defined(ROBOX_LCD) || defined(ROBOX_MOTOR)
+        ESP_LOGI(LOG_MAIN_TAG, "configure io-expander");
+        io->io_configure();
+    #endif
+
+    #if defined(ROBOX_LCD)
+        ESP_LOGI(LOG_MAIN_TAG, "lcd init");
+        digitalWrite(LCD_DIS_PWR, LOW);
+        delay(2000);
+        digitalWrite(LCD_DIS_PWR, HIGH);
+        lcd_t->lcd_init();
+    #endif
+
+    #if defined(ROBOX_BATTERY)
+        battery->initBattery();
+    #endif
+
+    adc_key_setup();
+
+    #if defined(ROBOX_MOTOR)
+    motor->init();
+    motor->set_direction(0, 0);
+    motor->set_speed(0.3, 0.3);
+    motor->enable(1);
+
+    timekeeper = millis() + 5000;
+    #endif
+
+    /* LCD Test program */
+    lcd_t->clearScreen(GLCD_COLOR_CLEAR);
+    lcd_t->printf("uptime %ld\nvoltage: %ld", millis(), battery->battery_voltage());
+    lcd_t->updateWholeScreen();
+    
+    /*
+     * Audio Setup
+     */
+
+    i2s_setup();
+    out.begin();
+
+}
+
+void loop() {
+    /*
+     * Motor & LED & screen Test Program
+     */
+
+    if (millis() > timekeeper) {
+        Serial.printf("new motor program. timekeeper: %ld, program %d\n", timekeeper, (motor_test_program % MOTOR_TEST_PROGRAMS));
+        timekeeper = millis() + 2000;
+
+        switch (motor_test_program % MOTOR_TEST_PROGRAMS)
+        {
+        case 0:
+            motor->set_direction(0, 0);
+            motor->set_speed(0.3, 0.3);
+            break;
+
+        case 1:
+            motor->set_direction(1, 1);
+            motor->set_speed(0.3, 0.3);
+            break;
+        
+        case 2:
+            motor->set_direction(1, 0);
+            motor->set_speed(0.3, 0.3);
+            break;
+
+        case 3:
+            motor->set_direction(0, 1);
+            motor->set_speed(0.3, 0.3);
+            break;
+
+        default:
+            break;
+        }
+        motor_test_program++;
+    }
+
+    led_breath(true, r_green);
+
+
+    /*
+     * Audio test
+     */
+    if (stop_audio_loop == false) {
+        if (mp3.available()) {
+            copier.copy();
+        } else {
+            helix.end(); // flush output
+            auto info = out.decoder().audioInfo();
+            LOGI("The audio rate from the mp3 file is %d", info.sample_rate);
+            LOGI("The channels from the mp3 file is %d", info.channels);
+            i2s.end();
+            stop_audio_loop = true;
+        }
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "name": "Robox2024",
+    "version": "2024.08.02",
+    "new_install_prompt_erase": false,
+    "new_install_improv_wait_time": 0,
+    "builds": [
+      {
+        "chipFamily": "ESP32",
+        "parts": [
+          { "path": "/static/firmware_merged.bin", "offset": 0 }
+        ]
+      }
+    ]
+  }

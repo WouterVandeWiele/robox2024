@@ -5,27 +5,215 @@
 #include "general_definitions.h"
 #include "general_config.h"
 #include "example_bitmaps.h"
+#include "adc_key.h"
+#include "lcd_screen_context_loops.h"
+#include "robox_audio_mux.h"
+#include "robox_battery.h"
 
+#include "robox_restart.h"
+#include "robox_language.h"
+// extern Translator translator;
+
+#include <WiFiManager.h>
+
+extern RoboxAudioMux mux;
+extern RoboxRestartManager restart_manager;
+
+#if defined(ROBOX_WIFI_MANAGER)
+extern WiFiManager wifiManager;
+#endif
+
+// #if defined(LCD_RUN_THREADED)
+//     static LCD_Threaded* lcd_t;
+    static TaskHandle_t threaded_lcd_task;
+    static TaskHandle_t threaded_marker_task;
+// #else
+    SED1530_LCD* lcd_t;
+    GEM_adafruit_gfx* menu;
+// #endif
+
+/* temporary GEM menu stuff */
+#include "splash.h"
+#include "robox_audio_mux.h"
+// static GEMSelect menu_source_select(3, (SelectOptionByte[]){{"Bluetooth", BleSource}, {"Webradio", WebRadioSource}, {"SD card", SDSource}});
+
+// void menu_callback_source(GEMCallbackData callbackData) {
+//   Serial.print("Pressed menu item title: ");
+//   Serial.println(callbackData.pMenuItem->getTitle()); // Get title of the menu item via pointer to the menu item
+//   Serial.print("value: ");
+//   Serial.println(callbackData.valChar); // Get user-defined variable as a part of callbackData argument
+// }
+
+// static audio_source selected_source;
+// static GEMItem menuItemSelectSource("Audio Source", selected_source, menu_source_select, menu_callback_source);
+
+void printData() {
+  Serial.printf("time since start %ld\n", millis());
+}
+GEMItem menuItemButton(LANG_PRINT, printData);
+
+
+void switch_to_no_source() {
+    mux.switch_to(NotSelectedSource);
+}
+
+void switch_to_BLE() {
+    mux.switch_to(BleSource);
+}
+
+void switch_to_WEB() {
+    mux.switch_to(WebRadioSource);
+}
+
+void switch_to_SD() {
+    mux.switch_to(SDSource);
+}
+
+static GEMItem buttonSwitchNoSource(LANG_SOURCE_NO, switch_to_no_source);
+static GEMItem buttonSwitchBLE(LANG_SOURCE_BLE, switch_to_BLE);
+static GEMItem buttonSwitchWEB(LANG_SOURCE_WEB, switch_to_WEB);
+static GEMItem buttonSwitchSD(LANG_SOURCE_SD, switch_to_SD);
+static GEMItem menuItemSwitchAudioPlay(LANG_BACK, playLoop);
+static GEMItem menuItemSettingsAudioPlay(LANG_BACK, playLoop);
+GEMPage menuPageSwitch(LANG_MENU_SWITCH);
+
+
+void dummy() {};
+
+static bool first_update = false;
+static uint32_t dummy_counter = 0;
+static GEMItem menuROstart1("", dummy);
+static GEMItem menuROstart2(LANG_RO_RO, dummy);
+static GEMItem menuROssid_label(LANG_RO_WIFI_SSID, dummy);
+static GEMItem menuROssid_value(String("ROBOX").c_str(), dummy);
+static GEMItem menuRObreak1("     ~~~~     ", dummy);
+static GEMItem menuROble_label(LANG_RO_BLE_NAME, dummy);
+static GEMItem menuROble_value(String("ROBOX_bb").c_str(), dummy);
+
+//////////////////////////////////////////////////////////////////////////
+
+// void reset_wifi_credentials() {
+//     playLoop();
+//     restart_manager.resetWifiCred();
+//     restart_manager.setWifiSetupText();
+//     restart_manager.setupWifiOnDemand();
+// }
+
+// static GEMItem menuPageSettingsResetWifiCredentials(LANG_RESET_WIFI_CRED, reset_wifi_credentials);
+
+GEMPage menuPageSettings(LANG_MENU_SETTINGS);
 
 
 #if defined(LCD_RUN_THREADED)
 // locking primitives to communicate with the task function
-static SemaphoreHandle_t xSemaphoreScreenUpdate;    // trigger to the task to update the screen, release this semafore once done (block sequential updateWholeScreen and let them wait untill the draw screen procedure has finished)
-static portMUX_TYPE spinlockScreenUpdate;
+// static SemaphoreHandle_t xSemaphoreScreenUpdate;
+// trigger to the task to update the screen, release this semafore once done (block sequential updateWholeScreen
+// and let them wait untill the draw screen procedure has finished)
+// static portMUX_TYPE spinlockScreenUpdate;
 
-void run_task(void * param) {
-    LCD_Threaded* p = (LCD_Threaded*)param;
+/* The index within the target task's array of task notifications to use. */
+// const UBaseType_t xArrayIndex = 0;
 
-    while (true) {
-        taskENTER_CRITICAL(&spinlockScreenUpdate);  // disable interrupts untill we determinded if we need to redraw the LCD
+void update_screen() {
+    lcd_t->updateWholeScreen();
+}
 
-        if (uxSemaphoreGetCount(xSemaphoreScreenUpdate) == 0) {
-            xSemaphoreGive(xSemaphoreScreenUpdate);
-            taskEXIT_CRITICAL(&spinlockScreenUpdate);
 
-            p->taskUpdateWholeScreen();
-        } else {
-            taskEXIT_CRITICAL(&spinlockScreenUpdate);
+[[noreturn]] void menu_task(void * param) {
+    // LCD_Threaded* p = (LCD_Threaded*)param;
+
+    // https://www.freertos.org/RTOS_Task_Notification_As_Counting_Semaphore.html
+    // BaseType_t xEvent;
+    // const TickType_t xBlockTime = pdMS_TO_TICKS( 500 ); 
+    // // const TickType_t xBlockTime = portMAX_DELAY ;
+    // uint32_t ulNotifiedValue;
+
+    ButtonPress button;
+
+    Serial.println("menu setup");
+
+    menu = new GEM_adafruit_gfx(
+        *lcd_t, 
+        /* menuPointerType= */ GEM_POINTER_ROW, 
+        /* menuItemsPerScreen= */ GEM_ITEMS_COUNT_AUTO, 
+        /* menuItemHeight= */ 8, 
+        /* menuPageScreenTopOffset= */ 10, 
+        /* menuValuesLeftOffset= */ 80
+    );
+
+    menu->setDrawCallback(update_screen);
+    menu->hideVersion();
+
+    if (restart_manager.is_cold_boot() == true) {
+        menu->setSplashDelay(2000);
+        menu->setSplash(100, 48, robox_splash);
+    }
+    else {
+        menu->setSplashDelay(2);
+        menu->setSplash(100, 48, empty_splash);
+    }
+
+    menuPageSwitch.addMenuItem(buttonSwitchNoSource);
+    menuPageSwitch.addMenuItem(buttonSwitchBLE);
+    menuPageSwitch.addMenuItem(buttonSwitchWEB);
+    menuPageSwitch.addMenuItem(buttonSwitchSD);
+    // menuPageSwitch.addMenuItem(menuItemButton);
+    menuPageSwitch.addMenuItem(menuItemSwitchAudioPlay);
+
+    // menuPageSettings.addMenuItem(menuItemButton);
+    // #if defined(ROBOX_WIFI_MANAGER)
+    // menuPageSettings.addMenuItem(menuPageSettingsResetWifiCredentials);
+    // #endif
+    menuPageSettings.addMenuItem(menuItemSettingsAudioPlay);
+
+    // Read only menu
+    menuPageSettings.addMenuItem(menuROstart1);
+    menuPageSettings.addMenuItem(menuROstart2);
+    menuPageSettings.addMenuItem(menuROssid_label);
+    menuPageSettings.addMenuItem(menuROssid_value);
+    menuPageSettings.addMenuItem(menuRObreak1);
+    menuPageSettings.addMenuItem(menuROble_label);
+    menuPageSettings.addMenuItem(menuROble_value);
+
+
+    menu->setMenuPageCurrent(menuPageSettings);
+    menu->init();
+    
+    playLoop();
+
+    for (;;) {
+        if (xQueueButtons == NULL) {
+            continue;
+        }
+      
+        if (!menu->readyForKey()) {
+            continue;
+        }
+
+        for (;;) {
+            if (!xQueueReceive(xQueueButtons, &button, 100 * portTICK_PERIOD_MS)) {
+                continue;
+            }
+            if (button.long_press) {
+                continue;
+            }
+            if (button.button == GEM_PLAY_MENU) {
+                playLoop();
+                break;
+            }
+            if (button.button < GEM_KEY_UP || button.button > GEM_KEY_OK) {
+                continue;
+            }
+            break;
+        }
+        // Serial.println("Got button press");
+        // menuTestChangeLabel.setTitle("Counter");
+
+
+        menu->registerKeyPress(button.button);
+        if (first_update == false) {
+            menuROssid_value.setTitle(restart_manager.getDefaultName().c_str());
+            menuROble_value.setTitle(restart_manager.getDefaultName().c_str());
         }
     }
 }
@@ -34,7 +222,14 @@ void run_task(void * param) {
 
 
 #if defined(IO_EXPANDER)
-    RoboxLcdScreen::RoboxLcdScreen(RoboxIoExpander* io): io(io), lcd_t(io) {
+    RoboxLcdScreen::RoboxLcdScreen(RoboxIoExpander* io): io(io) {
+
+        // #if defined(LCD_RUN_THREADED)
+        // lcd_t = new LCD_Threaded(io);
+        // #else
+        lcd_t = new SED1530_LCD(io);
+        // #endif
+
         // init_lcd();
         pinMode(LCD_DIS_PWR, OUTPUT);
     }
@@ -44,58 +239,76 @@ void run_task(void * param) {
     }
 #endif
 
-// LCD PINS
-// void lcd_screen_setup() {
-// #if !defined(IO_EXPANDER) && defined(LCD_RUN_THREADED)
-//     static const uint8_t lcdDataPins[] = LCDDATAPINS;
 
-//     lcd_t = std::make_unique<LCD_Threaded>(LCDA0, LCDRW, LCDENABLE, lcdDataPins);
-// #elif defined(IO_EXPANDER) && defined(LCD_RUN_THREADED)
-//     lcd_t = std::make_unique<LCD_Threaded>(IO_EXPANDER_W_ADDRESS);
+[[noreturn]] void marker_task(void * param) {
+    BatteryData battery;
 
-// #elif !defined(IO_EXPANDER) && !defined(LCD_RUN_THREADED)
-//     static const uint8_t lcdDataPins[] = LCDDATAPINS;
-//     lcd_t = std::make_unique<SED1530_LCD>(A0, RW, EN, DATA);
+    bool maker_toggle = false;
+    BatteryState battery_marker = battery_high;
 
-// #elif defined(IO_EXPANDER) && !defined(LCD_RUN_THREADED)
-//     lcd_t = std::make_unique<SED1530_LCD>(IO_EXPANDER_W_ADDRESS);
+    while (true)
+    {
+        delay(1000);
+
+        if (xQueueBattery == NULL) {
+            continue;
+        }
+
+        if (xQueueReceive(xQueueBattery, &battery, 0)) {
+            battery_marker = battery.state;
+
+            if (battery_marker == battery_low) {
+                lcd_t->setMarker(GLCD_MARKER_BATTERY, true);
+            }
+            else if (battery_marker == battery_high) {
+                lcd_t->setMarker(GLCD_MARKER_BATTERY, false);
+            }
+        }
+        if (battery_marker == battery_verylow) {
+            lcd_t->setMarker(GLCD_MARKER_BATTERY, maker_toggle);
+        }
+
+        maker_toggle = !maker_toggle;
+    }
     
-// #endif
-// }
-
-#if defined(LCD_RUN_THREADED)
-
-void LCD_Threaded::updateWholeScreen() {
-    xSemaphoreTake(xSemaphoreScreenUpdate, 0);
 }
-
-void LCD_Threaded::taskUpdateWholeScreen() {
-    SED1530_LCD::updateWholeScreen();
-}
-
-#endif
 
 void RoboxLcdScreen::init_lcd() {
-    ESP_LOGI(LOG_LCD_TAG, "LCD setup");
+    Serial.println("LCD setup");
 
-    power_up();
+    if (restart_manager.is_cold_boot()) {
+        power_up();
 
-    lcd_t.lcd_init();
+        lcd_t->lcd_init();
+    }
 
     #if defined(LCD_RUN_THREADED)
-    xSemaphoreScreenUpdate = xSemaphoreCreateBinary();
-    spinlockScreenUpdate = portMUX_INITIALIZER_UNLOCKED;
 
-    xTaskCreate(
-        run_task,       //Function to implement the task 
+    xTaskCreatePinnedToCore(
+        menu_task,       //Function to implement the task 
         "lcd_thread", //Name of the task
         6000,       //Stack size in words 
-        (void*)&lcd_t,       //Task input parameter 
-        0,          //Priority of the task 
-        &(threaded_task)       //Task handle.
+        // (void*)&lcd_t,       //Task input parameter 
+        NULL,       //Task input parameter 
+        PRIORITY_LCD_TASK,          //Priority of the task 
+        &(threaded_lcd_task),       //Task handle.
+        1           // Core you want to run the task on (0 or 1)
     );
 
+    xTaskCreatePinnedToCore(
+        marker_task,       //Function to implement the task 
+        "marker_thread", //Name of the task
+        3000,       //Stack size in words 
+        // (void*)&lcd_t,       //Task input parameter 
+        NULL,       //Task input parameter 
+        PRIORITY_LCD_TASK,          //Priority of the task 
+        &(threaded_marker_task),       //Task handle.
+        1           // Core you want to run the task on (0 or 1)
+    );
+
+    
     #endif
+
 }
 
 void RoboxLcdScreen::deinit_lcd() {
@@ -103,6 +316,8 @@ void RoboxLcdScreen::deinit_lcd() {
 }
 
 void RoboxLcdScreen::power_up() {
+    digitalWrite(LCD_DIS_PWR, LOW);
+    delay(2000);
     digitalWrite(LCD_DIS_PWR, HIGH);
 }
 
@@ -131,90 +346,4 @@ void RoboxLcdScreen::io_interrupt_observer(std::vector<uint8_t>& data) {
     // RoboxLcdScreen * self = static_cast<RoboxLcdScreen*>(this_pointer);
 
     // implement callback code when an interrupt is generated
-}
-
-
-void RoboxLcdScreen::lcd_gfx_test() {
-
-    /* draw rectangle */
-    ESP_LOGI(LOG_LCD_TAG, "LCD loop");
-    lcd_t.fillScreen(GLCD_COLOR_CLEAR);
-    lcd_t.drawRect(2, 2, 50, 20, GLCD_COLOR_SET);
-    lcd_t.updateWholeScreen();
-
-    delay(5000);
-    // lcd.fillScreen(GLCD_COLOR_CLEAR);
-    // delay(1000);
-
-    /* draw circle */
-    lcd_t.fillScreen(GLCD_COLOR_CLEAR);
-    lcd_t.drawCircle(20, 20, 10, GLCD_COLOR_SET);
-    lcd_t.updateWholeScreen();
-
-    delay(5000);
-
-    /* rotate through markers */
-    // for (int l = 0; l <= 3; l++) {
-    for (byte i = 1; i <= 6; i++) {
-        lcd_t.setMarker(i, true);
-        delay(400);
-        lcd_t.setMarker(i, false);
-        delay(100);
-        lcd_t.updateWholeScreen();
-    }
-    // }
-    
-
-    lcd_t.fillScreen(GLCD_COLOR_CLEAR);
-
-    /* refresh rate test */
-    int y = 0;
-    // for (int y = 0; y < 48; y++) {
-        for (int x = 0; x < 100; x++) {
-            lcd_t.drawPixel(x, y, GLCD_COLOR_SET);
-            lcd_t.updateWholeScreen();
-        }
-    // }
-    
-    delay(5000);
-
-    /* print text test */
-    lcd_t.fillScreen(GLCD_COLOR_CLEAR);
-    lcd_t.cp437(true);   // Use correct CP437 character codes
-    lcd_t.print("Scho"); // Print the plain ASCII first part
-    lcd_t.write(0x94);   // Print the o-with-umlauts
-    lcd_t.println("n");  // Print the last part
-    lcd_t.updateWholeScreen();
-
-    delay(5000);
-
-    /* 4x bitmaps test */
-
-    lcd_t.fillScreen(GLCD_COLOR_CLEAR);
-    lcd_t.setMarker(1, GLCD_COLOR_SET);
-    lcd_t.drawBitmap(0, 0, epd_bitmap_Bitmap_binary, 100, 48, GLCD_COLOR_SET);
-    lcd_t.updateWholeScreen();
-
-    delay(10000);
-
-    lcd_t.fillScreen(GLCD_COLOR_CLEAR);
-    lcd_t.setMarker(2, GLCD_COLOR_SET);
-    lcd_t.drawBitmap(0, 0, epd_bitmap_Bitmap_bayer, 100, 48, GLCD_COLOR_SET);
-    lcd_t.updateWholeScreen();
-
-    delay(10000);
-
-    lcd_t.fillScreen(GLCD_COLOR_CLEAR);
-    lcd_t.setMarker(3, GLCD_COLOR_SET);
-    lcd_t.drawBitmap(0, 0, epd_bitmap_Bitmap_floyd_steinberg, 100, 48, GLCD_COLOR_SET);
-    lcd_t.updateWholeScreen();
-
-    delay(10000);
-
-    lcd_t.fillScreen(GLCD_COLOR_CLEAR);
-    lcd_t.setMarker(4, GLCD_COLOR_SET);
-    lcd_t.drawBitmap(0, 0, epd_bitmap_Bitmap_atkinson, 100, 48, GLCD_COLOR_SET);
-    lcd_t.updateWholeScreen();
-
-    delay(10000);
 }

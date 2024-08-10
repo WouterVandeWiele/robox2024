@@ -69,10 +69,17 @@ void sourceCallback(cmd *c) {
 void muxCallback(cmd *c) {
     Command cmd(c);
 
-    Argument meta_title = cmd.getArgument("c");
+    Argument meta_title = cmd.getArgument("meta_title");
+    Argument volume = cmd.getArgument("volume");
 
     if (meta_title.isSet()) {
-        Serial.printf("Current Title: %s\n", mux.meta_tile);
+        // const std::lock_guard<std::mutex> lock(mux.meta_mutex);
+        Serial.printf("Current Title: %s\n", (mux.meta.title.c_str()));
+    }
+
+    if (volume.isSet()) {
+        float level = atof(volume.getValue().c_str());
+        mux.volume(level);
     }
 }
 
@@ -113,6 +120,7 @@ void debug_cli_setup() {
     mux_info = cli.addCmd("mux", muxCallback);
     mux_info.setDescription("get information from the mux interface");
     mux_info.addFlagArg("meta_title");
+    mux_info.addArg("volume");
 
     // [Optional] Check if our command was successfully added
     if (!ping) Serial.println(">Ping command not installed!");

@@ -163,11 +163,7 @@ void SED1530_LCD::writeData(uint8_t lcdData) {
 }
 
 void SED1530_LCD::lcd_init() {
-  #if defined(IO_EXPANDER)
-  const std::lock_guard<std::mutex> lock(io->io_mutex);
-  #endif
-
-
+  std::lock_guard<std::mutex> lck(io_operations);
   // ESP_LOGI(LOG_LCD_TAG, "lcd io setup start");
   // io->set_output(LCD_DATA_PORT, 0x00);
   // io->set_output(LCD_CONTROL_PORT, 0x00);
@@ -196,15 +192,13 @@ void SED1530_LCD::lcd_init() {
 }
 
 void SED1530_LCD::resetDisplay() {
+  std::lock_guard<std::mutex> lck(io_operations);
   this->writeCommand(GLCD_CMD_RESET);
 }
 
 void SED1530_LCD::invertDisplay(bool i) {
-    #if defined(IO_EXPANDER)
-    const std::lock_guard<std::mutex> lock(io->io_mutex);
-    #endif
-
-    this->writeCommand(0xA6 + (i ? 0:1));
+  std::lock_guard<std::mutex> lck(io_operations);
+  this->writeCommand(0xA6 + (i ? 0:1));
 }
 
 /*  Control de markers boven in het display
@@ -216,30 +210,27 @@ void SED1530_LCD::invertDisplay(bool i) {
  GLCD_MARKER_ARROW_UP       78  -- pijltje UP
 */
 void SED1530_LCD::setMarker(uint8_t marker, bool on) {
+    std::lock_guard<std::mutex> lck(io_operations);
     uint8_t highNibble, lowNibble;
     uint8_t markerLCD;
 
-    #if defined(IO_EXPANDER)
-    const std::lock_guard<std::mutex> lock(io->io_mutex);
-    #endif
-
-    switch (marker) {
-        case 1 : markerLCD = 20;
-                break;
-        case 2 : markerLCD = 31;
-                break;
-        case 3: markerLCD = 32;
-                break;
-        case 4: markerLCD = 57;
-                break;
-        case 5: markerLCD = 69;
-            break;
-        case 6: markerLCD = 78;
-            break;
-    }
+    // switch (marker) {
+    //     case 1 : markerLCD = 20;
+    //             break;
+    //     case 2 : markerLCD = 31;
+    //             break;
+    //     case 3: markerLCD = 32;
+    //             break;
+    //     case 4: markerLCD = 57;
+    //             break;
+    //     case 5: markerLCD = 69;
+    //         break;
+    //     case 6: markerLCD = 78;
+    //         break;
+    // }
     
-    lowNibble = markerLCD & 0xF;      // Mask out upper nibble
-    highNibble = markerLCD;        
+    lowNibble = marker & 0xF;      // Mask out upper nibble
+    highNibble = marker;        
     highNibble = highNibble >> 4;     // Shift upper 4 bits to lower
     bitSet(highNibble, 4);            // Set 5th bit high
     
@@ -247,13 +238,14 @@ void SED1530_LCD::setMarker(uint8_t marker, bool on) {
     this->writeCommand(highNibble);  //Set column Address high nibble
     this->writeCommand(lowNibble);   //Set column Address low nibble
     
-    this->writeData(on);
+    this->writeData(on ? 1 : 0);
 }
 
 /*
  Reset column address to the first position in the page
 */
 void SED1530_LCD::resetColumnAdress(void) {
+  std::lock_guard<std::mutex> lck(io_operations);
   this->writeCommand(0x10);
   this->writeCommand(0x00);
 }
@@ -262,6 +254,7 @@ void SED1530_LCD::resetColumnAdress(void) {
 Constrast is a value between 0 and 31.
 */
 void SED1530_LCD::setContrast(uint8_t contrast) {
+  std::lock_guard<std::mutex> lck(io_operations);
   this->writeCommand(0x80 + contrast & 0x3F);
 }
 
@@ -304,6 +297,7 @@ void SED1530_LCD::setColumn(uint8_t row) {
 
 
 void SED1530_LCD::clearScreen(uint16_t color) {
+  std::lock_guard<std::mutex> lck(io_operations);
   // draw all pages
   for (uint16_t p = 0; p < 8; p++) {
     this->setPage(p);
@@ -317,6 +311,7 @@ void SED1530_LCD::clearScreen(uint16_t color) {
 }
 
 void SED1530_LCD::fillScreen(uint16_t color) {
+  std::lock_guard<std::mutex> lck(io_operations);
   uint8_t pages = this->HEIGHT / 8;
   uint8_t data = color ? 0xFF : 0x00;
 
@@ -336,11 +331,7 @@ void SED1530_LCD::fillScreen(uint16_t color) {
 }
 
 void SED1530_LCD::updateWholeScreen(void) {
-
-  #if defined(IO_EXPANDER)
-    const std::lock_guard<std::mutex> lock(io->io_mutex);
-  #endif
-
+  std::lock_guard<std::mutex> lck(io_operations);
   // uint32_t bytes = ((w + 7) / 8) * h;
   // if ((buffer = (uint8_t *)malloc(bytes))) {
   //   memset(buffer, 0, bytes);
@@ -377,6 +368,9 @@ void SED1530_LCD::updateWholeScreen(void) {
       }
 
       this->writeData(data);
+      // vTaskDelay(1);
     }
+    // vTaskDelay(1);
+    // delay(1);
   }
 }

@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include "general_definitions.h"
 // #include "lcd_screen.h"
-#include "robox_mux_interface.h"
+// #include "robox_mux_interface.h"
 
 
 #define INPUT_P0 0x00   // input (incomming logic levels) port 0
@@ -53,6 +53,8 @@
 // 	bool flag;
 // };
 
+extern std::mutex io_operations;
+
 
 typedef struct ExpanderConfig{
   uint8_t out_state[2];         // default ALL 1 - if output: 1 = write HIGH, 0 = write LOW
@@ -91,14 +93,13 @@ class IoInterface {
 
 class RoboxIoExpander {
     public:
-        std::mutex io_mutex;
 
         RoboxIoExpander(uint8_t address);
         ~RoboxIoExpander();
 
         uint8_t get_inputs(uint8_t port);
         // void configure_outputs(uint8_t port, uint8_t data);
-        uint8_t get_configure_outputs(uint8_t port);
+        // uint8_t get_configure_outputs(uint8_t port);
         void set_output(uint8_t port, uint8_t data, uint8_t mask);
         static ExpanderConfig get_default_config();
         void io_configure();

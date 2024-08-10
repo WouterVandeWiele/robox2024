@@ -6,28 +6,46 @@
 #include "general_definitions.h"
 #include "general_config.h"
 
+#include <GEM_adafruit_gfx.h>
+
+extern SED1530_LCD* lcd_t;
+extern GEM_adafruit_gfx* menu;
+
+extern GEMPage menuPageSwitch;
+extern GEMPage menuPageSettings;
+
+#define GEM_INVALIDATE (0x80)
 
 // robox LCD architecture [docs/lcd_overview.excalidraw.png]
 
 #if defined(LCD_RUN_THREADED)
 
+// class LCD_Threaded: public SED1530_LCD {
 
-class LCD_Threaded: public SED1530_LCD {
+//     public:
+//         #if !defined(IO_EXPANDER)
+//             LCD_Threaded(uint8_t A0, uint8_t RW, uint8_t EN, uint8_t *DATA): SED1530_LCD(A0, RW, EN, DATA) {};
+//         #elif defined(IO_EXPANDER)
+//             LCD_Threaded(RoboxIoExpander *io): SED1530_LCD(io) {};
+//         #endif
 
-    public:
-        #if !defined(IO_EXPANDER)
-            LCD_Threaded(uint8_t A0, uint8_t RW, uint8_t EN, uint8_t *DATA): SED1530_LCD(A0, RW, EN, DATA) {};
-        #elif defined(IO_EXPANDER)
-            LCD_Threaded(RoboxIoExpander &io): SED1530_LCD(io) {};
-        #endif
+//         void updateWholeScreen();
 
-        void updateWholeScreen();
-
-        void taskUpdateWholeScreen();
-};
+//         void taskUpdateWholeScreen();
+// };
 
 #endif
 
+typedef enum {
+    INVALIDATE_ALL,
+    INVALIDATE_VOLUME,
+} LcdInvalidate;
+
+/**
+ * @brief Requests that the LCD display should be redrawn.
+ */
+void lcd_invalidate(LcdInvalidate invalidate);
+void lcd_go_to_play_menu();
 
 class RoboxLcdScreen: public IoInterface {
     public:
@@ -36,7 +54,7 @@ class RoboxLcdScreen: public IoInterface {
         #else
             RoboxLcdScreen(uint8_t A0, uint8_t RW, uint8_t EN, uint8_t *DATA);
         #endif
-        void lcd_gfx_test();
+        // void lcd_gfx_test();
 
         void power_up();
         void power_down();
@@ -50,6 +68,8 @@ class RoboxLcdScreen: public IoInterface {
         void init_lcd();
         void deinit_lcd();
 
+        // void lcd_menu_loop();
+
 
     private:
 
@@ -62,12 +82,9 @@ class RoboxLcdScreen: public IoInterface {
             uint8_t *DATA;
         #endif
 
-        #if defined(LCD_RUN_THREADED)
-            LCD_Threaded lcd_t;
-            TaskHandle_t threaded_task;
-        #else
-            SED1530_LCD lcd_t;
-        #endif
+    
+        // GEM_adafruit_gfx* menu;
+    
 };
 
 #endif  // LCD_SCREEN_H

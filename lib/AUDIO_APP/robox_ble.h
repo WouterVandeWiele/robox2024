@@ -17,16 +17,33 @@ void avrc_metadata_callback(uint8_t id, const uint8_t *text);
 
 class RoboxBluetooth : public MuxInterface {
     public:
-        RoboxBluetooth() {};
+        // RoboxBluetooth(bool beat_led=false, const char* ble_sink_name="a2dp-i2s")
+        // RoboxBluetooth(bool beat_led, float &volume_level, const char* ble_sink_name="a2dp-i2s")
+        RoboxBluetooth(bool beat_led, float &volume_level)
+            : MuxInterface(volume_level)
+            , beat_led(beat_led)
+            // , ble_sink_name(ble_sink_name)
+            , a2dp_sink()
+        {};
 
         /*
         BLE Audio MUX controls
         */
 
-        void mux_start();
-        void mux_stop();
+        void mux_start() override;
+        void mux_stop() override;
+
+        void volume(float level) override;
+
+        virtual bool audio_active() override;
+        virtual void audio_play() override;
+        virtual void audio_pause() override;
+        virtual void audio_next() override;
+        virtual void audio_previous() override;
 
     private:
+        bool beat_led;
+        // const char *ble_sink_name;
         BluetoothA2DPSink a2dp_sink;
 };
 

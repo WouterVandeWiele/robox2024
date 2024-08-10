@@ -68,6 +68,11 @@ Example command demonstrating aruments, takes <text> and prints n times
 
 source -s <value>
 Select the audio source, takes 1 arument of: ['ble', 'web', 'sd']
+
+mux -meta_title -volume <value>
+(get/set mux settings)
+-meta_title: reads the current title of the song
+-volume: sets the colume on the stream
 ```
 
 ## PlatformIO configuration (dev log)
@@ -99,3 +104,18 @@ Be sure you are not using GPIO2 and GPIO25 when using the DA module.
 
 ## ESP32 partition calculator
 https://esp32.jgarrettcorbin.com/
+https://atctwo.net/projects/esp32-partition-editor/
+
+## burn pip install reedsolo
+
+```shell
+pip install cryptography
+pip install ecdsa
+pip install bitstring
+pip install reedsolo
+```
+
+PlatformIO Core CLI:
+```shell
+pio pkg exec -- espefuse.py set_flash_voltage 3.3V --port COM3
+```

@@ -4,7 +4,7 @@
 #include "AudioTools.h"
 #include "robox_mux_interface.h"
 
-#include "AudioLibs/AudioSourceSDFAT.h"
+#include "AudioLibs/AudioSourceSD.h"
 #include "AudioCodecs/CodecMP3Helix.h"
 
 #include "robox_i2s.h"
@@ -15,26 +15,41 @@ SD Card Audio MUX controls
 
 class RoboxSD: public MuxInterface {
     public:
-        RoboxSD(): 
-            startFilePath("/"),
-            ext("mp3"),
-            source(startFilePath, ext),
-            player(source, i2s, decoder) {
-
-        };
+        RoboxSD(bool beat_led, float &volume_level)
+            : MuxInterface(volume_level)
+            , beat_led(beat_led)
+            , startFilePath("/")
+            , ext("mp3")
+            , multi_output(i2s)
+            , decoder()
+            , source(startFilePath, ext)
+            , player(source, multi_output, decoder) 
+        {};
         /*
         SD Audio MUX controls
         */
 
-        void mux_start();
-        void mux_stop();
-        void mux_copy();
+        void mux_start() override;
+        void mux_stop() override;
+        void mux_copy() override;
+
+        void volume(float level) override;
+
+        virtual bool audio_active() override;
+        virtual void audio_play() override;
+        virtual void audio_pause() override;
+        virtual void audio_next() override;
+        virtual void audio_previous() override;
+
+        bool is_sd_inserted();
 
     private:
+    bool beat_led;
         const char *startFilePath;
         const char* ext;
-        AudioSourceSDFAT source;
+        MultiOutput multi_output;
         MP3DecoderHelix decoder;
+        AudioSourceSD source;
         AudioPlayer player;
 };
 
