@@ -159,9 +159,9 @@ void update_screen() {
     menuPageSwitch.addMenuItem(menuItemSwitchAudioPlay);
 
     // menuPageSettings.addMenuItem(menuItemButton);
-    #if defined(ROBOX_WIFI_MANAGER)
+    // #if defined(ROBOX_WIFI_MANAGER)
     menuPageSettings.addMenuItem(menuPageSettingsResetWifiCredentials);
-    #endif
+    // #endif
     menuPageSettings.addMenuItem(menuItemSettingsAudioPlay);
 
     // Read only menu
