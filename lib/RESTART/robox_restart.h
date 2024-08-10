@@ -23,10 +23,12 @@ class RoboxRestartManager {
         void setupWifiOnDemand();
 
         bool is_wifi_initialized();
+        bool is_wifi_started();
 
     private:
         bool cold_boot;
         bool _is_wifi_initialized;
+        bool _is_wifi_started;
 
         void restart() {
             delay(100);

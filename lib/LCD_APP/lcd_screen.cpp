@@ -311,6 +311,19 @@ void update_screen() {
             }
         }
 
+        // wifi configured
+        if (restart_manager.is_wifi_started()) {
+            if (restart_manager.is_wifi_initialized()){
+                lcd_t->setMarker(GLCD_MARKER_ARROWS_CROSS, true);
+            }
+            else {
+                lcd_t->setMarker(GLCD_MARKER_ARROWS_CROSS, maker_toggle);
+            }
+        }
+        else {
+            lcd_t->setMarker(GLCD_MARKER_ARROWS_CROSS, false);
+        }
+
         maker_toggle = !maker_toggle;
     }
     

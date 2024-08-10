@@ -74,7 +74,6 @@ void RoboxWebRadio::mux_start() {
     ESP_LOGI(LOG_SD_TAG, ">>> Web Radio starting...");
 
     while (restart_manager.is_wifi_initialized() == false) {
-      Serial.println("wait unitill wifi is initialized");
       delay(500);
     }
 

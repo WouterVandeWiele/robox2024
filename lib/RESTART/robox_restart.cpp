@@ -39,6 +39,7 @@ void RoboxRestartManager::setWifiSetupText() {
 
 RoboxRestartManager::RoboxRestartManager()
     : _is_wifi_initialized(false)
+    , _is_wifi_started(false)
  {
     esp_reset_reason_t reason = restartReason();
 
@@ -106,6 +107,7 @@ String RoboxRestartManager::getDefaultName() {
 void RoboxRestartManager::setupWifiOnDemand() {
     // Run this part as soon as you need Wifi
     _is_wifi_initialized = false;
+    _is_wifi_started = true;
 
     String ssid = getDefaultName();
 
@@ -142,4 +144,8 @@ void RoboxRestartManager::setupWifiOnDemand() {
 
 bool RoboxRestartManager::is_wifi_initialized() {
     return _is_wifi_initialized;
+}
+
+bool RoboxRestartManager::is_wifi_started() {
+    return _is_wifi_started;
 }
