@@ -16,6 +16,7 @@ class RoboxRestartManager {
         LedMotorEnum get_led_motor();
 
         bool is_cold_boot();
+        void setWifiSetupText();
         void setupWifi();
         void resetWifiCred();
         String getDefaultName();

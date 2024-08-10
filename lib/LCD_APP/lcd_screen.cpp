@@ -92,12 +92,14 @@ static GEMItem menuROble_value(String("ROBOX_bb").c_str(), dummy);
 
 //////////////////////////////////////////////////////////////////////////
 
-void reset_wifi_credentials() {
-    restart_manager.resetWifiCred();
-    restart_manager.setupWifiOnDemand();
-}
+// void reset_wifi_credentials() {
+//     playLoop();
+//     restart_manager.resetWifiCred();
+//     restart_manager.setWifiSetupText();
+//     restart_manager.setupWifiOnDemand();
+// }
 
-static GEMItem menuPageSettingsResetWifiCredentials(LANG_RESET_WIFI_CRED, reset_wifi_credentials);
+// static GEMItem menuPageSettingsResetWifiCredentials(LANG_RESET_WIFI_CRED, reset_wifi_credentials);
 
 GEMPage menuPageSettings(LANG_MENU_SETTINGS);
 
@@ -160,7 +162,7 @@ void update_screen() {
 
     // menuPageSettings.addMenuItem(menuItemButton);
     // #if defined(ROBOX_WIFI_MANAGER)
-    menuPageSettings.addMenuItem(menuPageSettingsResetWifiCredentials);
+    // menuPageSettings.addMenuItem(menuPageSettingsResetWifiCredentials);
     // #endif
     menuPageSettings.addMenuItem(menuItemSettingsAudioPlay);
 
@@ -285,7 +287,7 @@ void RoboxLcdScreen::init_lcd() {
     xTaskCreatePinnedToCore(
         menu_task,       //Function to implement the task 
         "lcd_thread", //Name of the task
-        3000,       //Stack size in words 
+        6000,       //Stack size in words 
         // (void*)&lcd_t,       //Task input parameter 
         NULL,       //Task input parameter 
         PRIORITY_LCD_TASK,          //Priority of the task 

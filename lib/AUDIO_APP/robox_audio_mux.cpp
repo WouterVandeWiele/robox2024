@@ -109,9 +109,28 @@ void RoboxAudioMux::switch_startup() {
 }
 
 void RoboxAudioMux::copy() {
-    if ((source_name != NotSelectedSource) && (is_audio_paused == false) && (is_startup == false)) {
-        current_source->mux_copy();
+    if ((source_name == WebRadioSource) && !restart_manager.is_wifi_initialized()) {
+        Serial.println("is wifi and wifi not configured");
+        return;
     }
+
+    if (source_name == NotSelectedSource) {
+        Serial.println("no source selected");
+        return;
+    }
+
+    if (is_audio_paused == true) {
+        Serial.println("audio is paused");
+        return;
+    }
+
+    if (is_startup == true) {
+        Serial.println("is startup");
+        return;
+    }
+    // Serial.println("audio copy");
+
+    current_source->mux_copy();
 }
 
 void RoboxAudioMux::volume(float level) {

@@ -28,6 +28,14 @@ static void configModeCallback (WiFiManager *myWiFiManager) {
     lcd_invalidate(INVALIDATE_ALL);
 }
 
+void RoboxRestartManager::setWifiSetupText() {
+    String display_text = LANG_TOP_WIFI_SELECT + wifiManager.getConfigPortalSSID();
+
+    std::lock_guard<std::mutex> lck(meta_data_mtx);
+    mux.meta.title = String(display_text.c_str());
+    lcd_invalidate(INVALIDATE_ALL);
+}
+
 
 RoboxRestartManager::RoboxRestartManager()
     : _is_wifi_initialized(false)
@@ -97,6 +105,7 @@ String RoboxRestartManager::getDefaultName() {
 
 void RoboxRestartManager::setupWifiOnDemand() {
     // Run this part as soon as you need Wifi
+    _is_wifi_initialized = false;
 
     String ssid = getDefaultName();
 
