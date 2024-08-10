@@ -30,6 +30,8 @@
 #define BATTERY_VERYLOWVOLTAGE 3200
 #define BATTERY_LOWVOLTAGE 3400
 
+#define GEM_PLAY_MENU 7   // go back to the play menu
+
 #define BUTTON_SHORT_LONG_TH 500
 
 // #define DEBUG_MOTOR_MOVE_WHILE_PLUGIN
