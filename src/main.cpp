@@ -178,7 +178,7 @@ static uint32_t beat_loop_timestamp_previous = 0;
 // #include "streams_copy_example.h"
 // #include "listing.h"
 #include "general_definitions.h"
-#include "wifi_credentials.h"
+// #include "wifi_credentials.h"
 
 // setup logging
 // #define LOG_LOCAL_LEVEL ESP_LOG_ERROR
@@ -321,7 +321,7 @@ void setup() {
     Serial.println("R::::::R     R:::::R   OO:::::::::OO   B::::::::::::::::B     OO:::::::::OO   X:::::X       X:::::X");
     Serial.println("RRRRRRRR     RRRRRRR     OOOOOOOOO     BBBBBBBBBBBBBBBBB        OOOOOOOOO     XXXXXXX       XXXXXXX");
     Serial.println("\n");
-    Serial.println("Version: 2024.07.26\n");
+    Serial.println("Version: 2024.08.10\n");
     Serial.println("More info on https://github.com/...\n");
     Serial.println("\n");
 
@@ -480,11 +480,6 @@ void setup() {
 
     #if defined(ROBOX_MOTOR)
     motor->init();
-    // motor->set_direction(0, 0);
-    // motor->set_speed(0.3, 0.3);
-    // motor->enable(1);
-
-    // timekeeper = millis() + 5000;
     #endif
 
 
