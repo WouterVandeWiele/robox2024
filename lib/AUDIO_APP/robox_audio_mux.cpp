@@ -125,6 +125,10 @@ void RoboxAudioMux::copy() {
     current_source->mux_copy();
 }
 
+audio_source RoboxAudioMux::get_current_source() {
+    return source_name;
+}
+
 void RoboxAudioMux::volume(float level) {
     if ((source_name != NotSelectedSource) && (is_startup == false)) {
         current_source->volume(level);

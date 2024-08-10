@@ -41,8 +41,6 @@ class RoboxSD: public MuxInterface {
         virtual void audio_next() override;
         virtual void audio_previous() override;
 
-        bool is_sd_inserted();
-
     private:
     bool beat_led;
         const char *startFilePath;

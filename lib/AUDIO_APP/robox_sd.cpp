@@ -133,7 +133,3 @@ void RoboxSD::audio_previous() {
   player.previous();
   audio_play();
 }
-
-bool RoboxSD::is_sd_inserted() {
-  return digitalRead(USD_CARD_DETECT) ? true : false;
-}

@@ -270,6 +270,8 @@ void update_screen() {
     bool maker_toggle = false;
     BatteryState battery_marker = battery_high;
 
+    pinMode(USD_CARD_DETECT, INPUT);
+
     while (true)
     {
         delay(1000);
@@ -278,6 +280,7 @@ void update_screen() {
             continue;
         }
 
+        // battery indicators
         if (xQueueReceive(xQueueBattery, &battery, 0)) {
             battery_marker = battery.state;
 
@@ -288,8 +291,24 @@ void update_screen() {
                 lcd_t->setMarker(GLCD_MARKER_BATTERY, false);
             }
         }
+
         if (battery_marker == battery_verylow) {
             lcd_t->setMarker(GLCD_MARKER_BATTERY, maker_toggle);
+        }
+
+        // SD card detect
+        int sd_detect = digitalRead(USD_CARD_DETECT);
+        // Serial.printf("SD detect %d\n", sd_detect);
+        if (!sd_detect) {
+            lcd_t->setMarker(GLCD_MARKER_ARROW_UP, true);
+        }
+        else {
+            if (mux.get_current_source() == SDSource) {
+                lcd_t->setMarker(GLCD_MARKER_ARROW_UP, maker_toggle);
+            }
+            else {
+                lcd_t->setMarker(GLCD_MARKER_ARROW_UP, false);
+            }
         }
 
         maker_toggle = !maker_toggle;

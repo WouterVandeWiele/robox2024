@@ -56,6 +56,8 @@ class RoboxAudioMux {
 
         String get_title();
 
+        audio_source get_current_source();
+
         // std::mutex meta_mutex;
 
         bool audio_active();
