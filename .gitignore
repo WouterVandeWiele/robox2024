@@ -7,3 +7,4 @@
 lib/WIFI_CREDENTIALS/wifi_credentials.cpp
 support_*
 __pycache__
+*.docx
