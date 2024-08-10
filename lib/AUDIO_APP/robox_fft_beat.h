@@ -18,7 +18,7 @@ void fft_beat_setup(int samplerate = 44100);
 
 void led_clear();
 void led_init();
-
+void allRandom();
 enum LedBreathColors {r_blue, r_red, r_green};
 void led_breath(bool alternate, LedBreathColors color);
 

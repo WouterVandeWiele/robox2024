@@ -60,11 +60,11 @@ static CRGB Wheel(byte WheelPos) {
   }
 }
 
-static CRGB randomColor(){
+static CRGB randomColor() {
   return Wheel(random(256)); 
 }
 
-void allRandom(){
+void allRandom() {
   for(int i=0; i<NUM_LEDS; i++){
     leds[i] = randomColor();
   }
