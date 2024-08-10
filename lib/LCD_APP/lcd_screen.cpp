@@ -18,6 +18,7 @@
 
 extern RoboxAudioMux mux;
 extern RoboxRestartManager restart_manager;
+extern RoboxBattery* battery;
 
 #if defined(ROBOX_WIFI_MANAGER)
 extern WiFiManager wifiManager;
@@ -81,6 +82,9 @@ GEMPage menuPageSwitch(LANG_MENU_SWITCH);
 void dummy() {};
 
 static bool first_update = false;
+
+char* item_ssid;
+
 static uint32_t dummy_counter = 0;
 static GEMItem menuROstart1("", dummy);
 static GEMItem menuROstart2(LANG_RO_RO, dummy);
@@ -89,6 +93,12 @@ static GEMItem menuROssid_value(String("ROBOX").c_str(), dummy);
 static GEMItem menuRObreak1("     ~~~~     ", dummy);
 static GEMItem menuROble_label(LANG_RO_BLE_NAME, dummy);
 static GEMItem menuROble_value(String("ROBOX_bb").c_str(), dummy);
+static GEMItem menuRObreak2("     ~~~~     ", dummy);
+static GEMItem menuROip_label(LANG_RO_IP_ADDRESS, dummy);
+static GEMItem menuROip_value(String("ROBOX_bb").c_str(), dummy);
+static GEMItem menuRObreak3("     ~~~~     ", dummy);
+static GEMItem menuRObattery_voltage_label(LANG_RO_BATTERY_VOLTAGE, dummy);
+static GEMItem menuRObattery_voltage_value(String("ROBOX_bb").c_str(), dummy);
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -169,12 +179,21 @@ void update_screen() {
     // Read only menu
     menuPageSettings.addMenuItem(menuROstart1);
     menuPageSettings.addMenuItem(menuROstart2);
+
     menuPageSettings.addMenuItem(menuROssid_label);
     menuPageSettings.addMenuItem(menuROssid_value);
     menuPageSettings.addMenuItem(menuRObreak1);
+
     menuPageSettings.addMenuItem(menuROble_label);
     menuPageSettings.addMenuItem(menuROble_value);
+    menuPageSettings.addMenuItem(menuRObreak2);
 
+    menuPageSettings.addMenuItem(menuROip_label);
+    menuPageSettings.addMenuItem(menuROip_value);
+    menuPageSettings.addMenuItem(menuRObreak3);
+
+    menuPageSettings.addMenuItem(menuRObattery_voltage_label);
+    menuPageSettings.addMenuItem(menuRObattery_voltage_value);
 
     menu->setMenuPageCurrent(menuPageSettings);
     menu->init();
@@ -209,12 +228,17 @@ void update_screen() {
         // Serial.println("Got button press");
         // menuTestChangeLabel.setTitle("Counter");
 
+        // Serial.printf("- %s\n", menuROssid_value.getTitle().c_str());
+        // Serial.printf("- %s\n", menuROble_value.getTitle().c_str());
+        // Serial.printf("- %s\n", menuROip_value.getTitle().c_str());
+        // Serial.printf("- %s\n", menuRObattery_voltage_value.getTitle().c_str());
+
+        menuROssid_value.setTitle(restart_manager.getDefaultName());
+        menuROble_value.setTitle(restart_manager.getDefaultName());
+        menuROip_value.setTitle(WiFi.localIP().toString());
+        menuRObattery_voltage_value.setTitle( (String((float)battery->battery_voltage()/1000)+"V"));
 
         menu->registerKeyPress(button.button);
-        if (first_update == false) {
-            menuROssid_value.setTitle(restart_manager.getDefaultName().c_str());
-            menuROble_value.setTitle(restart_manager.getDefaultName().c_str());
-        }
     }
 }
 

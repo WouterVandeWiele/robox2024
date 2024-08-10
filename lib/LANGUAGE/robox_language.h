@@ -48,6 +48,8 @@
 
 #define LANG_RO_WIFI_SSID "Wifi Name"
 #define LANG_RO_BLE_NAME "Bluetooth Name"
+#define LANG_RO_IP_ADDRESS "IP Address"
+#define LANG_RO_BATTERY_VOLTAGE "Battery Voltage"
 
 #define LANG_RO_RO "~~Read Only~~~"
 
@@ -76,6 +78,8 @@
 
 #define LANG_RO_WIFI_SSID "Wifi Naam"
 #define LANG_RO_BLE_NAME "Bluetooth Naam"
+#define LANG_RO_IP_ADDRESS "IP Adres"
+#define LANG_RO_BATTERY_VOLTAGE "Batterij Spanning"
 
 #define LANG_RO_RO "~~Enkel Lezen~"
 

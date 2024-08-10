@@ -228,7 +228,7 @@ uint8_t motor_test_program = 0;
 #endif
 
 #if defined(ROBOX_BATTERY)
-static RoboxBattery* battery;
+RoboxBattery* battery;
 #endif
 
 
