@@ -156,9 +156,9 @@
     ImprovWiFi improvSerial(&Serial);
 #endif
 
-#if defined(ROBOX_SERVER)
-    #include "robox_server.h"
-#endif
+// #if defined(ROBOX_SERVER)
+//     #include "robox_server.h"
+// #endif
 
 #if defined(ROBOX_RESTART)
     #include "robox_restart.h"
@@ -488,7 +488,7 @@ void setup() {
     xTaskCreatePinnedToCore(
         audio_task,       //Function to implement the task 
         "audio_task", //Name of the task
-        6000,       //Stack size in words 
+        7000,       //Stack size in words 
         NULL,       //Task input parameter 
         PRIORITY_AUDIO_TASK,          //Priority of the task 
         &AudioCopyTask,       //Task handle.
@@ -507,10 +507,6 @@ void setup() {
             "Robox 2024"                        // device name
         );
     #endif
-    
-
-    // server_setup();
-    // server_start();
 
     restart_manager.setupWifi();
 
