@@ -20,6 +20,9 @@ extern RoboxAudioMux mux;
 extern RoboxRestartManager restart_manager;
 extern RoboxBattery* battery;
 
+extern bool is_ble_connected;
+extern bool is_ble_on;
+
 #if defined(ROBOX_WIFI_MANAGER)
 extern WiFiManager wifiManager;
 #endif
@@ -302,11 +305,12 @@ void update_screen() {
         }
 
         // charge indicator
-        if (!is_charge_stby) {
-            lcd_t->setMarker(GLCD_MARKER_STAR, maker_toggle);
-        }
-        else if (!is_charging) {
+        Serial.printf("is charging %d, is standby: %d\n", is_charging ? 0 : 1, is_charge_stby ? 0 : 1);
+        if (!is_charging) {
             lcd_t->setMarker(GLCD_MARKER_STAR, true);
+        }
+        else if (!is_charge_stby) {
+            lcd_t->setMarker(GLCD_MARKER_STAR, maker_toggle);
         }
         else {
             lcd_t->setMarker(GLCD_MARKER_STAR, false);
@@ -327,7 +331,7 @@ void update_screen() {
             }
         }
 
-        // wifi configured
+        // wifi status indicator
         if (restart_manager.is_wifi_started()) {
             if (restart_manager.is_wifi_initialized()){
                 lcd_t->setMarker(GLCD_MARKER_ARROWS_CROSS, true);
@@ -338,6 +342,21 @@ void update_screen() {
         }
         else {
             lcd_t->setMarker(GLCD_MARKER_ARROWS_CROSS, false);
+        }
+
+        // ble status indicator
+
+        if (is_ble_on) {
+            lcd_t->setMarker(GLCD_MARKER_BARCODE, true);
+        }
+        else {
+            lcd_t->setMarker(GLCD_MARKER_BARCODE, false);
+        }
+        if (is_ble_connected) {
+            lcd_t->setMarker(GLCD_MARKER_BARCODE_CROSS, true);
+        }
+        else {
+            lcd_t->setMarker(GLCD_MARKER_BARCODE_CROSS, false);
         }
 
         maker_toggle = !maker_toggle;
