@@ -9,10 +9,14 @@
 #include "robox_fft_beat.h"
 #include "robox_restart.h"
 #include "lcd_screen.h"
+#include "robox_fft_beat.h"
 
 extern RoboxAudioMux mux;
 extern RoboxRestartManager restart_manager;
 static esp_avrc_playback_stat_t playback_status;
+
+bool is_ble_connected = false;
+bool is_ble_on = false;
 // extern AudioRealFFT fft;
 
 // audio stream + LED beat detection
@@ -64,7 +68,22 @@ void avrc_metadata_callback(uint8_t id, const uint8_t *text) {
     default:
         break;
     }
+}
 
+// callback used by A2DP to provide the sound data
+void avrc_connection_state_callback(bool state) {
+    // Serial.printf("callback connection state: %d\n", state ? 1 : 0);
+    is_ble_connected = state;
+    if (state == true) {
+        // links together with led_bread effect in main loop
+        led_clear();
+    }
+}
+
+void avrc_rn_volumechange(int level) {
+    Serial.printf("ble volume: %ld\n", level);
+    mux._volume_number((float) level/100); // scale int level
+    lcd_invalidate(INVALIDATE_ALL);
 }
 
 void RoboxBluetooth::mux_start() {
@@ -90,6 +109,8 @@ void RoboxBluetooth::mux_start() {
 
     playback_status = ESP_AVRC_PLAYBACK_ERROR;
     a2dp_sink.set_avrc_rn_playstatus_callback(avrc_rn_playstatus_callback);
+    a2dp_sink.set_avrc_connection_state_callback(avrc_connection_state_callback);
+    a2dp_sink.set_avrc_rn_volumechange(avrc_rn_volumechange);
 
 
     if (beat_led) {
@@ -108,6 +129,8 @@ void RoboxBluetooth::mux_start() {
 
     ESP_LOGI(LOG_BLE_TAG, "start sink");
     a2dp_sink.start(ssid.c_str());
+
+    is_ble_on = true;
 
 
     i2s_setup();

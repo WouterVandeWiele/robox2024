@@ -64,6 +64,8 @@
 
 #if defined(ROBOX_FULL)
     #include "robox_audio_mux.h"
+    extern bool is_ble_connected;
+    extern bool is_ble_on;
 
 #elif defined(ROBOX_COMPONENT_BLE)
     #include "robox_ble.h"
@@ -321,8 +323,8 @@ void setup() {
     Serial.println("R::::::R     R:::::R   OO:::::::::OO   B::::::::::::::::B     OO:::::::::OO   X:::::X       X:::::X");
     Serial.println("RRRRRRRR     RRRRRRR     OOOOOOOOO     BBBBBBBBBBBBBBBBB        OOOOOOOOO     XXXXXXX       XXXXXXX");
     Serial.println("\n");
-    Serial.println("Version: 2024.08.10\n");
-    Serial.println("More info on https://github.com/...\n");
+    Serial.println("Version: 2024.08.11\n");
+    Serial.println("More info on https://woutervandewiele.github.io/robox2024/\n");
     Serial.println("\n");
 
     // setup logging
@@ -649,4 +651,13 @@ void loop() {
     // #if defined(ROBOX_WIFI_MANAGER)
     // doWiFiManager();
     // #endif
+    if (mux.get_current_source() == BleSource) {
+        if (is_ble_on == false) {
+            led_breath(true, r_blue);
+        }
+        else if ((is_ble_on = true) && (is_ble_connected == false)) {
+            led_breath(false, r_blue);
+        }
+    }
+    
 }

@@ -129,6 +129,10 @@ audio_source RoboxAudioMux::get_current_source() {
     return source_name;
 }
 
+void RoboxAudioMux::_volume_number(float level) {
+    volume_level = level;
+}
+
 void RoboxAudioMux::volume(float level) {
     if ((source_name != NotSelectedSource) && (is_startup == false)) {
         current_source->volume(level);
