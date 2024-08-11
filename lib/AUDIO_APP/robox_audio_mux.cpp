@@ -43,6 +43,7 @@ void RoboxAudioMux::switch_to(audio_source new_mux_source) {
 
     if (source_name != new_mux_source) {
         current_source->mux_stop();
+        digitalWrite(I2S_PIN_MUTE, LOW);
         delay(100);
         restart_manager.reboot_next_source(new_mux_source);
     }

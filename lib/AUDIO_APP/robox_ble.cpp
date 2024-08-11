@@ -146,13 +146,15 @@ BLE Audio MUX controls
 
 void RoboxBluetooth::mux_stop() {
     ESP_LOGI(LOG_BLE_TAG, "<<< BLE stopping");
-    a2dp_sink.set_volume(0);
-    a2dp_sink.stop();
-    a2dp_sink.end(true);
+    // a2dp_sink.set_volume(0);
+    // a2dp_sink.
+    // delay(1000);
+    // a2dp_sink.stop();
+    // a2dp_sink.end(true);
 
-    i2s_driver_uninstall((i2s_port_t)0);
+    // i2s_driver_uninstall((i2s_port_t)0);
 
-    btStop();
+    // btStop();
 
     ESP_LOGI(LOG_BLE_TAG, "<<< BLE stopped");
 }

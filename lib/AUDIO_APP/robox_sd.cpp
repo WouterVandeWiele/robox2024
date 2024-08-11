@@ -89,11 +89,13 @@ void RoboxSD::mux_start() {
 
 void RoboxSD::mux_stop() {
   // player.setVolume(0);
-  player.stop();
-  delay(1000);
-  player.end();
+  // player.stop();
+  // player.writeSilence(10000);
+  // player.setVolume(0);
+  // delay(1000);
+  // player.end();
 
-  i2s_driver_uninstall((i2s_port_t)0);
+  // i2s_driver_uninstall((i2s_port_t)0);
 }
 
 void RoboxSD::mux_copy() {

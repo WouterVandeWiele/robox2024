@@ -101,16 +101,17 @@ void RoboxWebRadio::mux_start() {
 
 void RoboxWebRadio::mux_stop() {
     // player.setVolume(0);
-    player.stop();
+    // player.stop();
+    // player.setVolume(0);
     // player.writeSilence(10000);
-    delay(1000);
-    player.end();
+    // delay(1000);
+    // player.end();
 
     // i2s.end();
     // urlStream.end();
     // web_multi_output.end();
     // web_decoder.end();
-    i2s_driver_uninstall((i2s_port_t)0);
+    // i2s_driver_uninstall((i2s_port_t)0);
 }
 
 void RoboxWebRadio::mux_copy() {
