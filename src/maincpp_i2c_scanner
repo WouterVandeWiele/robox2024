@@ -1,0 +1,31 @@
+#include <Arduino.h>
+
+#include "robox_i2c_scanner.h"
+
+void setup() {
+    Serial.begin(115200);
+    scanner_setup();
+}
+
+uint8_t read_io(uint8_t address) {
+    Wire.beginTransmission(0x20);
+    Wire.write(address);
+    Wire.endTransmission(false);
+
+
+    Wire.requestFrom(0x20, 1);
+    uint8_t data = Wire.read();
+    Wire.endTransmission(true);
+    return data;
+}
+
+void loop() {
+    scanner_loop();
+
+    Serial.printf("input   %2x %2x\n", read_io(0), read_io(1) );
+    Serial.printf("output  %2x %2x\n", read_io(2), read_io(3) );
+    Serial.printf("pol inv %2x %2x\n", read_io(4), read_io(5) );
+    Serial.printf("cfg out %2x %2x\n", read_io(6), read_io(7) );
+
+    delay(10000);
+}
