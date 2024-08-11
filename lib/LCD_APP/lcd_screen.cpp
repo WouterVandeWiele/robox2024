@@ -306,11 +306,11 @@ void update_screen() {
 
         // charge indicator
         Serial.printf("is charging %d, is standby: %d\n", is_charging ? 0 : 1, is_charge_stby ? 0 : 1);
-        if (!is_charging) {
-            lcd_t->setMarker(GLCD_MARKER_STAR, true);
-        }
-        else if (!is_charge_stby) {
+        if (!is_charging && !is_charge_stby) {
             lcd_t->setMarker(GLCD_MARKER_STAR, maker_toggle);
+        }
+        else if (is_charging && !is_charge_stby) {
+            lcd_t->setMarker(GLCD_MARKER_STAR, true);
         }
         else {
             lcd_t->setMarker(GLCD_MARKER_STAR, false);
