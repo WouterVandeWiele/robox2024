@@ -106,7 +106,7 @@ Be sure you are not using GPIO2 and GPIO25 when using the DA module.
 https://esp32.jgarrettcorbin.com/
 https://atctwo.net/projects/esp32-partition-editor/
 
-## burn pip install reedsolo
+## burn set_flash_voltage
 
 ```shell
 pip install cryptography
