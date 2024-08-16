@@ -129,8 +129,10 @@ bool RoboxWebRadio::audio_active() {
 void RoboxWebRadio::audio_play() {
     is_audio_paused = false;
     digitalWrite(I2S_PIN_MUTE, HIGH);
-    delay(300);
-    player.play();
+
+    // delay(300);
+    // player.play();
+    restart_manager.reboot_next_source(WebRadioSource);
 }
 
 void RoboxWebRadio::audio_pause() {
@@ -142,14 +144,29 @@ void RoboxWebRadio::audio_pause() {
 
 void RoboxWebRadio::audio_next() {
   audio_pause();
-  player.next();
-  audio_play();
+  // player.next();
+  // audio_play();
+  uint8_t ni = restart_manager.get_webplayer_startup_index() + 1;
+
+  if (ni >= urls.size()) {
+    ni = 0;
+  }
+  restart_manager.set_webplayer_startup_index(ni);
+  restart_manager.reboot_next_source(WebRadioSource);
+
 }
 
 void RoboxWebRadio::audio_previous() {
   audio_pause();
-  player.previous();
-  audio_play();
+  // player.previous();
+  // audio_play();
+  uint8_t ni = restart_manager.get_webplayer_startup_index() - 1;
+
+  if (ni >= urls.size()) {
+    ni = urls.size() - 1;
+  }
+  restart_manager.set_webplayer_startup_index(ni);
+  restart_manager.reboot_next_source(WebRadioSource);
 }
 
 void RoboxWebRadio::change_station(std::string station_name) {

@@ -11,6 +11,8 @@ class RoboxRestartManager {
 
         void reboot_next_source(audio_source source);
         audio_source get_startup_source();
+        uint8_t get_webplayer_startup_index();
+        void set_webplayer_startup_index(uint8_t index);
 
         void set_led_motor(LedMotorEnum lm);
         LedMotorEnum get_led_motor();

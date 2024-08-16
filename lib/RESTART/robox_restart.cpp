@@ -13,6 +13,8 @@
 static RTC_NOINIT_ATTR uint32_t _reboot_counter;
 static RTC_NOINIT_ATTR uint8_t _audio_source;
 static RTC_NOINIT_ATTR uint8_t _led_motor;
+static RTC_NOINIT_ATTR uint8_t _web_index;
+
 
 static WiFiManager wifiManager;
 extern RoboxAudioMux mux;
@@ -50,6 +52,7 @@ RoboxRestartManager::RoboxRestartManager()
         _reboot_counter = 0;
         _audio_source = NotSelectedSource;
         _led_motor = lm_none;
+        _web_index = 0;
         cold_boot = true;
     }
     else {
@@ -69,6 +72,15 @@ bool RoboxRestartManager::is_cold_boot() {
 audio_source RoboxRestartManager::get_startup_source() {
     return (audio_source) _audio_source;
 }
+
+uint8_t RoboxRestartManager::get_webplayer_startup_index() {
+    return _web_index;
+}
+
+void RoboxRestartManager::set_webplayer_startup_index(uint8_t index) {
+    _web_index = index;
+}
+
 
 void RoboxRestartManager::reboot_next_source(audio_source source) {
     _audio_source = (uint8_t) source;
@@ -130,6 +142,8 @@ void RoboxRestartManager::setupWifiOnDemand() {
     #if defined(DEBUG_RESET_WIFI_CREDENTIALS_AT_START)
     wifiManager.resetSettings();
     #endif
+    // wifiManager.setConnectTimeout(20);
+    // wifiManager.setConnectRetries(100);
     // wifiManager.setDebugOutput(true, WM_DEBUG_MAX);
     // wifiManager.setConfigPortalBlocking(false);
     boolean result = wifiManager.autoConnect(ssid.c_str(), NULL); // empty password

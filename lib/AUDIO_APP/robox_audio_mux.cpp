@@ -23,6 +23,15 @@ bool is_audio_paused = false;
 // static bool is_startup = true;
 std::mutex meta_data_mtx;
 
+static const std::vector<String> _urls {
+    "http://icecast.vrtcdn.be/mnm_hits-high.mp3",
+    "http://icecast.vrtcdn.be/mnm-high.mp3",
+    "http://icecast.vrtcdn.be/radio1-high.mp3",
+    "http://icecast.vrtcdn.be/ra2ant-high.mp3",
+    "http://icecast.vrtcdn.be/stubru-high.mp3",
+    // "http://streams.radio.dpgmedia.cloud/redirect/qmusic_be/mp3"
+};
+
 void RoboxAudioMux::setup() {
     ESP_LOGI(LOG_MUX_TAG, ">>> Audio Mux starting...");
     pinMode(I2S_PIN_MUTE, OUTPUT);
@@ -63,6 +72,7 @@ void RoboxAudioMux::switch_startup() {
 
     meta.title = "";
     String display_text = "";
+    uint8_t source_pos = restart_manager.get_webplayer_startup_index();
 
     switch (source_name)
     {
@@ -80,7 +90,8 @@ void RoboxAudioMux::switch_startup() {
         break;
 
     case WebRadioSource:
-        current_source.reset(new RoboxWebRadio(true, volume_level));
+        Serial.printf("webradio source: %d\n", source_pos);
+        current_source.reset(new RoboxWebRadio(true, volume_level, _urls, source_pos));
         current_source->mux_start();
         break;
 

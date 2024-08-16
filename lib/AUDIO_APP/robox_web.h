@@ -17,32 +17,33 @@
 //     "http://icecast.vrtcdn.be/mnm_hits-high.mp3"
 // };
 
-static const char *urls[] = {
-    "http://icecast.vrtcdn.be/mnm_hits-high.mp3",
-    "http://icecast.vrtcdn.be/mnm-high.mp3",
-    "http://icecast.vrtcdn.be/radio1-high.mp3",
-    "http://icecast.vrtcdn.be/ra2ant-high.mp3",
-    "http://icecast.vrtcdn.be/stubru-high.mp3",
-    // "http://streams.radio.dpgmedia.cloud/redirect/qmusic_be/mp3"
-};
-
 /*
 Web radio Audio MUX controls
 */
 
 class RoboxWebRadio: public MuxInterface {
     public:
-        RoboxWebRadio(bool beat_led, float &volume_level)
+        RoboxWebRadio(bool beat_led, float &volume_level, const std::vector<String> &urls, uint8_t pos)
             : MuxInterface(volume_level)
             , beat_led(beat_led)
+            , pos(pos)
+            , urls(urls)
             // , i2s(I2S_PIN_MUTE)
             // , urlStream(wifi_ssid, wifi_password)
             , urlStream()
-            , source(urlStream, urls, "audio/mp3")
+            , source(urlStream, "audio/mp3")
             , multi_output(i2s)
             , decoder()
             , player(source, multi_output, decoder) 
-        {};
+        
+        {
+            source.addURL(urls.at(pos).c_str());
+            // for (auto url : urls)
+            // {
+            //     source.addURL(url.c_str());
+            // }
+            // source.setIndex(pos);
+        };
 
         /*
         Web Radio Audio MUX controls
@@ -66,9 +67,11 @@ class RoboxWebRadio: public MuxInterface {
     private:
         bool beat_led;
         // I2SStream i2s;
+        uint8_t pos;
+        const std::vector<String> &urls;
 
         ICYStream urlStream;
-        AudioSourceURL source;
+        AudioSourceDynamicURL source;
         MultiOutput multi_output;
         MP3DecoderHelix decoder;
         AudioPlayer player;
