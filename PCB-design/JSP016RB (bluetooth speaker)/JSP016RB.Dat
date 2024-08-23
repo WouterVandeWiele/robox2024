@@ -1,0 +1,32 @@
+﻿Field=#~Integer~#~50|Field=manufacturer~String~manufacturer~100|Field=Description~String~Description~100|Field=Designator~String~Designator~100|Field=LibRef~String~LibRef~100|Field=Quantity~Integer~Quantity~100|Field=supplier_1~String~supplier_1~100|Field=supplier_1_partnumber~String~supplier_1_partnumber~235|ReportField=Currency~<none>|ReportField=ProductionQuantity~1|ReportField=ProjectFileName~JSP014RC.PrjPCB|ReportField=ProjectFullPath~C:\Users\janst\Nextcloud\Thuis\Projecten\Fri3d\2022 Bluetooth Speaker\JSP014RC (bluetooth speaker)\JSP014RC.PrjPCB|ReportField=Title~Bill of Materials For Project [JSP014RC.PrjPCB] (No PCB Document Selected)|ReportField=ReportTime~0:20:03|ReportField=ReportDate~2/08/2022|ReportField=ReportDateTime~2/08/2022 0:20:03|ReportField=OutputName~Bill of Materials|ReportField=OutputType~BOM_PartType|ReportField=GeneratorName~BOM|ReportField=GeneratorDescription~Bill of Materials|ReportField=VariantName~None|ReportField=TotalQuantity~72|ReportField=TotalActualPrice~0|ReportField=TotalTargetPrice~0|ReportField=VersionControl_RevNumber~|ReportField=VersionControl_ProjFolderRevNumber~|ReportField=Address1~|ReportField=Address2~|ReportField=Address3~|ReportField=Address4~|ReportField=Application_BuildNumber~|ReportField=ApprovedBy~|ReportField=Author~|ReportField=CheckedBy~|ReportField=CompanyName~|ReportField=CurrentDate~1/08/2022|ReportField=CurrentTime~23:53:09|ReportField=Date~|ReportField=DocumentFullPathAndName~C:\Users\janst\Nextcloud\Thuis\Projecten\Fri3d\2022 Bluetooth Speaker\JSP014RC (bluetooth speaker)\AUDIO.SchDoc|ReportField=DocumentName~AUDIO.SchDoc|ReportField=DocumentNumber~|ReportField=DrawnBy~|ReportField=Engineer~|ReportField=ImagePath~|ReportField=ModifiedDate~20/07/2022|ReportField=Organization~|ReportField=ProjectName~JSP014RC.PrjPCB|ReportField=Revision~|ReportField=Rule~|ReportField=SheetNumber~|ReportField=SheetTotal~|ReportField=Time~|ReportField=Title~|ReportField=DataSourceFileName~JSP014RC.PrjPCB|ReportField=DataSourceFullPath~C:\Users\janst\Nextcloud\Thuis\Projecten\Fri3d\2022 Bluetooth Speaker\JSP014RC (bluetooth speaker)\JSP014RC.PrjPCB|ReportField=PCBDataSourceFileName~JSP014RC.PcbDoc|ReportField=PCBDataSourceFullPath~C:\Users\janst\Nextcloud\Thuis\Projecten\Fri3d\2022 Bluetooth Speaker\JSP014RC (bluetooth speaker)\JSP014RC.PcbDoc|ReportField=PCBConfigurationName~Sources|ReportField=Item~|ReportField=ItemRevision~|ReportField=ItemAndRevision~|ReportField=ItemRevisionBase~|ReportField=ItemRevisionLevel1~|ReportField=ItemRevisionLevel2~|ReportField=ItemRevisionLevel1AndBase~|ReportField=ItemRevisionLevel2AndLevel1~
+1|AISHI(Aihua Group)|CAP ALUM 470UF 20% 10V TH|C5|2|1|lcsc|C2924460
+2|WMEC|CAP CER TH 100nF X7R 50V|C9, C11, C13, C14|38|4|lcsc|C2905888
+3|HUASHUO|MOSFET P-CH 60V 17A TO-220AB|Q1|12|1|lcsc|C2903571
+4|VO|RES TH 56 OHM 5% 1/8W|R14, R15, R17, R18|61|4|lcsc|C2896859
+5|VO|RES TH 56k OHM 5% 1/4W|R2|54|1|lcsc|C2896856
+6|VO|RES TH 330 OHM 5% 1/4W|R26|58|1|lcsc|C2894590
+7|VO|RES TH 1k OHM 5% 1/4W|R23, R27|57|2|lcsc|C2894570
+8|VO|RES TH 33k OHM 5% 1/4W|R3|53|1|lcsc|C2894551
+9|VO|RES TH 10k OHM 5% 1/4W|R4, R5, R7|52|3|lcsc|C2894537
+10|VO|RES TH 100k OHM 5% 1/4W|R1, R8, R9, R10, R11, R12, R13, R21, R22, R25, R28, R29, R30, R31|56|14|lcsc|C2894520
+11|Yunxing|CAP ALUM 10UF 20% 25V TH|C1, C20, C21|4|3|lcsc|C2841587
+12|TOGIALED|LED (RGB)|D1, D2|5|2|lcsc|C2837020
+13|TECH PUBLIC|IC  MOSFET Array 3A|IC7|60|1|lcsc|C2830320
+14|G-Switch|USB TYPE C , RECEPTACLE, R/A|J4|30|1|lcsc|C2762981
+15|Dersonic|CAP CER TH 0.47µF X7R 50V|C2, C3, C4, C8, C10, C18, C19|36|7|lcsc|C2761753
+16|Huaxing Mechanical-Elec.|RES TH 110 OHM 1% 1/8W|R16, R19|60|2|lcsc|C713899
+17|FH|CAP CER TH 100nF X7R 50V|C7, C12, C15, C16, C17, C22, C23|37|7|lcsc|C385200
+18|Nanjing Shiheng Elec|THERMISTOR NTC 10KOHM 3435K BEAD|R24|4|1|lcsc|C123389
+19|AISHI(Aihua Group)|CAP ALUM 1000UF 20% 10V TH|C6|3|1|lcsc|C105310
+20|UNI-ROYAL(Uniroyal Elec)|RES TH 4k12 OHM 1% 1/4W|R20|64|1|lcsc|C58603
+21|Diodes Incorporated|3W x 2 RL=4Ω 2.5V ~ 5.5V (stereo) Class D SOIC-16 Audio Power OpAmps|IC2|54|1|lcsc|C17337
+22|Fortune Semicon|IC  Battery Management IC|IC6|59|1|lcsc|C14213
+23|Changjiang Electronics Tech (CJ)|MOSFET N-CH 60V 0.2A TO-92|Q2, Q3|13|2|lcsc|C9114
+24|GTIWUNG|18650 single cell Battery holder|BAT1|12|1|amazon|B08CY56M98
+25|JST Sales America Inc.|CONN HEADER VERT 4POS 2MM|J3|32|1|digikey|B4B-PH-K(LF)(SN)-ND
+26|Microchip Technology|IC MCU 8BIT 4KB FLASH 20DIP|IC3|56|1|digikey|ATTINY461A-PU-ND, 2057-ICS-320-T-ND
+27|TE Connectivity AMP Connectors|CA 200MM 08 POS. MOW-PB M-M VALU|J1|31|1|digikey|A123436-ND
+28||M18 Bluetooth 4.2 Audio-receiver Module Lossless|IC1|55|1|banggood|1527332
+29|TT Electronics/BI|POT 10K OHM 1/20W PLASTIC LINEAR|R6|3|1|digikey|987-1296-ND
+30|Vishay Beyschlag/Draloric/BC Components|FUSE BOARD MOUNT 4A 32VDC 0603|F1|8|1|digikey|749-MFU0603FF04000P500CT-ND
+31||[NoValue], 'CONN 2 PIN SOLDER PADS, CONN 6 PIN SOLDER PADS FOR ISP|IC5, J2, J5|TP4056, 18, 35|3||

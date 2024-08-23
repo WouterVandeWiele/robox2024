@@ -1,0 +1,3 @@
+Layer Pairs Export File for PCB: C:\Users\janst\Nextcloud\Thuis\Projecten\Fri3d\2024 Bluetooth Speaker\PCB design\JSP016RB (bluetooth speaker)\JSP016RB.PcbDoc
+LayersSetName=Top_Bot_Thru_Holes|DrillFile=jsp016rb-roundholes.txt|DrillLayers=gtl,gbl
+LayersSetName=Top_Bot_Slot_Holes|DrillFile=jsp016rb-slotholes.txt|DrillLayers=gtl,gbl

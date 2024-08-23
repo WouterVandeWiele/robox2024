@@ -1,0 +1,10 @@
+Output: Generates pick and place files
+Type  : Pick Place
+From  : Variant [Variant of JSP016RB] of PCB Document [JSP016RB.PcbDoc]
+   Generated File[Pick Place for JSP016RB(Variant of JSP016RB).txt]
+
+
+Files Generated   : 1
+Documents Printed : 0
+
+Finished Output Generation At 1:31:46 On 12/07/2024
