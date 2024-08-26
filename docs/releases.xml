@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+
+<channel>
+  <title>Robox release RSS feed</title>
+  <link>https://woutervandewiele.github.io/robox2024/release.xml</link>
+  <description>This RSS feed is about Robox releases</description>
+  
+  <item>
+    <title>Fri3d Camp f1.0.1/v1.0.1</title>
+    <link>https://github.com/WouterVandeWiele/robox2024/tree/f1.0.1</link>
+    <description>First release for the speakers built at Fri3d Camp.</description>
+  </item>
+  
+  <item>
+    <title>Fri3d Camp f1.0.2/v1.0.2</title>
+    <link>https://github.com/WouterVandeWiele/robox2024/tree/f1.0.2</link>
+    <description>An update for the speakers. Allows adding, removing and editing of the web players radio station URL's. Can also check for new software releases and notify the user.</description>
+  </item>
+</channel>
+
+</rss>
