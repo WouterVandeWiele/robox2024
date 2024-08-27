@@ -98,18 +98,18 @@
       // needs an input element like this:
       //   <input type="file" onchange="simpleRssFeedPreview.onFileLoad()"/>
       // you may delete this function before deploying the script to your website
-      this.onFileLoad = function() {
-        const [file] = document.querySelector('input[type=file]').files;
-        const reader = new FileReader();
+      // this.onFileLoad = function() {
+      //   const [file] = document.querySelector('input[type=file]').files;
+      //   const reader = new FileReader();
   
-        reader.addEventListener("load", () => {
-          createHtmlPreviewForRssFeed(reader.result);
-        }, false);
+      //   reader.addEventListener("load", () => {
+      //     createHtmlPreviewForRssFeed(reader.result);
+      //   }, false);
   
-        if (file) {
-          reader.readAsText(file);
-        }
-      }
+      //   if (file) {
+      //     reader.readAsText(file);
+      //   }
+      // }
   
       this.getRssByRequest = function() {
         // inspired by: https://javascript.info/xmlhttprequest
