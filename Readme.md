@@ -7,7 +7,7 @@ English version below.
 Welkom bij het Robox 2024 (v2) project. Hier vind je alle informatie omtrent dit project. Voor de aanloop van FRI3D hebben we al wat basisinformatie gepubliceerd om je wegwijs te maken met de radio. In de weken na het kamp gaan we nog wat updates toevoegen om de functionaliteit van Robox v2 te verbeteren en uit te breiden. Dus hou deze website in het oog. Er zal dan uitgelegd worden hoe je zelf de udpate kan uitvoeren. Om deze website terug te vinden volstaat het om de QR-code op de achterkant van de radio te scannen.
 
 - status update: de eerste update is bijna klaar en zal binnenkort vrijgegeven worden. Binnenkort geven we hierover meer details. We gaan ook de documentatie op deze site uitbreiden en trachten in het nederlands en engels aan te bieden.
-- Er zijn nog 4 kits beschikbaar en deze kunnen geassembleerd worden tijdens een coderdojo workshop in westerlo (14/09) best om rechtstreeks contact op te nemen met de coderdojo van westerlo (per mail) om een plaatsje te reserveren.
+- **Er zijn nog 4 kits beschikbaar** en deze kunnen geassembleerd worden tijdens een **coderdojo workshop in westerlo (14/09)** best om rechtstreeks contact op te nemen met de coderdojo van westerlo (per mail) om een plaatsje te reserveren.
 - Voor degenen die het project nog verder willen steunen of een bijdrage willen leveren mogen een donatie doen via https://buymeacoffee.com/erowin
 - Heb je vragen over het project kan je via github een issue openen of ons contacteren via discord in deze server: https://discord.gg/HG2vBjpU9c (vragen naar @erowin of @wally)
 
