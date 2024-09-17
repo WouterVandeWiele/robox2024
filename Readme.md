@@ -1,13 +1,26 @@
-# Robox 2024 (update is nearly there)
+# Robox 2024 (Release scheduled for 2024/10/)
 
 ![image](https://github.com/user-attachments/assets/fac3a691-4a6e-4169-82d3-f7d4ebb7cdb1)
+
+### status updates
+- update 17/09/2024 ==> We had some issues while testing the update, but we are slowly ironing out most of these issues. The update will contain: possibility of adding radio stations, receiving notifications for new updates
+- update 27/08/2024 ==> We are working on the update.
+
+### planned software updates
+- possibility of adding radio stations
+- receiving update notifications
+- remembering what audio source was used last
+- adjusting motor speed in the settings menu
+
+### planned mechanical updates
+- 3D-printable or foldable glasses (in front of the speakers)
+- Replacing wheels with other fun gadgets (e.g. waving hands)
 
 English version below.
 
 Welkom bij het Robox 2024 (v2) project. Hier vind je alle informatie omtrent dit project. Voor de aanloop van FRI3D hebben we al wat basisinformatie gepubliceerd om je wegwijs te maken met de radio. In de weken na het kamp gaan we nog wat updates toevoegen om de functionaliteit van Robox v2 te verbeteren en uit te breiden. Dus hou deze website in het oog. Er zal dan uitgelegd worden hoe je zelf de udpate kan uitvoeren. Om deze website terug te vinden volstaat het om de QR-code op de achterkant van de radio te scannen.
 
 - status update: de eerste update is bijna klaar en zal binnenkort vrijgegeven worden. Binnenkort geven we hierover meer details. We gaan ook de documentatie op deze site uitbreiden en trachten in het nederlands en engels aan te bieden.
-- **Er zijn nog 4 kits beschikbaar** en deze kunnen geassembleerd worden tijdens een **coderdojo workshop in westerlo (14/09)** best om rechtstreeks contact op te nemen met de coderdojo van westerlo (per mail) om een plaatsje te reserveren.
 - Voor degenen die het project nog verder willen steunen of een bijdrage willen leveren mogen een donatie doen via https://buymeacoffee.com/erowin
 - Heb je vragen over het project kan je via github een issue openen of ons contacteren via discord in deze server: https://discord.gg/HG2vBjpU9c (vragen naar @erowin of @wally)
 
