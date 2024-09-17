@@ -1,4 +1,4 @@
-# Robox 2024 (Release scheduled for 2024/10/)
+# Robox 2024 (Release of new update scheduled for 2024/10/01)
 
 ![image](https://github.com/user-attachments/assets/fac3a691-4a6e-4169-82d3-f7d4ebb7cdb1)
 
