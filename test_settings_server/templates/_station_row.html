@@ -1,0 +1,27 @@
+<!-- {% macro delete_button(id) -%}
+    <button class="contrast"
+            hx-delete="/station_list?id={{ id }}"
+            hx-target="#station_table"
+            hx-swap="innerHTML"
+            hx-trigger="edit"
+            onClick="let editing = document.querySelector('.editing')
+            if(editing) {
+                document.getElementById('edit_warning').setAttribute('open', '')
+            } else {
+                document.getElementById('delete_warning').setAttribute('open', '');
+                document.getElementById('delete_button').setAttribute('hx-vals', 'js:{id: {{id}}}');
+            }
+            ">Delete</button>
+{%- endmacro -%}
+{% macro edit_button(id) -%}
+<button class="btn danger"
+        hx-get="/url_edit?id={{ id }}"
+        hx-trigger="edit"
+        onClick="let editing = document.querySelector('.editing')
+        if(editing) {
+            document.getElementById('edit_warning').setAttribute('open', '')
+        } else {
+        htmx.trigger(this, 'edit')
+        }">Edit</button>
+{%- endmacro -%}
+<tr><td>{{ count }}</td><td>{{item}}</td><td>{{ delete_button(count) }} {{ edit_button(count) }}</td></tr> -->

@@ -1,0 +1,12 @@
+<tr class='editing'>
+    <td>{{ id }}</td>
+    <td><input name='url' value="{{ url }}"></td>
+    <td>
+        <button hx-get="/station_list" hx-target="#station_table">
+            Cancel
+        </button>
+        <button hx-put="/station_list?id={{ id }}" hx-include="closest tr">
+            Save
+        </button>
+    </td>
+</tr>
