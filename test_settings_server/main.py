@@ -33,25 +33,27 @@ def station_list_html(request: Request):
 
 
 @app.delete("/station_list")
-def delete_station(request: Request, id: int):
+def delete_station(request: Request, response: Response, id: int):
     _station_list.pop(id-1)
-    return templates.TemplateResponse(
-            request=request,
-            name="station_list.html",
-            context={"url_list": _station_list},
-            headers={"HX-Location": '{"path":"/station_list", "target":"#station_table"}'}
-        )
+    response.headers["HX-Location"] = '{"path":"/station_list", "target":"#station_table"}'
+    # return templates.TemplateResponse(
+    #         request=request,
+    #         name="station_list.html",
+    #         context={"url_list": _station_list},
+    #         headers={"HX-Location": '{"path":"/station_list", "target":"#station_table"}'}
+    #     )
 
 
 @app.post("/station_list")
-def add_station(request: Request, url: Annotated[str, Form()]):
+def add_station(request: Request, response: Response, url: Annotated[str, Form()]):
     _station_list.append(url)
-    return templates.TemplateResponse(
-            request=request,
-            name="station_list.html",
-            context={"url_list": _station_list},
-            headers={"HX-Location": '{"path":"/station_list", "target":"#station_table"}'}
-        )
+    response.headers["HX-Location"] = '{"path":"/station_list", "target":"#station_table"}'
+    # return templates.TemplateResponse(
+    #         request=request,
+    #         name="station_list.html",
+    #         context={"url_list": _station_list},
+    #         headers={"HX-Location": '{"path":"/station_list", "target":"#station_table"}'}
+    #     )
 
 
 @app.put("/station_list")
