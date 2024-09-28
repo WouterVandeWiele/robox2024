@@ -10,7 +10,6 @@ const char static_root_html[] PROGMEM = u8R"x(
     <meta name="theme-color" content="#2a3140">
     <link rel="stylesheet" href="static?r=pico">
     <script src="static?r=htmx"></script>
-
 </head>
 <body>
   <header class="container">
@@ -19,6 +18,9 @@ const char static_root_html[] PROGMEM = u8R"x(
         <a aria-label="Pico CSS homepage" data-discover="true" href="/">
             <img src="/static/robox-logo2.svg" alt="Logo" style="width:100%; max-width:200px;">
         </a>
+        <h1>
+            <mark style="background: linear-gradient(to right, #d78dd2, #b999ee, #9da5e9, #8fa9f0); -webkit-background-clip: text; background-clip: text; color: transparent;">Configure Settings</mark>
+        </h1>
         <li>
           <details class="dropdown">
             <summary role="button" class="secondary">Theme</summary>
@@ -33,50 +35,54 @@ const char static_root_html[] PROGMEM = u8R"x(
     </div>
   </header>
   <main class="container">
-    <section class="examples-hero">
-        <h1>
-            <mark style="background: linear-gradient(to right, #d78dd2, #b999ee, #9da5e9, #8fa9f0); -webkit-background-clip: text; background-clip: text; color: transparent;">Configure Settings</mark>
-        </h1>
-        <p class="secondary">Minimalist templates to discover Pico in action.</p>
-    </section>
     <section class="example-list">
     
-        <article>
-            <h2>Preview</h2>
-            <p>A pure HTML example, without dependencies.</p>
-        </article>
-        <article aria-busy="true"></article>
-    
-        <article>
+        <article id="station_article">
             <h2>Station list</h2>
             <div class="overflow-auto">
-            <div id="station_table" hx-get="station_list" hx-trigger="load" hx-swap="innerHTML"></div>
+            <div hx-get="station_list" hx-trigger="load" hx-swap="innerHTML"></div>
             </div>
-
-            <div role="group">
-
-            <input type="text" name="url" placeholder="Add URL" />
-
-            <button hx-post="station_list" hx-include="[name='url']" hx-target="#station_table" hx-swap="innerHTML">
-                Add
-            </button>
-
-            </div>
-
-            <form role="group" hx-post="station_list_edit" hx-target="#station_table" hx-swap="innerHTML">
-
-            <input type="text" name="url_edit" placeholder="Edit URL">
-            <input type="text" name="url_id" placeholder="Edit ID">
-
-            <button>Edit</button>
-
-            </form>
-
         </article>
 
+        <div role="group">
+          <input type="text" name="url" placeholder="Add URL" />
+          <button hx-post="station_list" hx-include="[name='url']" hx-target="#station_article">
+              Add
+          </button>
+        </div>
+
+        <!-- confirm modals -->
+      
+        <dialog id="edit_warning">
+          <article>
+            <h2>Already Editing</h2>
+            <p>
+              Hey you are already editing a row! Please cancel or save the current edit first.
+            </p>
+            <footer>
+              <button onClick="document.getElementById('edit_warning').removeAttribute('open')">Ok</button>
+            </footer>
+          </article>
+        </dialog>
+      
+        <dialog id="delete_warning">
+          <article>
+            <h2>Deleting station</h2>
+            <p>
+              Are you sure to delete this station?
+            </p>
+            <footer>
+              <button 
+                id="delete_button"
+                hx-delete="/station_list"
+                onClick="document.getElementById('delete_warning').removeAttribute('open');">Yes</button>
+              <button onClick="document.getElementById('delete_warning').removeAttribute('open')">No</button>
+            </footer>
+          </article>
+        </dialog>
     </section>
   </main>
-  
+
   <!-- Minimal theme switcher -->
   <script src="static?r=minimal-theme-switcher.js"></script>
 </body>
