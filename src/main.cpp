@@ -132,8 +132,6 @@
 
 #if defined(ROBOX_PREFERENCES)
     #include <Preferences.h>
-    #define RW_MODE false
-    #define RO_MODE true
 #endif
 
 #if defined(ROBOX_WIFI_MANAGER)
