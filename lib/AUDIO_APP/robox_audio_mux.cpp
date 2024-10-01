@@ -15,6 +15,8 @@ extern GEM_adafruit_gfx* menu;
 #include "robox_sd.h"
 #include "robox_void.h"
 
+#include "robox_server.h"
+
 // extern WiFiManager wifiManager;
 extern RoboxRestartManager restart_manager;
 
@@ -23,14 +25,14 @@ bool is_audio_paused = false;
 // static bool is_startup = true;
 std::mutex meta_data_mtx;
 
-static const std::vector<String> _urls {
-    "http://icecast.vrtcdn.be/mnm_hits-high.mp3",
-    "http://icecast.vrtcdn.be/mnm-high.mp3",
-    "http://icecast.vrtcdn.be/radio1-high.mp3",
-    "http://icecast.vrtcdn.be/ra2ant-high.mp3",
-    "http://icecast.vrtcdn.be/stubru-high.mp3",
-    // "http://streams.radio.dpgmedia.cloud/redirect/qmusic_be/mp3"
-};
+// static const std::vector<String> _urls {
+//     "http://icecast.vrtcdn.be/mnm_hits-high.mp3",
+//     "http://icecast.vrtcdn.be/mnm-high.mp3",
+//     "http://icecast.vrtcdn.be/radio1-high.mp3",
+//     "http://icecast.vrtcdn.be/ra2ant-high.mp3",
+//     "http://icecast.vrtcdn.be/stubru-high.mp3",
+//     // "http://streams.radio.dpgmedia.cloud/redirect/qmusic_be/mp3"
+// };
 
 void RoboxAudioMux::setup() {
     ESP_LOGI(LOG_MUX_TAG, ">>> Audio Mux starting...");
@@ -91,6 +93,7 @@ void RoboxAudioMux::switch_startup() {
 
     case WebRadioSource:
         Serial.printf("webradio source: %d\n", source_pos);
+        load_stations();
         current_source.reset(new RoboxWebRadio(true, volume_level, _urls, source_pos));
         current_source->mux_start();
         break;

@@ -9,6 +9,7 @@
 #include "robox_server.h"
 
 #include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
+#include "updates.h"
 
 static RTC_NOINIT_ATTR uint32_t _reboot_counter;
 static RTC_NOINIT_ATTR uint8_t _audio_source;
@@ -99,15 +100,14 @@ LedMotorEnum RoboxRestartManager::get_led_motor() {
 
 
 void RoboxRestartManager::setupWifi() {
-    if (_audio_source == WebRadioSource) {
+    if ((_audio_source == WebRadioSource) || (_audio_source == NotSelectedSource)) {
         setupWifiOnDemand();
     }
 
-    #if defined(DEBUG_WIFI_ENABLE_NO_SOURCE)
     if (_audio_source == NotSelectedSource) {
-        setupWifiOnDemand();
+        server_setup();
+        server_start();
     }
-    #endif
 }
 
 void RoboxRestartManager::resetWifiCred() {
@@ -153,13 +153,13 @@ void RoboxRestartManager::setupWifiOnDemand() {
         Serial.println("Successfully connected to Wifi.");
         String display_text = LANG_TOP_WIFI_CONNECTED + WiFi.localIP().toString() + String("                                        ");
 
+        #if defined(UPDATE_CHECK)
+        update_check();
+        #endif
+
         std::lock_guard<std::mutex> lck(meta_data_mtx);
         mux.meta.title = String(display_text.c_str());
         lcd_invalidate(INVALIDATE_ALL);
-        #if defined(ENABLE_WEB_CONFIGURATION_SERVER)
-        server_setup();
-        server_start();
-        #endif
     }
     else
     {

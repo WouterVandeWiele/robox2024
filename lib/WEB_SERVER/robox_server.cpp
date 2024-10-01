@@ -3,15 +3,19 @@
 #include <AsyncTCP.h>
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
+#include <Preferences.h>
 
 #include "robox_server_static.h"
+#include "general_config.h"
 
 static AsyncWebServer server(80);
 const char* PARAM_MESSAGE = "message";
 const char* STATIC_QUERY_PARAM = "r";
 
+std::vector<String> _urls;
 
-static std::vector<String> station_list{ "http://link1", "http://link2", "http://link3"}; 
+
+// static std::vector<String> station_list{ "http://link1", "http://link2", "http://link3"}; 
 
 
 const String row_edit1 = R"x(<tr class='editing'>
@@ -66,7 +70,7 @@ String station_table() {
     String response = table1;
     uint8_t count = 0;
 
-    for (auto & element : station_list) {
+    for (auto & element : _urls) {
       response += "<tr>";
       response += "<td>" + String(++count) + "</td>";
       response += "<td>" + element + "</td>";
@@ -81,6 +85,53 @@ String station_table() {
 
 void notFound(AsyncWebServerRequest* request) {
   request->send(404, "text/plain", "Not found");
+}
+
+void save_stations() {
+  unsigned char storage_list[20][150] = {0};
+  Preferences roboxPrefs;
+
+  int32_t count = 0;
+
+  Serial.println("url list save");
+
+  for (String & element : _urls) {
+    if (count >= 20) {
+      break;
+    }
+
+    element.getBytes((storage_list[count]), 150);
+    Serial.printf("- %d: %s\n", count, storage_list[count]);
+
+    count++;
+  }
+
+  roboxPrefs.begin("roboxPrefs", RW_MODE);
+  roboxPrefs.putBytes("station_data", storage_list, 150*count);
+  roboxPrefs.putLong("station_length", count);
+  roboxPrefs.end();
+
+  Serial.printf("len: %d\n", count);
+}
+
+void load_stations() {
+  char storage_list[20][150] = {0};
+  Preferences roboxPrefs;
+
+  roboxPrefs.begin("roboxPrefs", RO_MODE);
+  int32_t count = roboxPrefs.getLong("station_length");
+  roboxPrefs.getBytes("station_data", &storage_list, 150*count);
+
+  Serial.println("url list load");
+  Serial.printf("len: %d\n", count);
+
+  _urls.clear();
+  for (int32_t i = 0; i < count; i++) {
+    _urls.push_back(String(storage_list[i]));
+    Serial.printf("- %d: %s\n", i, storage_list[i]);
+  }
+
+  roboxPrefs.end();
 }
 
 void server_setup() {
@@ -132,11 +183,13 @@ void server_setup() {
       query_param = request->getParam("id")->value().toInt();
 
       Serial.printf("deleting: %d\n", query_param);
-      station_list.erase(station_list.begin() + query_param -1);
+      _urls.erase(_urls.begin() + query_param -1);
 
-      for (auto & element : station_list) {
-        Serial.printf("- %s\n", element);
-      }
+      save_stations();
+
+      // for (auto & element : _urls) {
+      //   Serial.printf("- %s\n", element);
+      // }
 
     }
     AsyncWebServerResponse *response = request->beginResponse(200, "text/html", station_table().c_str());
@@ -156,7 +209,7 @@ void server_setup() {
 
     if (request->hasArg("url")) {
       url = request->arg("url");
-      Serial.printf("UPH: %s\n", url.c_str());
+      // Serial.printf("UPH: %s\n", url.c_str());
     }
     
     // if (request->hasParam("url")) {
@@ -166,14 +219,15 @@ void server_setup() {
 
     if (request->hasParam("id")) {
       id = request->getParam("id")->value().toInt();
-      Serial.printf("UI: %ld\n", id);
+      // Serial.printf("UI: %ld\n", id);
     }
 
     if (request->hasArg("url") && request->hasParam("id")) {
       Serial.printf("update: %ld - %s\n", url, url.c_str());
-      station_list[id-1] = url;
+      _urls[id-1] = url;
     }
 
+    save_stations();
 
     AsyncWebServerResponse *response = request->beginResponse(200, "text/html", station_table().c_str());
     response->addHeader("HX-Location","{\"path\":\"/station_list\", \"target\":\"#station_table\"}");
@@ -188,12 +242,13 @@ void server_setup() {
       query_param = request->getParam("url", true)->value();
       Serial.println(query_param);
 
-      station_list.push_back(query_param);
+      _urls.push_back(query_param);
+      save_stations();
 
       Serial.printf("adding: %s\n", query_param);
-      for (auto & element : station_list) {
-        Serial.printf("- %s\n", element);
-      }
+      // for (auto & element : _urls) {
+      //   Serial.printf("- %s\n", element);
+      // }
     }
     // AsyncWebServerResponse *response = request->beginResponse(200, "text/html", station_table().c_str());
     AsyncWebServerResponse *response = request->beginResponse(200);
@@ -209,7 +264,7 @@ void server_setup() {
 
     if (request->hasParam("id")) {
       id = request->getParam("id")->value().toInt();
-      url = station_list.at(id-1);
+      url = _urls.at(id-1);
       r = row_edit1 + String(id) + row_edit2 + url + row_edit3 + String(id) + row_edit4;
     }
 
@@ -222,6 +277,7 @@ void server_setup() {
 }
 
 void server_start() {
+  load_stations();
   server.begin();
 }
 
