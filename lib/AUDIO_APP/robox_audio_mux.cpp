@@ -25,14 +25,6 @@ bool is_audio_paused = false;
 // static bool is_startup = true;
 std::mutex meta_data_mtx;
 
-// static const std::vector<String> _urls {
-//     "http://icecast.vrtcdn.be/mnm_hits-high.mp3",
-//     "http://icecast.vrtcdn.be/mnm-high.mp3",
-//     "http://icecast.vrtcdn.be/radio1-high.mp3",
-//     "http://icecast.vrtcdn.be/ra2ant-high.mp3",
-//     "http://icecast.vrtcdn.be/stubru-high.mp3",
-//     // "http://streams.radio.dpgmedia.cloud/redirect/qmusic_be/mp3"
-// };
 
 void RoboxAudioMux::setup() {
     ESP_LOGI(LOG_MUX_TAG, ">>> Audio Mux starting...");

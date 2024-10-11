@@ -15,7 +15,14 @@ const char* STATIC_QUERY_PARAM = "r";
 std::vector<String> _urls;
 
 
-// static std::vector<String> station_list{ "http://link1", "http://link2", "http://link3"}; 
+static const std::vector<String> _urls_default {
+    "http://icecast.vrtcdn.be/mnm_hits-high.mp3",
+    "http://icecast.vrtcdn.be/mnm-high.mp3",
+    "http://icecast.vrtcdn.be/radio1-high.mp3",
+    "http://icecast.vrtcdn.be/ra2ant-high.mp3",
+    "http://icecast.vrtcdn.be/stubru-high.mp3",
+    // "http://streams.radio.dpgmedia.cloud/redirect/qmusic_be/mp3"
+};
 
 
 const String row_edit1 = R"x(<tr class='editing'>
@@ -126,9 +133,15 @@ void load_stations() {
   Serial.printf("len: %d\n", count);
 
   _urls.clear();
-  for (int32_t i = 0; i < count; i++) {
-    _urls.push_back(String(storage_list[i]));
-    Serial.printf("- %d: %s\n", i, storage_list[i]);
+  if (count > 0) {
+    for (int32_t i = 0; i < count; i++) {
+      _urls.push_back(String(storage_list[i]));
+      Serial.printf("- %d: %s\n", i, storage_list[i]);
+    }
+  }
+  else {
+    Serial.println("no URLS in NVS, get default list");
+    _urls = _urls_default;
   }
 
   roboxPrefs.end();
