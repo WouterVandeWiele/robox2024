@@ -171,6 +171,16 @@ mux -meta_title -volume <value>
 -volume: sets the colume on the stream
 ```
 
+## patching URLStream
+In order to check the user URL stream and display an error if the URL is invalid,
+a pach is needed on the aurduino audio tools library:
+
+```shell
+cp .\URLStream.patch .pio\libdeps\robox_hw\audio-tools
+cd .pio\libdeps\robox_hw\audio-tools
+cat .\URLStream.patch | git apply
+```
+
 ## PlatformIO configuration (dev log)
 ### Freenove fnk0085
 https://community.platformio.org/t/esp32s-configuration-error/38647/2

@@ -53,6 +53,8 @@
 
 #define LANG_RO_RO "~~Read Only~~~"
 
+#define LANG_INVALID_URL "Invalid URL"
+
 #endif
 
 #if defined(LANG_NL)
@@ -82,5 +84,7 @@
 #define LANG_RO_BATTERY_VOLTAGE "Batterij Spanning"
 
 #define LANG_RO_RO "~~Enkel Lezen~"
+
+#define LANG_INVALID_URL "Ongeldige URL"
 
 #endif

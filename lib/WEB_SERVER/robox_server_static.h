@@ -50,6 +50,12 @@ const char static_root_html[] PROGMEM = u8R"x(
               Add
           </button>
         </div>
+        
+        <p>Limitations:</p>
+        <ul>
+          <li>Station URLS are limited to 149 characters</li>
+          <li>Maximum 20 radio stations</li>
+        </ul>
 
         <!-- confirm modals -->
       
