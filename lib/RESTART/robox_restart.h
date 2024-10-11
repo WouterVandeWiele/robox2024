@@ -7,6 +7,8 @@ class RoboxRestartManager {
     public:
         RoboxRestartManager();
 
+        void init();
+
         uint32_t get_reboot_counter();
 
         void reboot_next_source(audio_source source);

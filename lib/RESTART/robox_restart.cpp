@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include <Preferences.h>
+#include "general_config.h"
 #include "robox_restart.h"
 
 #include "lcd_screen.h"
@@ -45,16 +47,25 @@ void RoboxRestartManager::setWifiSetupText() {
 RoboxRestartManager::RoboxRestartManager()
     : _is_wifi_initialized(false)
     , _is_wifi_started(false)
- {
+{}
+
+void RoboxRestartManager::init() {
+    Preferences roboxPrefs;
     esp_reset_reason_t reason = restartReason();
 
     if ((reason != ESP_RST_DEEPSLEEP) && (reason != ESP_RST_SW)) {
         // invalidate variables
         _reboot_counter = 0;
-        _audio_source = NotSelectedSource;
         _led_motor = lm_none;
         _web_index = 0;
         cold_boot = true;
+
+        roboxPrefs.begin("roboxPrefs", RO_MODE);
+        _audio_source = roboxPrefs.getUChar("audio_src", 0);
+        roboxPrefs.end();
+
+        Serial.println(_audio_source);
+
     }
     else {
         cold_boot = false;
@@ -85,6 +96,14 @@ void RoboxRestartManager::set_webplayer_startup_index(uint8_t index) {
 
 void RoboxRestartManager::reboot_next_source(audio_source source) {
     _audio_source = (uint8_t) source;
+
+    Preferences roboxPrefs;
+    roboxPrefs.begin("roboxPrefs", RW_MODE);
+    roboxPrefs.putUChar("audio_src", _audio_source);
+    roboxPrefs.end();
+
+    Serial.println(_audio_source);
+
     restart();
 }
 

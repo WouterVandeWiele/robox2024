@@ -301,8 +301,9 @@ void setup() {
 
     AudioLogger::instance().begin(Serial, AudioLogger::Info);
 
-    // font generated with https://patorjk.com/software/taag/#p=display&f=Doh&t=ROBOX
+    restart_manager.init();
 
+    // font generated with https://patorjk.com/software/taag/#p=display&f=Doh&t=ROBOX
     Serial.println("\n");
     Serial.println("RRRRRRRRRRRRRRRRR        OOOOOOOOO     BBBBBBBBBBBBBBBBB        OOOOOOOOO     XXXXXXX       XXXXXXX");
     Serial.println("R::::::::::::::::R     OO:::::::::OO   B::::::::::::::::B     OO:::::::::OO   X:::::X       X:::::X");
@@ -361,9 +362,9 @@ void setup() {
       // first-time run we will create
       // our keys and store the initial "factory default" values.
 
-      roboxPrefs.putString("wifi_ssid_2", "fri3d-badge");
-      roboxPrefs.putString("wifi_password_2", "badge2024");
-      roboxPrefs.putBool("motorsOn", true);
+    //   roboxPrefs.putString("wifi_ssid_2", "fri3d-badge");
+    //   roboxPrefs.putString("wifi_password_2", "badge2024");
+    //   roboxPrefs.putBool("motorsOn", true);
 
       roboxPrefs.putBool("nvsInit", true);      // Create the "already initialized"
                                                 //  key and store a value.
@@ -378,9 +379,9 @@ void setup() {
 
     // Retrieve the operational parameters from the namespace
     //  and save them into their run-time variables.
-    wifi_ssid_2 = roboxPrefs.getString("wifi_ssid_2").c_str();            //  The LHS variables were defined
-    wifi_password_2 = roboxPrefs.getString("wifi_password_2").c_str();    //   earlier in the sketch.
-    motorsOn = roboxPrefs.getBool("motorsOn");                //
+    // wifi_ssid_2 = roboxPrefs.getString("wifi_ssid_2").c_str();            //  The LHS variables were defined
+    // wifi_password_2 = roboxPrefs.getString("wifi_password_2").c_str();    //   earlier in the sketch.
+    // motorsOn = roboxPrefs.getBool("motorsOn");                //
 
     // All done. Last run state (or the factory default) is now restored.
     roboxPrefs.end();                                      // Close our preferences namespace.

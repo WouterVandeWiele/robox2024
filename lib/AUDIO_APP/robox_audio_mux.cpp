@@ -30,12 +30,12 @@ void RoboxAudioMux::setup() {
     ESP_LOGI(LOG_MUX_TAG, ">>> Audio Mux starting...");
     pinMode(I2S_PIN_MUTE, OUTPUT);
 
-    if (restart_manager.is_cold_boot()) {
-        source_name = NotSelectedSource;
-    }
-    else {
-        source_name = restart_manager.get_startup_source();
-    }
+    // if (restart_manager.is_cold_boot()) {
+    //     source_name = NotSelectedSource;
+    // }
+    // else {
+    source_name = restart_manager.get_startup_source();
+    // }
     switch_startup();
 
     ESP_LOGI(LOG_BLE_TAG, "<<< Audio Mux setup completed");
