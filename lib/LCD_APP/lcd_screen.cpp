@@ -36,6 +36,11 @@ extern WiFiManager wifiManager;
     GEM_adafruit_gfx* menu;
 // #endif
 
+float _speed_motor_left = 0.0f;
+float _speed_motor_right = 0.0f;
+float _speed_motor_test = 0.0f;
+float _led_dimmer = 1.0f;
+
 /* temporary GEM menu stuff */
 #include "splash.h"
 #include "robox_audio_mux.h"
@@ -73,12 +78,43 @@ void switch_to_SD() {
     mux.switch_to(SDSource);
 }
 
+void set_motor_left_speed(GEMCallbackData data) {
+    // mux.switch_to(SDSource);
+    Serial.printf("motor left speed: %f\n", _speed_motor_left);
+    restart_manager.set_motor_speed_left(_speed_motor_left);
+}
+
+void set_motor_right_speed(GEMCallbackData data) {
+    // mux.switch_to(SDSource);
+    Serial.printf("motor right speed: %f\n", _speed_motor_right);
+    restart_manager.set_motor_speed_right(_speed_motor_right);
+}
+
+void set_led_dimmer(GEMCallbackData data) {
+    // mux.switch_to(SDSource);
+    Serial.printf("led dimmer: %f\n", _led_dimmer);
+    restart_manager.set_led_dimmer(_led_dimmer);
+}
+
+
 static GEMItem buttonSwitchNoSource(LANG_SOURCE_NO, switch_to_no_source);
 static GEMItem buttonSwitchBLE(LANG_SOURCE_BLE, switch_to_BLE);
 static GEMItem buttonSwitchWEB(LANG_SOURCE_WEB, switch_to_WEB);
 static GEMItem buttonSwitchSD(LANG_SOURCE_SD, switch_to_SD);
 static GEMItem menuItemSwitchAudioPlay(LANG_BACK, playLoop);
 static GEMItem menuItemSettingsAudioPlay(LANG_BACK, playLoop);
+
+static SelectOptionFloat selectSpeedOptions[] = {{"30", 0.30f}, {"32", 0.32f}, {"34", 0.34f}, {"36", 0.36f}, {"38", 0.38f}, {"40", 0.40f}, {"42", 0.42f}, {"44", 0.44f}, {"46", 0.46f}, {"48", 0.48f}, {"50", 0.50f}, {"52", 0.52f}, {"54", 0.54f}, {"56", 0.56f}, {"58", 0.58f}, {"60", 0.60f}};
+static GEMSelect selectSpeedScheme(sizeof(selectSpeedOptions)/sizeof(SelectOptionFloat), selectSpeedOptions);
+// static GEMItem motorLeftSpeed(LANG_MOTOR_SPEED_LEFT, _speed_motor_left, selectSpeedScheme, set_motor_left_speed);
+// static GEMItem motorLeftSpeed(LANG_MOTOR_SPEED_RIGHT, _speed_motor_right, selectSpeedScheme, set_motor_test_speed);
+static GEMItem motorLeftSpeed(LANG_MOTOR_SPEED_LEFT, _speed_motor_left, selectSpeedScheme, set_motor_left_speed);
+static GEMItem motorRightSpeed(LANG_MOTOR_SPEED_RIGHT, _speed_motor_right, selectSpeedScheme, set_motor_right_speed);
+
+static SelectOptionFloat selectLightOptions[] = {{"5", 0.05f}, {"10", 0.10f}, {"15", 0.15f}, {"20", 0.20f}, {"25", 0.25f}, {"30", 0.30f}, {"35", 0.35f}, {"40", 0.40f}, {"45", 0.45f}, {"50", 0.50f}, {"55", 0.55f}, {"60", 0.60f}, {"65", 0.65f}, {"70", 0.70f}, {"75", 0.75f}, {"80", 0.80f}, {"85", 0.85f}, {"90", 0.90f}, {"95", 0.95f}, {"max", 1.0f}};
+static GEMSelect selectLightScheme(sizeof(selectLightOptions)/sizeof(SelectOptionFloat), selectLightOptions);
+static GEMItem ledDimmer(LANG_LED_DIMMER, _led_dimmer, selectLightScheme, set_led_dimmer);
+
 GEMPage menuPageSwitch(LANG_MENU_SWITCH);
 
 
@@ -178,6 +214,10 @@ void update_screen() {
     // menuPageSettings.addMenuItem(menuPageSettingsResetWifiCredentials);
     // #endif
     menuPageSettings.addMenuItem(menuItemSettingsAudioPlay);
+
+    menuPageSettings.addMenuItem(motorLeftSpeed);
+    menuPageSettings.addMenuItem(motorRightSpeed);
+    menuPageSettings.addMenuItem(ledDimmer);
 
     // Read only menu
     menuPageSettings.addMenuItem(menuROstart1);
@@ -372,6 +412,10 @@ void RoboxLcdScreen::init_lcd() {
 
         lcd_t->lcd_init();
     }
+
+    _speed_motor_left = restart_manager.get_motor_speed_left();
+    _speed_motor_right = restart_manager.get_motor_speed_right();
+    _led_dimmer = restart_manager.get_led_dimmer();
 
     #if defined(LCD_RUN_THREADED)
 

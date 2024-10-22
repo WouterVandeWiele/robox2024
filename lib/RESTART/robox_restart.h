@@ -29,10 +29,22 @@ class RoboxRestartManager {
         bool is_wifi_initialized();
         bool is_wifi_started();
 
+        float get_motor_speed_left();
+        float get_motor_speed_right();
+        void set_motor_speed_left(float speed);
+        void set_motor_speed_right(float speed);
+
+        float get_led_dimmer();
+        void set_led_dimmer(float brightess);
+
     private:
         bool cold_boot;
         bool _is_wifi_initialized;
         bool _is_wifi_started;
+
+        float _motor_speed_left;
+        float _motor_speed_right;
+        float _led_dimmer;
 
         void restart() {
             delay(100);

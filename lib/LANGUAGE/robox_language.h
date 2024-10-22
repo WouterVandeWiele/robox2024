@@ -55,6 +55,10 @@
 
 #define LANG_INVALID_URL "Invalid URL"
 
+#define LANG_MOTOR_SPEED_LEFT "Motor L"
+#define LANG_MOTOR_SPEED_RIGHT "Motor R"
+#define LANG_LED_DIMMER "LED Dim"
+
 #endif
 
 #if defined(LANG_NL)
@@ -87,4 +91,7 @@
 
 #define LANG_INVALID_URL "Ongeldige URL"
 
+#define LANG_MOTOR_SPEED_LEFT "Motor L"
+#define LANG_MOTOR_SPEED_RIGHT "Motor R"
+#define LANG_LED_DIMMER "LED Dim"
 #endif

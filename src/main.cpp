@@ -130,9 +130,9 @@
     #include "robox_i2c_scanner.h"
 #endif
 
-#if defined(ROBOX_PREFERENCES)
-    #include <Preferences.h>
-#endif
+// #if defined(ROBOX_PREFERENCES)
+//     // #include <Preferences.h>
+// #endif
 
 #if defined(ROBOX_WIFI_MANAGER)
     #include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
@@ -232,12 +232,12 @@ RoboxBattery* battery;
 #endif
 
 
-#if defined(ROBOX_PREFERENCES)
-Preferences roboxPrefs;
-const char* wifi_ssid_2;
-const char* wifi_password_2;
-bool motorsOn;
-#endif
+// #if defined(ROBOX_PREFERENCES)
+// // Preferences roboxPrefs;
+// // const char* wifi_ssid_2;
+// // const char* wifi_password_2;
+// // bool motorsOn;
+// #endif
 
 #if defined(ROBOX_WIFI_MANAGER)
     WiFiManager wifiManager;
@@ -345,47 +345,6 @@ void setup() {
 
     // fastled setup
     led_init();
-
-    #if defined(ROBOX_PREFERENCES)
-    roboxPrefs.begin("roboxPrefs", RO_MODE); 
-    
-    bool nvsInit = roboxPrefs.isKey("nvsInit");       // Test for the existence
-                                                      // of the "already initialized" key.
-
-    if (nvsInit == false) {
-      // If nvsInit is 'false', the key "nvsInit" does not yet exist therefore this
-      //  must be our first-time run. We need to set up our Preferences namespace keys. So...
-      roboxPrefs.end();                             // close the namespace in RO mode and...
-      roboxPrefs.begin("roboxPrefs", RW_MODE);      //  reopen it in RW mode.
-
-      // The .begin() method created the "roboxPrefs" namespace and since this is our
-      // first-time run we will create
-      // our keys and store the initial "factory default" values.
-
-    //   roboxPrefs.putString("wifi_ssid_2", "fri3d-badge");
-    //   roboxPrefs.putString("wifi_password_2", "badge2024");
-    //   roboxPrefs.putBool("motorsOn", true);
-
-      roboxPrefs.putBool("nvsInit", true);      // Create the "already initialized"
-                                                //  key and store a value.
-
-      // The "factory defaults" are created and stored so...
-      roboxPrefs.end();                             // Close the namespace in RW mode and...
-      roboxPrefs.begin("roboxPrefs", RO_MODE);      //  reopen it in RO mode so the setup code
-                                                    //  outside this first-time run 'if' block
-                                                    //  can retrieve the run-time values
-                                                    //  from the "roboxPrefs" namespace.
-    }
-
-    // Retrieve the operational parameters from the namespace
-    //  and save them into their run-time variables.
-    // wifi_ssid_2 = roboxPrefs.getString("wifi_ssid_2").c_str();            //  The LHS variables were defined
-    // wifi_password_2 = roboxPrefs.getString("wifi_password_2").c_str();    //   earlier in the sketch.
-    // motorsOn = roboxPrefs.getBool("motorsOn");                //
-
-    // All done. Last run state (or the factory default) is now restored.
-    roboxPrefs.end();                                      // Close our preferences namespace.
-    #endif
 
     #if defined(ROBOX_FULL)
         ESP_LOGI(LOG_MAIN_TAG, "Setup mux");

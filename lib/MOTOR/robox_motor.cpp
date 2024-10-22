@@ -4,9 +4,11 @@
 #include "general_config.h"
 #include "general_definitions.h"
 #include <random>
+#include "robox_restart.h"
 
 #define MAX_12_BITS 4095
 
+extern RoboxRestartManager restart_manager;
 
 RoboxMotor::RoboxMotor(RoboxIoExpander* io)
     : io(io)
@@ -111,35 +113,35 @@ void RoboxMotor::random_move() {
     switch (move)
     {
     case mm_forward:
-        set_speed(FIXED_MOTOR_SPEED, FIXED_MOTOR_SPEED);
+        set_speed(restart_manager.get_motor_speed_left(), restart_manager.get_motor_speed_right());
         set_direction(1, 1);
         break;
     case mm_reverse:
-        set_speed(FIXED_MOTOR_SPEED, FIXED_MOTOR_SPEED);
+        set_speed(restart_manager.get_motor_speed_left(), restart_manager.get_motor_speed_right());
         set_direction(0, 0);
         break;
     case mm_center_left:
-        set_speed(FIXED_MOTOR_SPEED, FIXED_MOTOR_SPEED);
+        set_speed(restart_manager.get_motor_speed_left(), restart_manager.get_motor_speed_right());
         set_direction(1, 0);
         break;
     case mm_center_right:
-        set_speed(FIXED_MOTOR_SPEED, FIXED_MOTOR_SPEED);
+        set_speed(restart_manager.get_motor_speed_left(), restart_manager.get_motor_speed_right());
         set_direction(0, 1);
         break;
     case mm_left_forward_only:
-        set_speed(FIXED_MOTOR_SPEED, 0);
+        set_speed(restart_manager.get_motor_speed_left(), 0);
         set_direction(1, 0);
         break;
     case mm_left_reverse_only:
-        set_speed(FIXED_MOTOR_SPEED, 0);
+        set_speed(restart_manager.get_motor_speed_left(), 0);
         set_direction(0, 0);
         break;
     case mm_right_forward_only:
-        set_speed(0, FIXED_MOTOR_SPEED);
+        set_speed(0, restart_manager.get_motor_speed_right());
         set_direction(0, 1);
         break;
     case mm_right_reverse_only:
-        set_speed(0, FIXED_MOTOR_SPEED);
+        set_speed(0, restart_manager.get_motor_speed_right());
         set_direction(0, 0);
         break;
     

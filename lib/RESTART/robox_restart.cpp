@@ -10,6 +10,8 @@
 
 #include "robox_server.h"
 
+#include "robox_fft_beat.h"
+
 #include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager WiFi Configuration Magic
 #include "updates.h"
 
@@ -53,6 +55,42 @@ void RoboxRestartManager::init() {
     Preferences roboxPrefs;
     esp_reset_reason_t reason = restartReason();
 
+    // init NVS
+    roboxPrefs.begin("roboxPrefs", RO_MODE); 
+    
+    bool nvsInit = roboxPrefs.isKey("nvsInit");       // Test for the existence
+                                                      // of the "already initialized" key.
+
+    if (nvsInit == false) {
+      // If nvsInit is 'false', the key "nvsInit" does not yet exist therefore this
+      //  must be our first-time run. We need to set up our Preferences namespace keys. So...
+      roboxPrefs.end();                             // close the namespace in RO mode and...
+      roboxPrefs.begin("roboxPrefs", RW_MODE);      //  reopen it in RW mode.
+
+      roboxPrefs.putBool("nvsInit", true);      // Create the "already initialized"
+                                                //  key and store a value.
+
+      // The "factory defaults" are created and stored so...
+    //   roboxPrefs.end();                             // Close the namespace in RW mode and...
+    //   roboxPrefs.begin("roboxPrefs", RO_MODE);      //  reopen it in RO mode so the setup code
+    //                                                 //  outside this first-time run 'if' block
+    //                                                 //  can retrieve the run-time values
+    //                                                 //  from the "roboxPrefs" namespace.
+        _motor_speed_left = FIXED_MOTOR_SPEED;
+        _motor_speed_right = FIXED_MOTOR_SPEED;
+        _led_dimmer = MAX_LED_BRIGHTNESS;
+    }
+    else {
+        _motor_speed_left = roboxPrefs.getFloat("motor_l", FIXED_MOTOR_SPEED);
+        _motor_speed_right = roboxPrefs.getFloat("motor_r", FIXED_MOTOR_SPEED);
+        _led_dimmer = roboxPrefs.getFloat("led_dim", MAX_LED_BRIGHTNESS);
+    }
+
+    roboxPrefs.end();
+
+    set_brightness(_led_dimmer);
+
+    // init variables
     if ((reason != ESP_RST_DEEPSLEEP) && (reason != ESP_RST_SW)) {
         // invalidate variables
         _reboot_counter = 0;
@@ -68,9 +106,51 @@ void RoboxRestartManager::init() {
 
     }
     else {
+        // hot boot, variables still initialized
         cold_boot = false;
     }
     
+}
+
+float RoboxRestartManager::get_motor_speed_left() {
+    return _motor_speed_left;
+}
+
+float RoboxRestartManager::get_motor_speed_right() {
+    return _motor_speed_right;
+}
+
+void RoboxRestartManager::set_motor_speed_left(float speed) {
+    _motor_speed_left = speed;
+
+    Preferences roboxPrefs;
+    roboxPrefs.begin("roboxPrefs", RW_MODE);
+    roboxPrefs.putFloat("motor_l", speed);
+    roboxPrefs.end();
+
+}
+void RoboxRestartManager::set_motor_speed_right(float speed) {
+    _motor_speed_right = speed;
+
+    Preferences roboxPrefs;
+    roboxPrefs.begin("roboxPrefs", RW_MODE);
+    roboxPrefs.putFloat("motor_r", speed);
+    roboxPrefs.end();
+}
+
+float RoboxRestartManager::get_led_dimmer() {
+    return _led_dimmer;
+}
+
+void RoboxRestartManager::set_led_dimmer(float brightess) {
+    _led_dimmer = brightess;
+
+    Preferences roboxPrefs;
+    roboxPrefs.begin("roboxPrefs", RW_MODE);
+    roboxPrefs.putFloat("led_dim", brightess);
+    roboxPrefs.end();
+
+    set_brightness(_led_dimmer);
 }
 
 uint32_t RoboxRestartManager::get_reboot_counter() {

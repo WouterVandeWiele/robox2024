@@ -21,5 +21,6 @@ void led_init();
 void allRandom();
 enum LedBreathColors {r_blue, r_red, r_green};
 void led_breath(bool alternate, LedBreathColors color);
+void set_brightness(float brightness);
 
 // #endif  // ROBOX_FFT_BEAT_H

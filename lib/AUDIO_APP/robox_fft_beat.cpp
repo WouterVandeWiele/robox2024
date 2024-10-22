@@ -10,7 +10,9 @@
 #include <random>
 
 #include "robox_led_motor_controller.h"
+#include "robox_restart.h"
 extern LedMotorController led_motor_controller;
+extern RoboxRestartManager restart_manager;
 
 #include "robox_motor.h"
 extern RoboxMotor* motor;
@@ -258,4 +260,8 @@ void led_breath(bool alternate, LedBreathColors color) {
 
     FastLED.show();
   }
+}
+
+void set_brightness(float brightness) {
+  FastLED.setBrightness((int)(255*brightness));
 }
