@@ -23,7 +23,8 @@ class RoboxSD: public MuxInterface {
             , multi_output(i2s)
             , decoder()
             , source(startFilePath, ext)
-            , player(source, multi_output, decoder) 
+            , player(source, multi_output, decoder)
+            , sd_names()
         {};
         /*
         SD Audio MUX controls
@@ -41,14 +42,20 @@ class RoboxSD: public MuxInterface {
         virtual void audio_next() override;
         virtual void audio_previous() override;
 
+        virtual std::vector<String> song_list() override;
+
     private:
-    bool beat_led;
+        bool beat_led;
         const char *startFilePath;
         const char* ext;
         MultiOutput multi_output;
         MP3DecoderHelix decoder;
         AudioSourceSD source;
         AudioPlayer player;
+
+        std::vector<String> sd_names;
+
+        void printDirectory(File dir, int numTabs);
 };
 
 

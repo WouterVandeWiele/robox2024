@@ -202,3 +202,7 @@ String RoboxAudioMux::get_title() {
 
     return meta.title;
 }
+
+std::vector<String> RoboxAudioMux::song_list() {
+    return current_source->song_list();
+}

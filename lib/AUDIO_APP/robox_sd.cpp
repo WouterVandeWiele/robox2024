@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <vector>
 
 #include "robox_i2s.h"
 #include "general_definitions.h"
@@ -61,6 +62,36 @@ static void printMetaData(MetaDataType type, const char* str, int len){
 
 }
 
+// https://github.com/esp8266/Arduino/blob/master/libraries/SD/examples/listfiles/listfiles.ino
+void RoboxSD::printDirectory(File dir, int numTabs) {
+  while (true) {
+
+    File entry = dir.openNextFile();
+    if (!entry) {
+      // no more files
+      break;
+    }
+    // for (uint8_t i = 0; i < numTabs; i++) { Serial.print('\t'); }
+    if (!entry.isDirectory()) {
+      sd_names.push_back(entry.name());
+    }
+
+    // Serial.print(entry.name());
+    // if (entry.isDirectory()) {
+    //   Serial.println("/");
+    //   // printDirectory(entry, numTabs + 1);
+    // } else {
+    //   // files have sizes, directories do not
+    //   Serial.print("\t\t");
+    //   Serial.print(entry.size(), DEC);
+    //   time_t lw = entry.getLastWrite();
+    //   struct tm* tmstruct = localtime(&lw);
+    //   Serial.printf("\tLAST WRITE: %d-%02d-%02d %02d:%02d:%02d\n", (tmstruct->tm_year) + 1900, (tmstruct->tm_mon) + 1, tmstruct->tm_mday, tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
+    // }
+    entry.close();
+  }
+}
+
 
 void RoboxSD::mux_start() {
     ESP_LOGI(LOG_SD_TAG, ">>> SD starting...");
@@ -85,6 +116,14 @@ void RoboxSD::mux_start() {
     player.setVolume(0.2);
 
     ESP_LOGI(LOG_BLE_TAG, "<<< SD setup completed");
+
+    File root = SD.open("/");
+    printDirectory(root, 0);
+
+    Serial.println("SD files:");
+    for (auto i : sd_names) {
+      Serial.printf("- %s\n", i.c_str());
+    }
 }
 
 void RoboxSD::mux_stop() {
@@ -134,4 +173,8 @@ void RoboxSD::audio_previous() {
   audio_pause();
   player.previous();
   audio_play();
+}
+
+std::vector<String> RoboxSD::song_list() {
+  return sd_names;
 }

@@ -322,7 +322,9 @@ void setup() {
     Serial.println("R::::::R     R:::::R   OO:::::::::OO   B::::::::::::::::B     OO:::::::::OO   X:::::X       X:::::X");
     Serial.println("RRRRRRRR     RRRRRRR     OOOOOOOOO     BBBBBBBBBBBBBBBBB        OOOOOOOOO     XXXXXXX       XXXXXXX");
     Serial.println("\n");
-    Serial.println("Version: 2024.08.11\n");
+    Serial.println("Version:");
+    Serial.println(ROBOX_VERSION);
+    Serial.println("\n");
     Serial.println("More info on https://woutervandewiele.github.io/robox2024/\n");
     Serial.println("\n");
 

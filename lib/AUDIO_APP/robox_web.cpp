@@ -1,4 +1,5 @@
 #include <map>
+#include <vector>
 
 #include <Arduino.h>
 #include "AudioTools.h"
@@ -12,6 +13,7 @@
 #include "robox_restart.h"
 
 #include "lcd_screen.h"
+#include "robox_server.h"
 
 extern RoboxRestartManager restart_manager;
 
@@ -179,4 +181,8 @@ void RoboxWebRadio::change_station(std::string station_name) {
 //     }
 
 //     mux_start();
+}
+
+std::vector<String> RoboxWebRadio::song_list() {
+  return _urls;
 }

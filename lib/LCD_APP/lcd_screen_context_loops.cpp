@@ -204,60 +204,65 @@ static void invalidateScreen(LcdInvalidate type) {
 
 
 static void onOkay() {
-     switch (active_button)
-     {
-     case item_play_pause:
-         mux.audio_play_pause();
-         invalidateScreen(INVALIDATE_ALL);
-         break;
+    switch (active_button)
+    {
+    case item_play_pause:
+        mux.audio_play_pause();
+        invalidateScreen(INVALIDATE_ALL);
+        break;
 
-     case item_led_motor:
-        led_motor_controller.next();
-        // lm_current_item++;
-        // if (lm_current_item > 3) {
-        //     lm_current_item = 0;
-        // }
-        // switch (lm_current_item)
-        // {
-        // case 1:
-        //     // led only
-        //     break;
+    case item_led_motor:
+    led_motor_controller.next();
+    // lm_current_item++;
+    // if (lm_current_item > 3) {
+    //     lm_current_item = 0;
+    // }
+    // switch (lm_current_item)
+    // {
+    // case 1:
+    //     // led only
+    //     break;
 
-        // case 2:
-        //     // motor only
-        //     break;
+    // case 2:
+    //     // motor only
+    //     break;
 
-        // case 3:
-        //     // led and motor
-        //     break;
+    // case 3:
+    //     // led and motor
+    //     break;
 
-        // default:
-        //     break;
-        // }
-         invalidateScreen(INVALIDATE_ALL);
-         break;
+    // default:
+    //     break;
+    // }
+        invalidateScreen(INVALIDATE_ALL);
+        break;
 
-     case item_reverse:
-         mux.audio_previous();
-         break;
+    case item_reverse:
+        mux.audio_previous();
+        break;
 
-     case item_forward:
-         mux.audio_next();
-         break;
+    case item_forward:
+        mux.audio_next();
+        break;
 
-     case item_switch:
-         menu->setMenuPageCurrent(menuPageSwitch);
-         menu->context.exit();
-         break;
+    case item_switch:
+        menu->setMenuPageCurrent(menuPageSwitch);
+        menu->context.exit();
+        break;
 
-     case item_settings:
-         menu->setMenuPageCurrent(menuPageSettings);
-         menu->context.exit();
-         break;
+    // case item_audio_controls:
+    //     menu->setMenuPageCurrent(menuAudioControl);
+    //     menu->context.exit();
+    //     break;
 
-     default:
-         break;
-     }
+    case item_settings:
+        menu->setMenuPageCurrent(menuPageSettings);
+        menu->context.exit();
+        break;
+
+    default:
+        break;
+    }
 }
 
 static void nextItem(uint8_t button) {

@@ -12,6 +12,7 @@
 // #include "AudioTools.h"
 #include <memory>
 #include <mutex>
+#include <vector>
 #include <Arduino.h>
 #include "robox_mux_interface.h"
 #include "general_definitions.h"
@@ -54,6 +55,8 @@ class RoboxAudioMux {
         void audio_play_pause();
         void audio_next();
         void audio_previous();
+
+        std::vector<String> song_list();
 
         String get_title();
 

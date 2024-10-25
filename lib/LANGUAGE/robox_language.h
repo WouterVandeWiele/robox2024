@@ -38,6 +38,7 @@
 #define LANG_RESET_WIFI_CRED "Reset Wifi Cred"
 
 #define LANG_MENU_SWITCH "Switch Audio Source"
+#define LANG_MENU_AUDIO_CONTROLS "Audio list"
 #define LANG_MENU_SETTINGS "Settings"
 
 #define LANG_TOP_SELECT_SOURCE "<- Select Source"
@@ -50,6 +51,7 @@
 #define LANG_RO_BLE_NAME "Bluetooth Name"
 #define LANG_RO_IP_ADDRESS "IP Address"
 #define LANG_RO_BATTERY_VOLTAGE "Battery Voltage"
+#define LANG_RO_ROBOX_VERSION "Robox Version"
 
 #define LANG_RO_RO "~~Read Only~~~"
 
@@ -74,6 +76,7 @@
 #define LANG_RESET_WIFI_CRED "Reset Wifi Cred"
 
 #define LANG_MENU_SWITCH "Wissel Audio Bron"
+#define LANG_MENU_AUDIO_CONTROLS "Audio lijst"
 #define LANG_MENU_SETTINGS "Instellingen"
 
 #define LANG_TOP_SELECT_SOURCE "<- Wissel Bron"
@@ -86,6 +89,8 @@
 #define LANG_RO_BLE_NAME "Bluetooth Naam"
 #define LANG_RO_IP_ADDRESS "IP Adres"
 #define LANG_RO_BATTERY_VOLTAGE "Batterij Spanning"
+#define LANG_RO_ROBOX_VERSION "Robox Versie"
+
 
 #define LANG_RO_RO "~~Enkel Lezen~"
 

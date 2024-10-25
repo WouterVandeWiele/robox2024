@@ -12,6 +12,7 @@ extern SED1530_LCD* lcd_t;
 extern GEM_adafruit_gfx* menu;
 
 extern GEMPage menuPageSwitch;
+extern GEMPage menuAudioControl;
 extern GEMPage menuPageSettings;
 
 #define GEM_INVALIDATE (0x80)

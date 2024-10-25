@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "general_config.h"
 
 #include "robox_motor.h"
@@ -73,6 +74,11 @@ class MuxInterface {
 
         virtual void audio_previous() {
             
+        }
+
+        virtual std::vector<String> song_list() {
+            std::vector<String> empty = {};
+            return empty;
         }
 
     protected:

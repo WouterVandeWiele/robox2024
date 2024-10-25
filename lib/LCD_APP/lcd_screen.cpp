@@ -138,6 +138,9 @@ static GEMItem menuROip_value(String("ROBOX_bb").c_str(), dummy);
 static GEMItem menuRObreak3("     ~~~~     ", dummy);
 static GEMItem menuRObattery_voltage_label(LANG_RO_BATTERY_VOLTAGE, dummy);
 static GEMItem menuRObattery_voltage_value(String("ROBOX_bb").c_str(), dummy);
+static GEMItem menuRObreak4("     ~~~~     ", dummy);
+static GEMItem menuROversion_label(LANG_RO_ROBOX_VERSION, dummy);
+static GEMItem menuROversion_value(ROBOX_VERSION, dummy);
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -151,6 +154,10 @@ static GEMItem menuRObattery_voltage_value(String("ROBOX_bb").c_str(), dummy);
 // static GEMItem menuPageSettingsResetWifiCredentials(LANG_RESET_WIFI_CRED, reset_wifi_credentials);
 
 GEMPage menuPageSettings(LANG_MENU_SETTINGS);
+
+GEMItem menuAudioControlBack(LANG_BACK, playLoop);
+std::vector<GEMItem*> audioControlItems;
+GEMPage menuAudioControl(LANG_MENU_AUDIO_CONTROLS);
 
 
 #if defined(LCD_RUN_THREADED)
@@ -237,6 +244,18 @@ void update_screen() {
 
     menuPageSettings.addMenuItem(menuRObattery_voltage_label);
     menuPageSettings.addMenuItem(menuRObattery_voltage_value);
+
+    menuPageSettings.addMenuItem(menuRObreak4);
+
+    menuPageSettings.addMenuItem(menuROversion_label);
+    menuPageSettings.addMenuItem(menuROversion_value);
+
+    // for (auto i : mux.song_list()) {
+    //     audioControlItems.push_back(new GEMItem(i, dummy, true));
+    //     menuAudioControl.addMenuItem(*audioControlItems.back());
+    // }
+
+    menuAudioControl.addMenuItem(menuAudioControlBack);
 
     menu->setMenuPageCurrent(menuPageSettings);
     menu->init();

@@ -47,4 +47,6 @@
 #define LANG_NL
 // #define LANG_EN
 
+#define ROBOX_VERSION "1.1.0"
+
 #endif  // GENERAL_CONFIG_H

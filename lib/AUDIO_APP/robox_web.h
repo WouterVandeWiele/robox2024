@@ -64,6 +64,8 @@ class RoboxWebRadio: public MuxInterface {
 
         void change_station(std::string station_name);
 
+        virtual std::vector<String> song_list() override;
+
     private:
         bool beat_led;
         // I2SStream i2s;
