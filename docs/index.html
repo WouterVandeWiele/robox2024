@@ -5,6 +5,7 @@
   <meta name="theme-color" content="#2a3140">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.0.6/css/pico.min.css">
   <!-- <script src="https://unpkg.com/htmx.org@2.0.1" ></script> -->
+   <script src="static/script.js"></script>
   <title>Robox 2024</title>
 
 </head>
@@ -50,8 +51,26 @@
         <!-- Project showcase -->
     
         <article>
-            <h2>Project Showcase</h2>
-            <p>...</p>
+            <h2>Updater</h2>
+
+            <select id="ver" class="btn" onclick="setManifest();">
+    
+              <optgroup label="Fri3d Camp">
+                <option data-manifest="releases/fri3d_1_0_1/manifest.json">fri3d_1_0_1</option>
+                <option data-manifest="releases/fri3d_1_1_0/manifest.json">fri3d_1_1_0</option>
+              </optgroup>
+           
+            </select>
+            <script
+              type="module"
+              src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"
+            ></script>
+            <esp-web-install-button
+              id="inst"
+              manifest=""
+            >
+              <button class="btn" slot="activate">Install</button>
+            </esp-web-install-button>
         </article>
 
     </section>
