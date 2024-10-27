@@ -1,16 +1,21 @@
-# Robox 2024 (Release of new update scheduled for 2024/10/01)
+# Robox 2024 (Update is here!)
 
 ![image](https://github.com/user-attachments/assets/fac3a691-4a6e-4169-82d3-f7d4ebb7cdb1)
 
 ### status updates
+- update 21/10/2024 ==> you can download the update here: https://woutervandewiele.github.io/robox2024/
 - update 17/09/2024 ==> We had some issues while testing the update, but we are slowly ironing out most of these issues. The update will contain: possibility of adding radio stations, receiving notifications for new updates
 - update 27/08/2024 ==> We are working on the update.
 
 ### planned software updates
-- possibility of adding radio stations
-- receiving update notifications
-- remembering what audio source was used last
-- adjusting motor speed in the settings menu
+- adjusting motor speed in the settings menu (currently being tested)
+- fixing full battery indication (currently being tested/in development))
+- remembering last played radio station (in development)
+- adding a sleep timer (maybe ==> in consideration)
+
+### 1_1_0 update (shoutout to Wouter!)
+- adding radio stations (read the dutch manual about the part of adding radio stations)
+- remembering what audio source was used last, the radio now remembers if you last time played a radio station or a bluetooth stream or ...
 
 ### planned mechanical updates
 - 3D-printable or foldable glasses (in front of the speakers)
@@ -20,14 +25,13 @@ English version below.
 
 Welkom bij het Robox 2024 (v2) project. Hier vind je alle informatie omtrent dit project. Voor de aanloop van FRI3D hebben we al wat basisinformatie gepubliceerd om je wegwijs te maken met de radio. In de weken na het kamp gaan we nog wat updates toevoegen om de functionaliteit van Robox v2 te verbeteren en uit te breiden. Dus hou deze website in het oog. Er zal dan uitgelegd worden hoe je zelf de udpate kan uitvoeren. Om deze website terug te vinden volstaat het om de QR-code op de achterkant van de radio te scannen.
 
-- status update: de eerste update is bijna klaar en zal binnenkort vrijgegeven worden. Binnenkort geven we hierover meer details. We gaan ook de documentatie op deze site uitbreiden en trachten in het nederlands en engels aan te bieden.
+- status update: de eerste update is klaar en verkrijgbaar. We gaan ook de documentatie op deze site uitbreiden en trachten in het nederlands en engels aan te bieden.
 - Voor degenen die het project nog verder willen steunen of een bijdrage willen leveren mogen een donatie doen via https://buymeacoffee.com/erowin
 - Heb je vragen over het project kan je via github een issue openen of ons contacteren via discord in deze server: https://discord.gg/HG2vBjpU9c (vragen naar @erowin of @wally)
 
 Welcome at the Robox 2024 (v2) project, here you will find all information about this project. Before FRI3D we have already published some basic information to get to know your radio. In the next comming weeks after the camp we will add some firmware updates to increase the functionality of Robox V2. So keep an eye on this site. There will appear an explanation on how to execute the update all by yourself. To find back this webpage you can scan the QR-code on the back of the radio.
 
-- update: the first firmware update is almost ready and will be released soon. We will add the release notes soon as well. We will also extend the documentation a bit and we will try to provide a dutch and english translation of the documentation.
-
+- update: the first firmware update has been releas and can be downloaded here: https://woutervandewiele.github.io/robox2024/ (check the dutch manual for the installation of the update)
 - For the ones who want to support the project can donate here: https://buymeacoffee.com/erowin
 - If you have questions about the project you can contact us on discord in this server: https://discord.gg/HG2vBjpU9c (you can ask for @erowin or @wally)
 
@@ -90,11 +94,25 @@ Van audiobron wisselen doe je door naar het menu “Bron selectie” te gaan (sy
 
   ![image](https://github.com/user-attachments/assets/317f0081-e539-452f-8497-3c02b377fa91)
 
+  o	Je krijgt dan deze webpagina te zien waar je een webradiostream kan toevoegen.
+  
+  ![image](https://github.com/user-attachments/assets/00cba1ec-1fe8-403d-801e-7e9a9dfdd4c5)
+
+  o	De stream die je toevoegd moet http:// zijn (https:// werkt niet). De link mag ook geen redirect zijn. Je kan dit testen in een webbrowser. Als de link een redirect uitvoert moet je de link hebben na de redirect. Het moet een mp3 stream zijn. Hier kan je de meeste radiostreams (België en wereldwijd) terugvinden: https://fmstream.org/index.php?c=FT
+
 •	Bluetooth ==> Hierbij kan je bluetooth verbinding maken met een gsm/laptop en muziek afspelen. De bluetooth naam vindt je in de “Instellingen”.
 
 •	microSD-kaart (mp3-speler) ==> Hierbij kan je muziek afspelen van een microSD-kaart.
 
 •	Geen bron ==> Dan speelt ROBOX geen muziek af, maar kan je extra instellingen doen via “Instellingen” en “Webconfiguratie” door vervolgens te surfen naar het ip-adres dat ook in “Instellingen” staat. (zie afbeelding rechts)
+
+### Firmware update installeren
+- Sluit de radio met een USB-data kabel aan op de pc.
+- Ga naar https://woutervandewiele.github.io/robox2024/ en selecteer de meest recente versie, bijvoorbeeld fried_1_1_0.
+- Klik vervolgens op install
+- Selecteer de juiste com-poort (zie apparaatbeheer ==> poorten om te weten welk apparaat de radio is
+![image](https://github.com/user-attachments/assets/8005243f-5e92-4d37-bb88-35243e2551a8)
+- Neem contact met ons op als het updaten niet lukt.
 
 
 ## Configuration
