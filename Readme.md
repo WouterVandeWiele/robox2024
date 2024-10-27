@@ -13,7 +13,7 @@
 - remembering last played radio station (in development)
 - adding a sleep timer (maybe ==> in consideration)
 
-### 1_1_0 update (shoutout to Wouter!)
+### 1_1_0 update, shoutout to Wouter! (read the dutch part of the manual for the update procedure)
 - adding radio stations (read the dutch manual about the part of adding radio stations)
 - remembering what audio source was used last, the radio now remembers if you last time played a radio station or a bluetooth stream or ...
 
