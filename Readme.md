@@ -4,7 +4,7 @@
 
 ### status updates
 - update 21/10/2024 ==> you can download the update here: https://woutervandewiele.github.io/robox2024/
-- update 17/09/2024 ==> We had some issues while testing the update, but we are slowly ironing out most of these issues. The update will contain: possibility of adding radio stations, receiving notifications for new updates
+- update 17/09/2024 ==> We had some issues while testing the update, but we are slowly ironing out most of these issues. The update will contain: possibility of adding radio stations
 - update 27/08/2024 ==> We are working on the update.
 
 ### planned software updates
