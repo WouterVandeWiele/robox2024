@@ -109,10 +109,11 @@ Van audiobron wisselen doe je door naar het menu “Bron selectie” te gaan (sy
 ### Firmware update installeren
 - Sluit de radio met een USB-data kabel aan op de pc.
 - Ga naar https://woutervandewiele.github.io/robox2024/ en selecteer de meest recente versie, bijvoorbeeld fried_1_1_0.
+![image](https://github.com/user-attachments/assets/8005243f-5e92-4d37-bb88-35243e2551a8)
 - Klik vervolgens op install
 - Selecteer de juiste com-poort (zie apparaatbeheer ==> poorten om te weten welk apparaat de radio is) en klik op connect.
-![image](https://github.com/user-attachments/assets/8005243f-5e92-4d37-bb88-35243e2551a8)
 ![image](https://github.com/user-attachments/assets/88bceaba-a342-4b81-952a-e8b62d6b16bb)
+- Het kan enkele minuten duren vooraleer de update uitgevoerd is.
 
 - Neem contact met ons op als het updaten niet lukt.
 
