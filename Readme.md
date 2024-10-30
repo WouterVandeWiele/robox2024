@@ -21,8 +21,10 @@
 - 3D-printable or foldable glasses (in front of the speakers) ==> in development (30/10/2024)
 - Replacing wheels with other fun gadgets (e.g. waving hands) ==> in development (30/10/2024)
 - Added a longer version of the ear axle holder, so the wheels are separated a bit further from the body. (see 3D-print files)
+
 ![image](https://github.com/user-attachments/assets/fbf21f8c-0072-48b7-931d-3c406baff16d)
 - Added a full 3D-printed wheel (as one part)
+
 ![image](https://github.com/user-attachments/assets/307a13f5-6b3d-42ab-a2a9-0f4e95a58dc9)
 
 
