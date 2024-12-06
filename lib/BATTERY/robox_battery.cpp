@@ -28,12 +28,43 @@ QueueHandle_t xQueueBattery;
     uint8_t batteryChargerStatus = 0;
     RoboxIoExpander* io = (RoboxIoExpander*)parameter;
 
+    uint8_t charge_ind_short_count = 0;
+    uint32_t charge_ind_long_count = 0;
+    uint32_t charge_ind_timestamp = millis() + BATTERY_CHARGE_IND_INTERVAL;
+
+    BatteryStatus.chargerChgStBy = true;
+
     while (true) {
         // Note: batteryChargerStatus is inverted since the outputs on the charging IC are active low
-        batteryChargerStatus = io->get_inputs(LCD_CONTROL_PORT) & (BATTERY_CHARGE | BATTERY_STANDBY);
+        batteryChargerStatus = io->get_inputs(LCD_CONTROL_PORT);
+
+        // Serial.printf("port %d: %x\n", LCD_CONTROL_PORT, batteryChargerStatus);
         
         BatteryStatus.chargerCharging = (batteryChargerStatus & BATTERY_CHARGE) ? true : false;
-        BatteryStatus.chargerChgStBy = (batteryChargerStatus & BATTERY_STANDBY) ? true : false;
+        if (BatteryStatus.chargerCharging) {
+            BatteryStatus.chargerChgStBy = true;
+        }
+        // BatteryStatus.chargerChgStBy = (batteryChargerStatus & BATTERY_STANDBY) ? true : false;
+        if (millis() > charge_ind_timestamp) {
+            charge_ind_timestamp = millis() + BATTERY_CHARGE_IND_INTERVAL;
+
+            if (charge_ind_short_count > 45) {
+                charge_ind_long_count += 1;
+            }
+            else {
+                charge_ind_long_count = 0;
+            }
+
+            charge_ind_short_count = 0;
+            
+            if (charge_ind_long_count > 20) {
+                BatteryStatus.chargerChgStBy = false;
+            }
+            else {
+                BatteryStatus.chargerChgStBy = true;
+            }
+        }
+
 
         BatteryStatus.voltage = analogReadMilliVolts(BATTERY_ADC) * ADC_BATTERY_CONVERSION;
 
@@ -41,9 +72,14 @@ QueueHandle_t xQueueBattery;
         Serial.printf(">battery_voltage:%ld\n", BatteryStatus.voltage);
         Serial.printf(">battery_chg_stby: %d\n", BatteryStatus.chargerChgStBy ? 1 : 0);
         Serial.printf(">battery_chg_ind: %d\n", BatteryStatus.chargerCharging ? 1 : 0);
+        Serial.printf(">charge_ind_short_count: %d\n", charge_ind_short_count);
+        Serial.printf(">charge_ind_long_count: %d\n", charge_ind_long_count);
         #endif
 
-        if (BatteryStatus.voltage < BATTERY_VERYLOWVOLTAGE) {
+        if (BatteryStatus.voltage > BATTERY_ABOVE_CHARGE_TH) {
+            charge_ind_short_count++;
+        }
+        else if (BatteryStatus.voltage < BATTERY_VERYLOWVOLTAGE) {
             BatteryStatus.state = battery_verylow;
         }
         else if (BatteryStatus.voltage < BATTERY_LOWVOLTAGE) {
@@ -82,6 +118,7 @@ QueueHandle_t xQueueBattery;
             #endif
         }
         xQueueSend(xQueueBattery, &BatteryStatus, 0);
+
         delay(1000);    //every second
     }
 }
@@ -121,13 +158,13 @@ uint32_t RoboxBattery::battery_voltage() {
     return BatteryStatus.voltage;
 }
 
-uint8_t RoboxBattery::batteryChargerStatusCharging() {
-    return BatteryStatus.chargerCharging;
-}
+// uint8_t RoboxBattery::batteryChargerStatusCharging() {
+//     return BatteryStatus.chargerCharging;
+// }
 
-uint8_t RoboxBattery::batteryChargerStatusChgStBy() {
-    return BatteryStatus.chargerChgStBy;
-}
+// uint8_t RoboxBattery::batteryChargerStatusChgStBy() {
+//     return BatteryStatus.chargerChgStBy;
+// }
 
 void RoboxBattery::io_interrupt_observer(std::vector<uint8_t>& data) {
     // RoboxLcdScreen * self = static_cast<RoboxLcdScreen*>(this_pointer);

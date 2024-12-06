@@ -104,14 +104,14 @@ static GEMItem buttonSwitchSD(LANG_SOURCE_SD, switch_to_SD);
 static GEMItem menuItemSwitchAudioPlay(LANG_BACK, playLoop);
 static GEMItem menuItemSettingsAudioPlay(LANG_BACK, playLoop);
 
-static SelectOptionFloat selectSpeedOptions[] = {{"30", 0.30f}, {"32", 0.32f}, {"34", 0.34f}, {"36", 0.36f}, {"38", 0.38f}, {"40", 0.40f}, {"42", 0.42f}, {"44", 0.44f}, {"46", 0.46f}, {"48", 0.48f}, {"50", 0.50f}, {"52", 0.52f}, {"54", 0.54f}, {"56", 0.56f}, {"58", 0.58f}, {"60", 0.60f}};
+static SelectOptionFloat selectSpeedOptions[] = {{"60", 0.60f}, {"58", 0.58f}, {"56", 0.56f}, {"54", 0.54f}, {"52", 0.52f}, {"50", 0.50f}, {"48", 0.48f}, {"46", 0.46f}, {"44", 0.44f}, {"42", 0.42f}, {"40", 0.40f}, {"38", 0.38f}, {"36", 0.36f}, {"34", 0.34f}, {"32", 0.32f}, {"30", 0.30f}};
 static GEMSelect selectSpeedScheme(sizeof(selectSpeedOptions)/sizeof(SelectOptionFloat), selectSpeedOptions);
 // static GEMItem motorLeftSpeed(LANG_MOTOR_SPEED_LEFT, _speed_motor_left, selectSpeedScheme, set_motor_left_speed);
 // static GEMItem motorLeftSpeed(LANG_MOTOR_SPEED_RIGHT, _speed_motor_right, selectSpeedScheme, set_motor_test_speed);
 static GEMItem motorLeftSpeed(LANG_MOTOR_SPEED_LEFT, _speed_motor_left, selectSpeedScheme, set_motor_left_speed);
 static GEMItem motorRightSpeed(LANG_MOTOR_SPEED_RIGHT, _speed_motor_right, selectSpeedScheme, set_motor_right_speed);
 
-static SelectOptionFloat selectLightOptions[] = {{"5", 0.05f}, {"10", 0.10f}, {"15", 0.15f}, {"20", 0.20f}, {"25", 0.25f}, {"30", 0.30f}, {"35", 0.35f}, {"40", 0.40f}, {"45", 0.45f}, {"50", 0.50f}, {"55", 0.55f}, {"60", 0.60f}, {"65", 0.65f}, {"70", 0.70f}, {"75", 0.75f}, {"80", 0.80f}, {"85", 0.85f}, {"90", 0.90f}, {"95", 0.95f}, {"max", 1.0f}};
+static SelectOptionFloat selectLightOptions[] = {{"max", 1.0f}, {"95", 0.95f}, {"90", 0.90f}, {"85", 0.85f}, {"80", 0.80f}, {"75", 0.75f}, {"70", 0.70f}, {"65", 0.65f}, {"60", 0.60f}, {"55", 0.55f}, {"50", 0.50f}, {"45", 0.45f}, {"40", 0.40f}, {"35", 0.35f}, {"30", 0.30f}, {"25", 0.25f}, {"20", 0.20f}, {"15", 0.15f}, {"10", 0.10f}, {"5", 0.05f}};
 static GEMSelect selectLightScheme(sizeof(selectLightOptions)/sizeof(SelectOptionFloat), selectLightOptions);
 static GEMItem ledDimmer(LANG_LED_DIMMER, _led_dimmer, selectLightScheme, set_led_dimmer);
 
@@ -365,12 +365,12 @@ void update_screen() {
 
         // charge indicator
         // Serial.printf("is charging %d, is standby: %d\n", is_charging ? 1 : 0, is_charge_stby ? 1 : 0);
-        if (!is_charging) {
-            lcd_t->setMarker(GLCD_MARKER_STAR, maker_toggle);
-        }
-        else if (!is_charge_stby) {
+        if (!is_charge_stby) {
             lcd_t->setMarker(GLCD_MARKER_STAR, true);
         }
+        else if (!is_charging) {
+            lcd_t->setMarker(GLCD_MARKER_STAR, maker_toggle);
+        } 
         else {
             lcd_t->setMarker(GLCD_MARKER_STAR, false);
         }

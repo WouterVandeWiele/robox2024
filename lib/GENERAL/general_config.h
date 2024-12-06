@@ -14,6 +14,9 @@
 #define BEAT_MIN_INTERACTION_TIME 1000
 #define DUMMY_BEAT_RANGE 1000
 
+#define BATTERY_ABOVE_CHARGE_TH 4.1f
+// #define BATTERY_ABOVE_CHARGE_TH 0.27f
+#define BATTERY_CHARGE_IND_INTERVAL 60000
 
 #define IO_EXPANDER
 
@@ -22,7 +25,7 @@
 
 // fft beat detection teleplot telemetry
 // #define BEAT_TELEMETRY
-// #define BATTERY_TELEMETRY
+#define BATTERY_TELEMETRY
 
 
 #define PRIORITY_AUDIO_TASK 6
@@ -47,6 +50,6 @@
 #define LANG_NL
 // #define LANG_EN
 
-#define ROBOX_VERSION "1.1.0"
+#define ROBOX_VERSION "1.1.2"
 
 #endif  // GENERAL_CONFIG_H
